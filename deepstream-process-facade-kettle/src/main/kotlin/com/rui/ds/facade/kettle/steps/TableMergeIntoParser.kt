@@ -8,7 +8,7 @@ import com.rui.ds.steps.output.TableMergeIntoStep
 import com.rui.ds.steps.output.TableMergeIntoStepMeta
 import org.dom4j.Element
 
-@KettleStep("MysqlUpsert")
+@KettleStep("MySQLUpsert")
 @KettleStep("MergeInto")
 class TableMergeIntoParser : KettleStepParser {
     override fun parse(element: Element): Step {

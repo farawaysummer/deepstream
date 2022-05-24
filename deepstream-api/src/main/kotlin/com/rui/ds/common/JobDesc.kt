@@ -29,6 +29,8 @@ class DataSourceConfig(
     val isAutoCommit = false
     var isReadOnly: Boolean = DEFAULT_READ_ONLY
 
+
+
     companion object {
         const val DS_TYPE_ORACLE = "oracle"
         const val DS_TYPE_MYSQL = "mysql"
@@ -55,5 +57,9 @@ class DataSourceConfig(
             DS_TYPE_MYSQL to "com.mysql.cj.jdbc.Driver",
             DS_TYPE_MSSQL to "com.microsoft.sqlserver.jdbc.SQLServerDriver"
         )
+    }
+
+    override fun toString(): String {
+        return "DataSourceConfig(name='$name', dbName='$dbName', url='$connectString')"
     }
 }

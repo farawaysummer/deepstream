@@ -3,8 +3,10 @@ package com.rui.ds.generator
 import com.google.common.base.Joiner
 import com.rui.ds.common.DataSourceConfig
 import com.rui.ds.datasource.DatabaseSources
+import com.rui.ds.log.Logging
+import com.rui.ds.log.logger
 
-abstract class FlinkTableGenerator(val dsConfig: DataSourceConfig, private val tablePrefix: String = "") {
+abstract class FlinkTableGenerator(val dsConfig: DataSourceConfig, private val tablePrefix: String = ""): Logging {
 
     abstract val typeMap: Map<String, String>
 
@@ -35,15 +37,26 @@ abstract class FlinkTableGenerator(val dsConfig: DataSourceConfig, private val t
         val dbMetaData = connection.metaData
 
         //TODO get primary key by jdbc metadata
-        dbMetaData.getPrimaryKeys(dbName, null, tableName)
+        val schemaName = if (dbName.isNullOrBlank()) {
+            null
+        } else {
+            dbName
+        }
 
-        val tableResult = dbMetaData.getTables(dbName, null, tableName, arrayOf("TABLE"))
+        val sourcePKSet = dbMetaData.getPrimaryKeys(schemaName, null, tableName)
+        val sourcePK = mutableSetOf<String>()
+        while (sourcePKSet.next()) {
+            sourcePK.add(sourcePKSet.getString("COLUMN_NAME"))
+        }
+        sourcePK.addAll(primaryKeys)
+
+        val tableResult = dbMetaData.getTables(schemaName, null, tableName, arrayOf("TABLE"))
         while (tableResult.next()) {
-            val tName = tableResult.getString("TABLE_NAME")
+            val tName = tableResult.getString("TABLE_NAME").uppercase()
 
             val createSQL = StringBuilder("CREATE TABLE $tablePrefix$tName (")
 
-            val columnResult = dbMetaData.getColumns(dbName, null, tName, null)
+            val columnResult = dbMetaData.getColumns(schemaName, null, tName, null)
             val fields = linkedMapOf<String, String>()
             while (columnResult.next()) {
                 val columnType = columnResult.getString("TYPE_NAME")
@@ -64,9 +77,9 @@ abstract class FlinkTableGenerator(val dsConfig: DataSourceConfig, private val t
                     .append(Joiner.on(",").join(partitionedBy)).append(")")
             }
 
-            if (primaryKeys.isNotEmpty()) {
+            if (sourcePK.isNotEmpty()) {
                 createSQL.append("\nPRIMARY KEY (")
-                    .append(Joiner.on(",").join(primaryKeys))
+                    .append(Joiner.on(",").join(sourcePK))
                     .append(") NOT ENFORCED\n")
             }
 
@@ -74,16 +87,18 @@ abstract class FlinkTableGenerator(val dsConfig: DataSourceConfig, private val t
             createSQL.append("\n) \n WITH (\n")
                 .append("'connector' = '$tableType',\n")
 
-            val connectorInfo = createConnectorInfo(dbName ?: "", tName)
+            val connectorInfo = createConnectorInfo(schemaName ?: "", tName)
             for ((key, value) in connectorInfo) {
                 createSQL.append("'$key' = '$value',\n")
             }
             createSQL.setLength(createSQL.length - 2)
             createSQL.append(")")
 
-            println(createSQL)
+            val sql =  createSQL.toString()
 
-            return createSQL.toString()
+            logger().info("生成表 $tableName 的SQL:\n $sql")
+
+            return sql
         }
 
         return ""
@@ -130,8 +145,7 @@ abstract class FlinkTableGenerator(val dsConfig: DataSourceConfig, private val t
             tableSqlMap[tName] = createSQL.toString()
         }
 
-        println(tableSqlMap)
-
+//        println(tableSqlMap)
         return tableSqlMap.toMap()
     }
 }

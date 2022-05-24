@@ -46,7 +46,7 @@ interface Step: Logging {
         val stream =
             when (data.contextType) {
                 DataContext.CONTEXT_TYPE_TABLE -> {
-                    process.tableEnv.toDataStream(data.table)
+                    process.tableEnv.toChangelogStream(data.table) // TODO 要根据执行类型（批量或流），决定生成的流是Append-only或Changelog
                 }
                 DataContext.CONTEXT_TYPE_STREAM -> {
                     return data.stream!!
@@ -70,7 +70,6 @@ interface Step: Logging {
 
         return null
     }
-
 }
 
 abstract class DataProcessStep(
@@ -97,6 +96,10 @@ abstract class DataProcessStep(
 
     open fun dispose() {
 
+    }
+
+    override fun toString(): String {
+        return "Step(name='$name', meta=$meta, inputDataType=$inputDataType, outputDataType=$outputDataType)"
     }
 }
 

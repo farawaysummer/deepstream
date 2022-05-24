@@ -1,4 +1,5 @@
 package com.rui.ds.datasource
+
 import com.github.jasync.sql.db.Configuration
 import com.github.jasync.sql.db.ConnectionPoolConfiguration
 import com.github.jasync.sql.db.mysql.pool.MySQLConnectionFactory
@@ -7,13 +8,15 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import com.rui.ds.common.DataSourceConfig
+import com.rui.ds.log.Logging
+import com.rui.ds.log.logger
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import java.sql.Connection
 
 typealias AsyncConnection = com.github.jasync.sql.db.Connection
 
-object DatabaseSources {
+object DatabaseSources : Logging {
     // TODO 修改为LoadingCache方式
     private val dataSourceConfigs: MutableMap<String, DataSourceConfig> = mutableMapOf()
 
@@ -26,12 +29,15 @@ object DatabaseSources {
 
     private val dataSourceCache: LoadingCache<String, HikariDataSource>
     private val asyncConnCache: LoadingCache<String, AsyncConnection>
+
     init {
         dataSourceCache = CacheBuilder.newBuilder().build(
-            object: CacheLoader<String, HikariDataSource>() {
+            object : CacheLoader<String, HikariDataSource>() {
                 override fun load(dsName: String): HikariDataSource {
                     val config = getDataSource(dsName) ?: throw Exception("No data source config $dsName found.")
-                     val hikariConfig = HikariConfig()
+                    val hikariConfig = HikariConfig()
+
+                    logger().debug("加载数据源$config")
 
                     hikariConfig.jdbcUrl = config.connectString
                     hikariConfig.username = config.username

@@ -6,6 +6,7 @@ import com.rui.ds.common.OutputStep
 import com.rui.ds.common.StepMeta
 import com.rui.ds.common.TableContext
 import com.rui.ds.generator.TableGenerator
+import com.rui.ds.log.logger
 import io.debezium.util.Joiner
 
 class TableMergeIntoStep(name: String ,override val meta: TableMergeIntoStepMeta): OutputStep(name, meta) {
@@ -23,6 +24,8 @@ class TableMergeIntoStep(name: String ,override val meta: TableMergeIntoStepMeta
             UPSERT INTO ${meta.toTable.tableName} (${Joiner.on(",").join(meta.outputFields)})
                 SELECT ${Joiner.on(",").join(meta.outputFields)} FROM DTable
             """.trimIndent()
+
+        logger().info("更新记录SQL:\n $insertSql")
 
         process.tableEnv.executeSql(insertSql)
 

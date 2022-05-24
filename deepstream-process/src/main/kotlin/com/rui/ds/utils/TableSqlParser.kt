@@ -1,14 +1,17 @@
 package com.rui.ds.utils
 
 import com.rui.ds.common.TableContext
+import com.rui.ds.log.Logging
+import com.rui.ds.log.logger
 import org.apache.calcite.sql.*
 import org.apache.calcite.sql.parser.SqlParser
 import java.util.*
 import java.util.stream.Collectors
 
-object TableSqlParser {
+object TableSqlParser: Logging {
 
     fun extractQueryTables(sql: String): List<TableContext> {
+        logger().info("解析SQL:\n$sql")
         val result = SqlParser.create(sql).parseQuery()
         val tables = mutableSetOf<String>()
         extractTablesInSql(result, tables)

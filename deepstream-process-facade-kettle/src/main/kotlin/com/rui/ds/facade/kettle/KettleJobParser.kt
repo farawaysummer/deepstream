@@ -116,9 +116,10 @@ class KettleJobParser : JobMetaParser<String> {
             return encrypted
         }
 
+        val encPassword = encrypted.substring("Encrypted ".length)
         val biConfuse = BigInteger(seed)
         return try {
-            val biR1 = BigInteger(encrypted, 16)
+            val biR1 = BigInteger(encPassword, 16)
             val biR0 = biR1.xor(biConfuse)
             String(biR0.toByteArray())
         } catch (e: Exception) {

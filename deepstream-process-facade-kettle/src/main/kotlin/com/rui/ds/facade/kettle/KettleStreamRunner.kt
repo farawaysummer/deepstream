@@ -17,8 +17,13 @@ object KettleStreamRunner : Logging {
     private val parser = KettleJobParser()
 
     fun executeKtr(ktrFile: String) {
+        logger().debug("开始执行脚本$ktrFile")
         val content = Files.asCharSource(File(ktrFile), Charset.forName("GBK")).read()
+
         val job = parser.parse(content)
+
+        logger().info("转换作业解析内容:$job")
+
         val instance = JobInstance(job)
 
         val config = JobConfig()

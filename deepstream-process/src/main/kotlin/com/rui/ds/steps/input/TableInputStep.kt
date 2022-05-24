@@ -10,8 +10,8 @@ class TableInputStep(name: String, override val meta: TableInputStepMeta) : Inpu
     private val tables: List<TableContext> = TableSqlParser.extractQueryTables(meta.inputSql)
 
     init {
-        logger().info("解析表输入SQL: ${meta.inputSql}")
-        logger().info("解析的表定义包括: $tables")
+        logger().debug("解析表输入SQL: ${meta.inputSql}")
+        logger().debug("解析的表定义包括: $tables")
     }
 
     override fun process(data: DataContext, process: ProcessContext): DataContext {

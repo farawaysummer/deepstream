@@ -26,7 +26,6 @@ class FieldSelectFunction(
 
         return newRow
     }
-
 }
 
 class AddConstantFunction(

@@ -2,12 +2,14 @@ package com.rui.ds.common
 
 import com.rui.ds.ProcessContext
 import com.rui.ds.StreamDataTypes
+import com.rui.ds.log.Logging
+
 import org.apache.flink.streaming.api.datastream.DataStream
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator
 import org.apache.flink.table.api.Table
 import org.apache.flink.types.Row
 
-interface Step {
+interface Step: Logging {
     val name: String
     val inputDataType: StreamDataTypes
     val outputDataType: StreamDataTypes
@@ -68,6 +70,7 @@ interface Step {
 
         return null
     }
+
 }
 
 abstract class DataProcessStep(

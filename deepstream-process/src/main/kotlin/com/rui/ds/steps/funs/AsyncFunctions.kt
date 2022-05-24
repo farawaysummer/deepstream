@@ -14,7 +14,7 @@ import kotlin.math.min
 
 typealias AsyncRowFunction = RichAsyncFunction<Row, Row>
 
-abstract class JdbcAsyncFunction(val client: AsyncDatabaseClient) : AsyncRowFunction() {
+abstract class JdbcAsyncFunction(private val client: AsyncDatabaseClient) : AsyncRowFunction() {
     override fun asyncInvoke(input: Row, resultFuture: ResultFuture<Row>) {
         val outputResult = client.query(input)
 

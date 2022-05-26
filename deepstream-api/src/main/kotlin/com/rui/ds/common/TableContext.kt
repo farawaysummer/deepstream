@@ -5,6 +5,8 @@ data class TableContext(
     val tableName: String,
     val tableType: String
 ) {
+    // table construct
+
     enum class TableSize {
         SMALL,
         MEDIUM,

@@ -12,14 +12,8 @@ import javax.script.CompiledScript
 import javax.script.ScriptEngineManager
 
 class ScriptStep(name: String, override val meta: ScriptStepMeta): TransformStep(name, meta) {
-    private val engine = ScriptEngineManager().getEngineByName("nashorn")
 
-    private val scriptFunction: JsScriptFunction
-    init {
-        val compiledScript = (engine as Compilable).compile(meta.script)
-
-        scriptFunction = JsScriptFunction(compiledScript, meta.outputFields)
-    }
+    private val scriptFunction: JsScriptFunction = JsScriptFunction(meta.script, meta.outputFields)
 
     override fun process(data: DataContext, process: ProcessContext): DataContext {
         val stream = toStream(data, process)!!
@@ -34,9 +28,13 @@ data class ScriptStepMeta(
 ): StepMeta
 
 class JsScriptFunction(
-    private val compiledScript: CompiledScript,
+    private val script: String,
     private val outputFields: List<FieldInfo>
 ) : MapFunction<Row, Row> {
+    @Transient
+    private val engine = ScriptEngineManager().getEngineByName("nashorn")
+    @Transient
+    private val compiledScript = (engine as Compilable).compile(script)
 
     override fun map(value: Row): Row {
         // 将列值绑定到引擎运行环境

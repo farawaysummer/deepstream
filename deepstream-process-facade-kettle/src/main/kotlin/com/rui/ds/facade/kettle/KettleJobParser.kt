@@ -15,7 +15,8 @@ import java.math.BigInteger
 /**
  * KTR 文件解析为流程
  */
-class KettleJobParser : JobMetaParser<String> {
+object KettleJobParser : JobMetaParser<String> {
+    private const val seed: String = "0933910847463829827159347601486730416058"
 
     private val stepParsers: Map<String, KettleStepParser>
 
@@ -74,7 +75,14 @@ class KettleJobParser : JobMetaParser<String> {
         )
     }
 
-    private fun parseConnection(conElement: Element): DataSourceConfig {
+    private fun parseStep(stepElement: Element): Step {
+        val type = stepElement.elementText("type")
+        val parser = stepParsers[type] ?: throw RuntimeException("Unsupported step type $type.")
+
+        return parser.parse(stepElement)
+    }
+
+    fun parseConnection(conElement: Element): DataSourceConfig {
         val name = conElement.elementText("name")
         val host = conElement.elementText("server")
         val port = conElement.elementText("port")
@@ -100,13 +108,6 @@ class KettleJobParser : JobMetaParser<String> {
         )
     }
 
-    private fun parseStep(stepElement: Element): Step {
-        val type = stepElement.elementText("type")
-        val parser = stepParsers[type] ?: throw RuntimeException("Unsupported step type $type.")
-
-        return parser.parse(stepElement)
-    }
-
     private fun decryptPassword(encrypted: String?): String {
         if (encrypted.isNullOrEmpty()) {
             return ""
@@ -125,9 +126,5 @@ class KettleJobParser : JobMetaParser<String> {
         } catch (e: Exception) {
             ""
         }
-    }
-
-    companion object {
-        const val seed: String = "0933910847463829827159347601486730416058"
     }
 }

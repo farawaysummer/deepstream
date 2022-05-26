@@ -5,22 +5,21 @@ import com.rui.ds.job.JobConfig
 import com.rui.ds.job.JobInstance
 import com.rui.ds.log.Logging
 import com.rui.ds.log.logger
-import java.io.File
-import java.nio.charset.Charset
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.io.File
+import java.nio.charset.Charset
 import kotlin.io.path.Path
 import kotlin.io.path.listDirectoryEntries
 
 object KettleStreamRunner : Logging {
-    private val parser = KettleJobParser()
 
     fun executeKtr(ktrFile: String) {
         logger().debug("开始执行脚本$ktrFile")
         val content = Files.asCharSource(File(ktrFile), Charset.forName("GBK")).read()
 
-        val job = parser.parse(content)
+        val job = KettleJobParser.parse(content)
 
         logger().info("转换作业解析内容:$job")
 

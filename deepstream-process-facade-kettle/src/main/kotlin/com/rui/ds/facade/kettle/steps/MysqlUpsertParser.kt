@@ -8,8 +8,8 @@ import com.rui.ds.steps.output.TableMergeIntoStep
 import com.rui.ds.steps.output.TableMergeIntoStepMeta
 import org.dom4j.Element
 
-@KettleStep("MergeInto")
-class TableMergeIntoParser : KettleStepParser {
+@KettleStep("MySQLUpsert")
+class MysqlUpsertParser: KettleStepParser {
     override fun parse(element: Element): Step {
         val name = element.elementText("name")
         val dsName = element.elementText("connection")
@@ -20,17 +20,15 @@ class TableMergeIntoParser : KettleStepParser {
             tableType = TableContext.TABLE_TYPE_SINK
         )
 
-        val conditions = element.elements("key")
-        val conditionFields = conditions.map { it.elementText("field") }
-        val values = element.elements("value")
+        val values = lookupElement.elements("value")
         val outputFields = values.map { it.elementText("name") }
 
         val meta = TableMergeIntoStepMeta(
             dsName = dsName,
             toTable = table,
-            condition = conditionFields,
+            condition = emptyList(),
             outputFields = outputFields
-            )
+        )
 
         return TableMergeIntoStep(name, meta)
     }

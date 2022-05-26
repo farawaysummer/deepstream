@@ -7,6 +7,8 @@ import com.rui.ds.log.Logging
 import org.apache.flink.streaming.api.datastream.DataStream
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator
 import org.apache.flink.table.api.Table
+import org.apache.flink.table.catalog.ResolvedSchema
+import org.apache.flink.table.types.DataType
 import org.apache.flink.types.Row
 
 interface Step: Logging {
@@ -25,13 +27,18 @@ interface Step: Logging {
     fun dataByTable(table: Table): DataContext {
         val data = DataContext(table)
 
-        val columns = table.resolvedSchema.columns
-        data.types = StreamDataTypes.of(
+        data.types = dataTypes(table.resolvedSchema)
+
+        return data
+    }
+
+    fun dataTypes(schema: ResolvedSchema): StreamDataTypes {
+        val columns = schema.columns
+
+        return StreamDataTypes.of(
             columns.map { it.name }.toTypedArray(),
             columns.map { it.dataType }.toTypedArray()
         )
-
-        return data
     }
 
     fun dataByStream(stream: DataStream<Row>, types: StreamDataTypes = StreamDataTypes.INIT): DataContext {
@@ -107,6 +114,6 @@ abstract class InputStep(name: String, meta: StepMeta) : DataProcessStep(name, m
 abstract class TransformStep(name: String, meta: StepMeta) : DataProcessStep(name, meta)
 abstract class OutputStep(name: String, meta: StepMeta) : DataProcessStep(name, meta)
 
-interface StepMeta
+interface StepMeta : java.io.Serializable
 
 

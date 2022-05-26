@@ -5,7 +5,7 @@ class JobInstance(
 ) {
 
     fun execute(config: JobConfig) {
-        val processContext = job.initDebugContext(config)
+        val processContext = DeepStreamJob.initProcessContext(config)
 
         job.visit(processContext)
     }

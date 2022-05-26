@@ -36,60 +36,6 @@ class DeepStreamJob(
 ) {
     private val startSteps: List<DataProcessStep> = steps.values.filterIsInstance<InputStep>()
 
-    internal fun initDebugContext(jobConfig: JobConfig): ProcessContext {
-        val fsSettings = if (jobConfig.jobMode == "STREAM") {
-            EnvironmentSettings.newInstance()
-                .inStreamingMode()
-                .build()
-        } else {
-            EnvironmentSettings.newInstance()
-                .inBatchMode()
-                .build()
-        }
-
-        val configuration = Configuration()
-
-        if (jobConfig.miniBatchEnabled) {
-            configuration.setString("table.exec.mini-batch.enabled", "true") // enable mini-batch optimization
-            configuration.setString(
-                "table.exec.mini-batch.allow-latency",
-                "5 s"
-            ) // use 5 seconds to buffer input records
-            configuration.setString("table.exec.mini-batch.size", "5000")
-            configuration.setString(
-                "table.optimizer.agg-phase-strategy",
-                "TWO_PHASE"
-            ) // enable two-phase, i.e. local-global aggregation
-        }
-
-        val env = if (jobConfig.enableWebUI) {
-            configuration.setInteger("rest.port", 8082)
-            StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(configuration)
-        } else {
-            StreamExecutionEnvironment.createLocalEnvironment(configuration)
-        }
-
-        env.parallelism = 1
-        val checkpointStorage = File("./flink/checkpoint")
-        checkpointStorage.mkdirs()
-        env.checkpointConfig.checkpointStorage =
-            FileSystemCheckpointStorage("file://${checkpointStorage.absolutePath}")
-
-        env.enableCheckpointing(10000L)  //头和头
-        env.checkpointConfig.checkpointingMode = CheckpointingMode.EXACTLY_ONCE
-        env.checkpointConfig.checkpointTimeout = 10000L
-        env.checkpointConfig.maxConcurrentCheckpoints = 2
-        env.checkpointConfig.minPauseBetweenCheckpoints = 10000L
-
-        val tableEnv = StreamTableEnvironment.create(env, fsSettings)
-        tableEnv.config.sqlDialect = SqlDialect.DEFAULT
-
-        return ProcessContext(
-            env = env,
-            tableEnv = tableEnv
-        )
-    }
-
     override fun toString(): String {
         return "DeepStreamJob(steps=$steps, hops=$hops)"
     }
@@ -107,6 +53,60 @@ class DeepStreamJob(
             return DeepStreamJob(
                 steps.associateBy({ it.name }, { it as DataProcessStep }),
                 hops
+            )
+        }
+
+        fun initProcessContext(jobConfig: JobConfig): ProcessContext {
+            val fsSettings = if (jobConfig.jobMode == "STREAM") {
+                EnvironmentSettings.newInstance()
+                    .inStreamingMode()
+                    .build()
+            } else {
+                EnvironmentSettings.newInstance()
+                    .inBatchMode()
+                    .build()
+            }
+
+            val configuration = Configuration()
+
+            if (jobConfig.miniBatchEnabled) {
+                configuration.setString("table.exec.mini-batch.enabled", "true") // enable mini-batch optimization
+                configuration.setString(
+                    "table.exec.mini-batch.allow-latency",
+                    "5 s"
+                ) // use 5 seconds to buffer input records
+                configuration.setString("table.exec.mini-batch.size", "5000")
+                configuration.setString(
+                    "table.optimizer.agg-phase-strategy",
+                    "TWO_PHASE"
+                ) // enable two-phase, i.e. local-global aggregation
+            }
+
+            val env = if (jobConfig.enableWebUI) {
+                configuration.setInteger("rest.port", 8082)
+                StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(configuration)
+            } else {
+                StreamExecutionEnvironment.createLocalEnvironment(configuration)
+            }
+
+            env.parallelism = 1
+            val checkpointStorage = File("./flink/checkpoint")
+            checkpointStorage.mkdirs()
+            env.checkpointConfig.checkpointStorage =
+                FileSystemCheckpointStorage("file://${checkpointStorage.absolutePath}")
+
+            env.enableCheckpointing(10000L)  //头和头
+            env.checkpointConfig.checkpointingMode = CheckpointingMode.EXACTLY_ONCE
+            env.checkpointConfig.checkpointTimeout = 10000L
+            env.checkpointConfig.maxConcurrentCheckpoints = 2
+            env.checkpointConfig.minPauseBetweenCheckpoints = 10000L
+
+            val tableEnv = StreamTableEnvironment.create(env, fsSettings)
+            tableEnv.config.sqlDialect = SqlDialect.DEFAULT
+
+            return ProcessContext(
+                env = env,
+                tableEnv = tableEnv
             )
         }
     }

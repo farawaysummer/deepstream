@@ -167,9 +167,10 @@ BIRTH_PLACE VARCHAR
 
         // 简单的聚合处理
         // 简单的聚合处理
-        val transformSQL = "select * from r_mpi_patientinfo"
+        val transformSQL = "select * from DTable"
 
-        tableEnv.executeSql(sourceDDL)
+        val table = tableEnv.sqlQuery(sourceDDL)
+        tableEnv.createTemporaryView("DTable", table)
 
         val result = tableEnv.executeSql(transformSQL)
         result.print()

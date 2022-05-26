@@ -5,6 +5,7 @@ import org.apache.flink.api.common.typeinfo.Types
 import org.apache.flink.table.runtime.types.TypeInfoDataTypeConverter
 import org.apache.flink.table.types.DataType
 import org.apache.flink.types.Row
+import java.lang.Integer.min
 
 typealias SQLTypes = java.sql.Types
 
@@ -35,6 +36,15 @@ data class StreamDataTypes internal constructor(
         return Types.ROW_NAMED(
             fields, *types
         )
+    }
+
+    fun fieldType(fieldName: String): TypeInformation<*>? {
+        val index = fields.indexOf(fieldName)
+        return if (index == -1) {
+            null
+        } else {
+            types[index]
+        }
     }
 
     fun plus(other: StreamDataTypes): StreamDataTypes {
@@ -97,6 +107,16 @@ data class StreamDataTypes internal constructor(
         }
 
         return StreamDataTypes(allFields.toTypedArray(), allTypes.toTypedArray())
+    }
+
+    override fun toString(): String {
+        val size = min(fields.size, types.size)
+        val results = mutableListOf<String>()
+        for (i in 0 until size) {
+            results.add("${fields[i]}[${types[i]}]")
+        }
+
+        return "Types(${results.joinToString(separator = " , ")})"
     }
 
     companion object {

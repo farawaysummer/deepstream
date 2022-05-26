@@ -127,3 +127,4 @@ fabric.properties
 /.idea/misc.xml
 /.idea/modules.xml
 /.idea/
+/deepstream-process-facade-kettle/flink/

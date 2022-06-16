@@ -7,7 +7,10 @@ import com.rui.ds.utils.TableSqlParser
 import com.rui.ds.log.logger
 
 class TableInputStep(name: String, override val meta: TableInputStepMeta) : InputStep(name, meta) {
-    private val tables: List<TableContext> = TableSqlParser.extractQueryTables(meta.inputSql)
+    private val tables: List<TableContext> = TableSqlParser.extractQueryTables(
+        sql = meta.inputSql,
+        tableTypes = meta.tableTypes
+    )
 
     init {
         logger().debug("解析表输入SQL: ${meta.inputSql}")
@@ -38,5 +41,6 @@ class TableInputStep(name: String, override val meta: TableInputStepMeta) : Inpu
 
 data class TableInputStepMeta(
     val dsName: String,
-    val inputSql: String
+    val inputSql: String,
+    val tableTypes: Map<String, String> = mutableMapOf()
 ) : StepMeta

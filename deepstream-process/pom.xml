@@ -42,6 +42,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.ververica</groupId>
+            <!-- add the dependency matching your database -->
+            <artifactId>flink-connector-oracle-cdc</artifactId>
+            <!-- the dependency is available only for stable releases. -->
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-jdbc</artifactId>
         </dependency>

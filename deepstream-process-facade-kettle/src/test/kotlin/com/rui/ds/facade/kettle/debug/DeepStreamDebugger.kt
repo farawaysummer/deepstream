@@ -62,6 +62,7 @@ open class DeepStreamDebugger {
 
     fun createTable(process: ProcessContext, dsName: String, tableContext: TableContext): TableResult {
         val tableEnv = process.tableEnv
+
         return tableEnv.executeSql(
             TableGenerator.getGenerator(dsName, tableContext.tableType).createTableSQL(
                 dbName = tableContext.catalog,

@@ -5,6 +5,8 @@ import com.google.common.collect.Queues
 import com.rui.ds.ProcessContext
 import com.rui.ds.common.*
 import com.rui.ds.datasource.DatabaseSources
+import com.rui.ds.udf.ConcatFunction
+import com.rui.ds.udf.DecodeFunction
 import org.apache.flink.configuration.Configuration
 import org.apache.flink.runtime.state.storage.FileSystemCheckpointStorage
 import org.apache.flink.streaming.api.CheckpointingMode
@@ -104,12 +106,22 @@ class DeepStreamJob(
             val tableEnv = StreamTableEnvironment.create(env, fsSettings)
             tableEnv.config.sqlDialect = SqlDialect.DEFAULT
 
+            registryUDF(tableEnv)
+
             return ProcessContext(
                 env = env,
                 tableEnv = tableEnv
             )
         }
+
+        private fun registryUDF(tableEnv: StreamTableEnvironment) {
+
+            tableEnv.createTemporarySystemFunction("DP_DECODE", DecodeFunction())
+            tableEnv.createTemporarySystemFunction("DP_CONCAT", ConcatFunction())
+        }
+
     }
+
 
     fun visit(processContext: ProcessContext) {
         // find union steps

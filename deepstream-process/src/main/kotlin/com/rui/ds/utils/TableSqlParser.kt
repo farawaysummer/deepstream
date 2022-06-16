@@ -8,18 +8,23 @@ import org.apache.calcite.sql.parser.SqlParser
 import java.util.*
 import java.util.stream.Collectors
 
-object TableSqlParser: Logging {
+object TableSqlParser : Logging {
 
-    fun extractQueryTables(sql: String): List<TableContext> {
+    fun extractQueryTables(sql: String, tableTypes: Map<String, String> = mapOf()): List<TableContext> {
         logger().info("解析SQL:\n$sql")
         val result = SqlParser.create(sql).parseQuery()
         val tables = mutableSetOf<String>()
         extractTablesInSql(result, tables)
 
-        val first = toTableContext(tables.first(), TableContext.TABLE_TYPE_CDC)
-        val rest = tables.drop(1).map { toTableContext(it, TableContext.TABLE_TYPE_DIM) }.toTypedArray()
+        //
+        return if (tableTypes.isEmpty()) {
+            val first = toTableContext(tables.first(), TableContext.TABLE_TYPE_CDC)     // 根据table的顺序决定是否为cdc表
+            val rest = tables.drop(1).map { toTableContext(it, TableContext.TABLE_TYPE_DIM) }.toTypedArray()
 
-        return listOf(first, *rest)
+            listOf(first, *rest)
+        } else {
+            tables.map { toTableContext(it, tableTypes[it] ?: TableContext.TABLE_TYPE_DIM) }
+        }
     }
 
     fun extractColumns(sql: String): List<String> {

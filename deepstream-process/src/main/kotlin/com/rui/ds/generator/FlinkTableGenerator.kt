@@ -10,13 +10,15 @@ abstract class FlinkTableGenerator(val dsConfig: DataSourceConfig, private val t
 
     abstract val typeMap: Map<String, String>
 
+    open val excludeTypes:Set<String> = mutableSetOf()
+
     abstract val tableType: String
 
     internal open fun createTableFields(fields: Map<String, String>): List<String> {
 
         val list = fields.map { (columnName, columnType) ->
             val transType = typeMap[columnType] ?: columnType
-            val desc = "$columnName $transType"
+            val desc = "`$columnName` $transType"
 
             desc
         }.toList()
@@ -61,6 +63,9 @@ abstract class FlinkTableGenerator(val dsConfig: DataSourceConfig, private val t
             while (columnResult.next()) {
                 val columnType = columnResult.getString("TYPE_NAME")
                 val columnName = columnResult.getString("COLUMN_NAME")
+                if (excludeTypes.contains(columnType)) {
+                    continue
+                }
                 fields[columnName] = columnType
             }
 

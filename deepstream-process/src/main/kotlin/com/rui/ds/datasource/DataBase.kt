@@ -121,6 +121,6 @@ object DataBase {
             types.add(dType)
         }
 
-        return StreamDataTypes.Companion.of(columns.toTypedArray(), types.toTypedArray())
+        return StreamDataTypes.of(columns.toTypedArray(), types.toTypedArray())
     }
 }

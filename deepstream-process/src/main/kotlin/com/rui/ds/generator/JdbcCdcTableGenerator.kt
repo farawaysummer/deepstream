@@ -7,8 +7,12 @@ class JdbcCdcTableGenerator(
     tablePrefix: String = ""
 ) : FlinkTableGenerator(dsConfig, tablePrefix) {
     override val typeMap: Map<String, String> = mapOf(
-        "DATETIME" to "TIMESTAMP(3)"
+        "DATETIME" to "TIMESTAMP(3)",
+        "NUMBER" to "INTEGER",
+        "VARCHAR2" to "STRING"
     )
+
+    override val excludeTypes: Set<String> = setOf("BLOB")
 
     override val tableType: String
         get() = "${dsConfig.type}-cdc"

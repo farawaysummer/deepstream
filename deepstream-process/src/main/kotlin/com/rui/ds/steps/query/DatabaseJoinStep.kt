@@ -45,8 +45,8 @@ class DatabaseJoinStep(name:String, override val meta: DatabaseJoinStepMeta) : T
             TimeUnit.MILLISECONDS,
             100
         )
-        // 查询结构和原记录合并后返回
 
+        // 查询结构和原记录合并后返回
         return dataByStream(joinedStream, data.types.plus(addTypes))
     }
 }

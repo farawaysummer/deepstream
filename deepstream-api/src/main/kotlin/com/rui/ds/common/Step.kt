@@ -2,6 +2,7 @@ package com.rui.ds.common
 
 import com.rui.ds.ProcessContext
 import com.rui.ds.StreamDataTypes
+import com.rui.ds.log.LogManager
 import com.rui.ds.log.Logging
 
 import org.apache.flink.streaming.api.datastream.DataStream
@@ -53,7 +54,7 @@ interface Step: Logging {
         val stream =
             when (data.contextType) {
                 DataContext.CONTEXT_TYPE_TABLE -> {
-                    process.tableEnv.toChangelogStream(data.table) // TODO 要根据执行类型（批量或流），决定生成的流是Append-only或Changelog
+                    process.tableEnv.toChangelogStream(data.table)
                 }
                 DataContext.CONTEXT_TYPE_STREAM -> {
                     return data.stream!!

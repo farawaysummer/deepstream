@@ -3,7 +3,7 @@ package com.rui.ds.facade.kettle.debug
 import com.rui.ds.common.TableContext
 import com.rui.ds.common.TableContext.Companion.TABLE_TYPE_DIM
 import com.rui.ds.common.TableContext.Companion.TABLE_TYPE_SINK
-import com.rui.ds.steps.funs.StringFunction
+import com.rui.ds.udf.StringFunction
 import org.junit.Test
 import kotlin.test.assertNotNull
 

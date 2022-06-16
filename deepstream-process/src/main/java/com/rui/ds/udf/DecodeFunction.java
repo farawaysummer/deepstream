@@ -1,12 +1,13 @@
 package com.rui.ds.udf;
 
+import com.rui.ds.common.DeepStreamUDF;
 import org.apache.flink.table.annotation.DataTypeHint;
 import org.apache.flink.table.annotation.InputGroup;
 import org.apache.flink.table.functions.ScalarFunction;
 
 import java.util.Objects;
 
-@DeepStreamUDF(name = "DP_DECODE")
+@DeepStreamUDF("DP_DECODE")
 public class DecodeFunction extends ScalarFunction {
 
     public String eval(@DataTypeHint(inputGroup = InputGroup.ANY) Object condition, @DataTypeHint(inputGroup = InputGroup.ANY) Object... values) {

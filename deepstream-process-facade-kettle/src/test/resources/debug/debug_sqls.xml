@@ -148,7 +148,7 @@ PRIMARY KEY (AUTO_ID) NOT ENFORCED
     </sql>
 
     <sql name="selectFromFeeDetail">
-SELECT A.AUTO_ID AS AUTO_ID,
+SELECT A.AUTO_ID || '-1' AS AUTO_ID,
        &apos;&apos; AS BATCH_NUM, --批次号 不填
        &apos;&apos; AS UPLOAD_TIME, --系统上传时间 不填
        A.PATIENT_ID AS LOCAL_ID, --人员在本地域唯一 必填
@@ -226,6 +226,192 @@ SELECT BATCH_NUM,
        to_str(UPDATE_DATE),
        AUTO_ID
 FROM DTable
+        ]]>
+    </sql>
+
+    <sql name="select_from_nb_his">
+        <![CDATA[
+SELECT BBB.ORG_CODE,
+       DP_CONCAT(A.PRES_ID , '-' , A.`NO` , '-' , A.GROUPNO,'-1')  AS AUTO_ID, --序列号
+       DP_CONCAT(A.PRES_ID , '-' , A.`NO` , '-' , A.GROUPNO,'-1')  AS LP_CLI_RECIPE, --主键-门诊处方业务
+       A.PRES_ID AS LK_CLI_RECIPE, --关联键-门诊处方业务
+       C.REGISTER_ID AS LK_CLI_SEE, --关联键-门诊就诊业务
+       C.SICK_ID AS LK_MPI_PATIENT, --关联键-患者业务
+       C.SICK_ID AS PATIENT_ID, --患者号
+       C.REGISTER_ID AS OUTP_ID, --门诊号
+       C.REGISTER_ID AS OUTP_NO, --门诊就诊流水号
+       DP_CONCAT(A.PRES_ID,'-',B.CATEGORY) AS RECIPE_NO, --处方号
+       B.RECORD_TIME AS RECIPE_DTIME, --处方时间
+       C.DEPT_ID AS RECIPE_DEPT_CODE, --开立科室代码
+       '' AS RECIPE_DEPT_NAME, --开立科室名称
+       C.EMP_ID AS RECIPE_DOC_CODE, --开立医生代码
+       '' AS RECIPE_DOC_NAME, --开立医生名称
+       '1' AS DRUG_FLAG, --药品标识
+       A.DRUG_ID AS ITEM_CODE, --项目代码
+       D.HZMC AS ITEM_NAME, --项目名称
+       '' AS ITEM_TYPE_CODE, --项目类别代码
+       '' AS ITEM_TYPE_NAME, --项目类别名称
+       D.LSJ AS UNIT_PRICE, --单价
+       A.QUANTITY AS QTY, --数量
+       D.DW2 AS UNIT, --计价单位
+       D.GG AS SPEC, --规格
+       B.CATEGORY AS DRUG_RECP_TYPECODE, --处方类型代码
+       '' AS DRUG_RECP_TYPENAME, --处方类型名称
+       A.USAGE AS DRUG_USE_FREQCODE, --使用频次代码
+       '' AS DRUG_USE_FREQNAME, --使用频次名称
+       A.DOSE AS DRUG_EACH_DOSE, --药品每次使用剂量
+       D.JLDW AS DRUG_DOSE_UNIT, --剂量单位
+       A.DRUG_WAY AS DRUG_USAGE_CODE, --药品使用用法代码
+       '' AS DRUG_USAGE_NAME, --药品使用用法名称
+       D.JX AS DOSAGE_FORM_CODE, --药品剂型代码
+       '' AS DOSAGE_FORM_NAME, --药品剂型名称
+       A.QUANTITY AS DRUG_TOTAL_DOSE, --药品使用总剂量
+       D.DW2 AS DRUG_TOTAL_UNIT, --药品使用总剂量单位
+       '' AS DRUG_START_DTIME, --用药开始时间
+       '' AS DRUG_END_DTIME, --用药停止时间
+       '' AS DURG_SEND_DTIME, --发药时间
+       '' AS DRUG_USE_DAYS, --药品使用天数
+       '' AS DRUG_PACKAGE_QTY, --药品包装数量
+       '' AS DRUG_PACKAGE_UNIT, --药品包装单位
+       '' AS DRUG_MIN_UNIT, --最小单位
+       '' AS DRUG_BASE_DOSE, --药品基本剂量
+       '' AS DRUG_MAIN_FLAG, --主药标志
+       DP_CONCAT(A.PRES_ID , '-' , A.`NO` , '-' , A.GROUPNO) AS GROUP_NO, --组合号
+       '' AS DRUG_HERB_FOOTNOTES, --草药脚注
+       A.TIMES AS HERB_DOSE_QTY, --药品付数
+       '' AS CHARGE_FLAG, --是否收费
+       '' AS CHARGE_DTIME, --收费时间
+       DP_DECODE(D.PSBJ, 'Y', '1', 'N', '2', '2') AS DRUG_SKIN_FLAG, --皮试判别标识
+       DP_DECODE(A.SKIN_TEST,
+              '+',
+              '阳',
+              '-',
+              '阴',
+              'W',
+              '未',
+              'M',
+              '免',
+              'T',
+              '脱敏',
+              '') AS DRUG_SKIN_RESULT, --皮试结果
+       '' AS INSPECTION_PART_CODE, --检查部位代码
+       '' AS INSPECTION_PART_NAME, --检查部位名称
+       '' AS EMER_FLAG, --加急标志
+       '' AS APPLY_NO, --申请单号
+       '' AS REPORT_NO, --报告单号
+       B.DEMAND AS NOTE, --备注
+       '' AS USE_TIMES, -- 使用频率
+       D.CDMC AS PRODUCTION_PLACE, --生产产地
+       '' AS PRODUCTION_DTIME, --生产日期
+       '' AS VALID_DTIME, --有效日期
+	   	 '' AS MEDIC_CODE, --	中心药品代码
+     '' AS MEDIC_CODE_SAFETY, --	医保代码
+    A.SELF_MARK AS MEDIC_SELF, --	自备  默认N
+    A.MED_INS_MARK AS MEDIC_SAFETY, --	医保自负  默认N
+       B.RECORD_TIME AS CREATE_DTIME, --业务数据创建时间
+       B.RECORD_TIME AS UPDATE_DTIME, --业务数据更新时间
+       '' AS RECORD_DTIME, --记录时间
+       '' AS RECORD_UPDATE_DTIME --记录更新时间
+  FROM KTDOC_PRESCRIPTION_LIST A
+  LEFT JOIN YPMC D
+    ON A.DRUG_ID = D.YPBH,KTDOC_PRESCRIPTION B
+LEFT JOIN (SELECT ORG_CODE,CLINIC_ID FROM KTHRAEVT_CLINIC GROUP BY ORG_CODE,CLINIC_ID) BBB ON BBB.CLINIC_ID = B.CLINIC_ID
+  LEFT JOIN KTDOC_WORK_LOG C
+    ON B.CLINIC_ID = C.CLINIC_ID
+ WHERE A.PRES_ID = B.PRES_ID
+        ]]>
+    </sql>
+
+    <sql name="select_from_nb_his_bak">
+        <![CDATA[
+SELECT BBB.ORG_CODE,
+       A.PRES_ID || '-' || A.`NO` || '-' || A.GROUPNO||'-1' AS AUTO_ID, --序列号
+       A.PRES_ID || '-' || A.`NO` || '-' || A.GROUPNO||'-1'  AS LP_CLI_RECIPE, --主键-门诊处方业务
+       A.PRES_ID AS LK_CLI_RECIPE, --关联键-门诊处方业务
+       C.REGISTER_ID AS LK_CLI_SEE, --关联键-门诊就诊业务
+       C.SICK_ID AS LK_MPI_PATIENT, --关联键-患者业务
+       C.SICK_ID AS PATIENT_ID, --患者号
+       C.REGISTER_ID AS OUTP_ID, --门诊号
+       C.REGISTER_ID AS OUTP_NO, --门诊就诊流水号
+       A.PRES_ID||'-'||B.CATEGORY AS RECIPE_NO, --处方号
+       B.RECORD_TIME AS RECIPE_DTIME, --处方时间
+       C.DEPT_ID AS RECIPE_DEPT_CODE, --开立科室代码
+       '' AS RECIPE_DEPT_NAME, --开立科室名称
+       C.EMP_ID AS RECIPE_DOC_CODE, --开立医生代码
+       '' AS RECIPE_DOC_NAME, --开立医生名称
+       '1' AS DRUG_FLAG, --药品标识
+       A.DRUG_ID AS ITEM_CODE, --项目代码
+       D.HZMC AS ITEM_NAME, --项目名称
+       '' AS ITEM_TYPE_CODE, --项目类别代码
+       '' AS ITEM_TYPE_NAME, --项目类别名称
+       D.LSJ AS UNIT_PRICE, --单价
+       A.QUANTITY AS QTY, --数量
+       D.DW2 AS UNIT, --计价单位
+       D.GG AS SPEC, --规格
+       B.CATEGORY AS DRUG_RECP_TYPECODE, --处方类型代码
+       '' AS DRUG_RECP_TYPENAME, --处方类型名称
+       A.USAGE AS DRUG_USE_FREQCODE, --使用频次代码
+       '' AS DRUG_USE_FREQNAME, --使用频次名称
+       A.DOSE AS DRUG_EACH_DOSE, --药品每次使用剂量
+       D.JLDW AS DRUG_DOSE_UNIT, --剂量单位
+       A.DRUG_WAY AS DRUG_USAGE_CODE, --药品使用用法代码
+       '' AS DRUG_USAGE_NAME, --药品使用用法名称
+       D.JX AS DOSAGE_FORM_CODE, --药品剂型代码
+       '' AS DOSAGE_FORM_NAME, --药品剂型名称
+       A.QUANTITY AS DRUG_TOTAL_DOSE, --药品使用总剂量
+       D.DW2 AS DRUG_TOTAL_UNIT, --药品使用总剂量单位
+       '' AS DRUG_START_DTIME, --用药开始时间
+       '' AS DRUG_END_DTIME, --用药停止时间
+       '' AS DURG_SEND_DTIME, --发药时间
+       '' AS DRUG_USE_DAYS, --药品使用天数
+       '' AS DRUG_PACKAGE_QTY, --药品包装数量
+       '' AS DRUG_PACKAGE_UNIT, --药品包装单位
+       '' AS DRUG_MIN_UNIT, --最小单位
+       '' AS DRUG_BASE_DOSE, --药品基本剂量
+       '' AS DRUG_MAIN_FLAG, --主药标志
+       A.PRES_ID || '-' || A.`NO` || '-' || A.GROUPNO AS GROUP_NO, --组合号
+       '' AS DRUG_HERB_FOOTNOTES, --草药脚注
+       A.TIMES AS HERB_DOSE_QTY, --药品付数
+       '' AS CHARGE_FLAG, --是否收费
+       '' AS CHARGE_DTIME, --收费时间
+       DP_DECODE(D.PSBJ, 'Y', '1', 'N', '2', '2') AS DRUG_SKIN_FLAG, --皮试判别标识
+       DP_DECODE(A.SKIN_TEST,
+              '+',
+              '阳',
+              '-',
+              '阴',
+              'W',
+              '未',
+              'M',
+              '免',
+              'T',
+              '脱敏',
+              '') AS DRUG_SKIN_RESULT, --皮试结果
+       '' AS INSPECTION_PART_CODE, --检查部位代码
+       '' AS INSPECTION_PART_NAME, --检查部位名称
+       '' AS EMER_FLAG, --加急标志
+       '' AS APPLY_NO, --申请单号
+       '' AS REPORT_NO, --报告单号
+       B.DEMAND AS NOTE, --备注
+       '' AS USE_TIMES, -- 使用频率
+       D.CDMC AS PRODUCTION_PLACE, --生产产地
+       '' AS PRODUCTION_DTIME, --生产日期
+       '' AS VALID_DTIME, --有效日期
+	   	 '' AS MEDIC_CODE, --	中心药品代码
+     '' AS MEDIC_CODE_SAFETY, --	医保代码
+    A.SELF_MARK AS MEDIC_SELF, --	自备  默认N
+    A.MED_INS_MARK AS MEDIC_SAFETY, --	医保自负  默认N
+       B.RECORD_TIME AS CREATE_DTIME, --业务数据创建时间
+       B.RECORD_TIME AS UPDATE_DTIME, --业务数据更新时间
+       '' AS RECORD_DTIME, --记录时间
+       '' AS RECORD_UPDATE_DTIME --记录更新时间
+  FROM KTDOC_PRESCRIPTION_LIST A
+  LEFT JOIN YPMC D
+    ON A.DRUG_ID = D.YPBH,KTDOC_PRESCRIPTION B
+LEFT JOIN (SELECT ORG_CODE,CLINIC_ID FROM KTHRAEVT_CLINIC GROUP BY ORG_CODE,CLINIC_ID) BBB ON BBB.CLINIC_ID = B.CLINIC_ID
+  LEFT JOIN KTDOC_WORK_LOG C
+    ON B.CLINIC_ID = C.CLINIC_ID
+ WHERE A.PRES_ID = B.PRES_ID
         ]]>
     </sql>
 </sqls>

@@ -5,8 +5,6 @@ import com.google.common.collect.Queues
 import com.rui.ds.ProcessContext
 import com.rui.ds.common.*
 import com.rui.ds.datasource.DatabaseSources
-import com.rui.ds.udf.ConcatFunction
-import com.rui.ds.udf.DecodeFunction
 import org.apache.flink.configuration.Configuration
 import org.apache.flink.runtime.state.storage.FileSystemCheckpointStorage
 import org.apache.flink.streaming.api.CheckpointingMode
@@ -15,7 +13,9 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment
 import org.apache.flink.table.api.EnvironmentSettings
 import org.apache.flink.table.api.SqlDialect
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment
+import org.apache.flink.table.functions.UserDefinedFunction
 import org.apache.flink.types.Row
+import org.reflections.Reflections
 import java.io.File
 
 data class JobConfig(
@@ -43,6 +43,23 @@ class DeepStreamJob(
     }
 
     companion object {
+        private val udfs: Map<String, UserDefinedFunction>
+
+        init {
+            // 获取udf定义并注册
+            val udfMap = mutableMapOf<String, UserDefinedFunction>()
+            val reflection = Reflections("com.rui.ds.udf")
+            val udfTypes = reflection.getTypesAnnotatedWith(DeepStreamUDF::class.java)
+            for (udfType in udfTypes) {
+                val udfDef = udfType.getDeclaredAnnotation(DeepStreamUDF::class.java)
+                val udfName = udfDef.value
+
+                udfMap[udfName] = udfType.newInstance() as UserDefinedFunction
+            }
+
+            udfs = udfMap.toMap()
+        }
+
         fun of(configs: List<DataSourceConfig>, steps: List<Step>, hops: List<Hop>): DeepStreamJob {
             configs.forEach {
                 DatabaseSources.registryDataSource(it)
@@ -115,11 +132,10 @@ class DeepStreamJob(
         }
 
         private fun registryUDF(tableEnv: StreamTableEnvironment) {
-
-            tableEnv.createTemporarySystemFunction("DP_DECODE", DecodeFunction())
-            tableEnv.createTemporarySystemFunction("DP_CONCAT", ConcatFunction())
+            udfs.forEach { (udfName, udfInstance) ->
+                tableEnv.createTemporarySystemFunction(udfName, udfInstance)
+            }
         }
-
     }
 
 

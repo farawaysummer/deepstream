@@ -40,6 +40,10 @@ class TableMergeIntoStep(name: String ,override val meta: TableMergeIntoStepMeta
         for (field in meta.outputFields) {
             val sourceFieldType = sourceTypes.fieldType(field)
             val targetFieldType = targetTypes.fieldType(field)
+//
+//            if (checkTypeMatch(sourceFieldType, targetFieldType)) {
+//
+//            }
         }
 
         val insertSql = """
@@ -47,9 +51,8 @@ class TableMergeIntoStep(name: String ,override val meta: TableMergeIntoStepMeta
                 SELECT ${Joiner.on(",").join(meta.outputFields)} FROM DTable
             """.trimIndent()
 
+        return insertSql
 
-
-        TODO()
     }
 
     private fun checkTypeMatch(sourceType: TypeInformation<*>, targetType: TypeInformation<*>): Boolean {

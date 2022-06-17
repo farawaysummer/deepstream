@@ -13,6 +13,7 @@ import com.rui.ds.log.logger
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import java.sql.Connection
+import javax.sql.DataSource
 
 typealias AsyncConnection = com.github.jasync.sql.db.Connection
 
@@ -34,10 +35,10 @@ object DatabaseSources : Logging {
         dataSourceCache = CacheBuilder.newBuilder().build(
             object : CacheLoader<String, HikariDataSource>() {
                 override fun load(dsName: String): HikariDataSource {
-                    val config = getDataSource(dsName) ?: throw Exception("No data source config $dsName found.")
+                    val config = getDataSourceConfig(dsName) ?: throw Exception("No data source config $dsName found.")
                     val hikariConfig = HikariConfig()
 
-                    logger().debug("加载数据源$config")
+                    logger().info("加载数据源$config")
 
                     hikariConfig.jdbcUrl = config.connectString
                     hikariConfig.username = config.username
@@ -66,7 +67,7 @@ object DatabaseSources : Logging {
         asyncConnCache = CacheBuilder.newBuilder().build(
             object : CacheLoader<String, AsyncConnection>() {
                 override fun load(dsName: String): AsyncConnection {
-                    val conf = getDataSource(dsName) ?: throw Exception("No data source config $dsName found.")
+                    val conf = getDataSourceConfig(dsName) ?: throw Exception("No data source config $dsName found.")
                     val connection: AsyncConnection = ConnectionPool(
                         MySQLConnectionFactory(
                             Configuration(
@@ -91,8 +92,12 @@ object DatabaseSources : Logging {
         dataSourceConfigs[config.name] = config
     }
 
-    fun getDataSource(name: String): DataSourceConfig? {
+    fun getDataSourceConfig(name: String): DataSourceConfig? {
         return dataSourceConfigs[name]
+    }
+
+    fun getDataSource(name: String): DataSource? {
+        return dataSourceCache.get(name)
     }
 
     fun getConnection(name: String): Connection? {

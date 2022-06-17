@@ -13,8 +13,8 @@ class TableInputStep(name: String, override val meta: TableInputStepMeta) : Inpu
     )
 
     init {
-        logger().debug("解析表输入SQL: ${meta.inputSql}")
-        logger().debug("解析的表定义包括: $tables")
+        logger().info("解析表输入SQL: ${meta.inputSql}")
+        logger().info("解析的表定义包括: $tables")
     }
 
     override fun process(data: DataContext, process: ProcessContext): DataContext {

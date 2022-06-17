@@ -13,7 +13,7 @@ object DataBase {
         val connection = DatabaseSources.getConnection(dsName) ?: throw RuntimeException("Can't connect.")
         val newSql = prepareSql(sql)
 
-        return if (DatabaseSources.getDataSource(dsName)?.type == "oracle") {
+        return if (DatabaseSources.getDataSourceConfig(dsName)?.type == "oracle") {
             getQueryFieldsFromDatabaseMetaData(connection, sql)
         } else {
             getQueryFieldsFromPreparedStatement(connection, newSql)

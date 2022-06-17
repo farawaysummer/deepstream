@@ -5,6 +5,8 @@ import com.google.common.collect.Queues
 import com.rui.ds.ProcessContext
 import com.rui.ds.common.*
 import com.rui.ds.datasource.DatabaseSources
+import org.apache.flink.api.common.restartstrategy.RestartStrategies
+import org.apache.flink.api.common.time.Time
 import org.apache.flink.configuration.Configuration
 import org.apache.flink.runtime.state.storage.FileSystemCheckpointStorage
 import org.apache.flink.streaming.api.CheckpointingMode
@@ -17,6 +19,7 @@ import org.apache.flink.table.functions.UserDefinedFunction
 import org.apache.flink.types.Row
 import org.reflections.Reflections
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 data class JobConfig(
     val jobMode: String = "STREAM",
@@ -92,7 +95,7 @@ class DeepStreamJob(
                 configuration.setString("table.exec.mini-batch.enabled", "true") // enable mini-batch optimization
                 configuration.setString(
                     "table.exec.mini-batch.allow-latency",
-                    "5 s"
+                    "3 s"
                 ) // use 5 seconds to buffer input records
                 configuration.setString("table.exec.mini-batch.size", "5000")
                 configuration.setString(
@@ -105,8 +108,14 @@ class DeepStreamJob(
                 configuration.setInteger("rest.port", 8082)
                 StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(configuration)
             } else {
-                StreamExecutionEnvironment.createLocalEnvironment(configuration)
+                StreamExecutionEnvironment.getExecutionEnvironment(configuration)
             }
+
+            // 重启失败处理job的配置
+            env.restartStrategy = RestartStrategies.fixedDelayRestart(
+                3, // number of restart attempts
+                Time.of(10, TimeUnit.SECONDS) // delay
+            )
 
             env.parallelism = 1
             val checkpointStorage = File("./flink/checkpoint")
@@ -114,11 +123,11 @@ class DeepStreamJob(
             env.checkpointConfig.checkpointStorage =
                 FileSystemCheckpointStorage("file://${checkpointStorage.absolutePath}")
 
-            env.enableCheckpointing(10000L)  //头和头
+            env.enableCheckpointing(5000L)  //头和头
             env.checkpointConfig.checkpointingMode = CheckpointingMode.EXACTLY_ONCE
-            env.checkpointConfig.checkpointTimeout = 10000L
+            env.checkpointConfig.checkpointTimeout = 5000L
             env.checkpointConfig.maxConcurrentCheckpoints = 2
-            env.checkpointConfig.minPauseBetweenCheckpoints = 10000L
+            env.checkpointConfig.minPauseBetweenCheckpoints = 5000L
 
             val tableEnv = StreamTableEnvironment.create(env, fsSettings)
             tableEnv.config.sqlDialect = SqlDialect.DEFAULT
@@ -137,7 +146,6 @@ class DeepStreamJob(
             }
         }
     }
-
 
     fun visit(processContext: ProcessContext) {
         // find union steps
@@ -252,8 +260,6 @@ class DeepStreamJob(
 
         return DataContext(stream)
     }
-
-
 }
 
 data class UnionFrom(

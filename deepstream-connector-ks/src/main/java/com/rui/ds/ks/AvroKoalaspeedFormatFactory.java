@@ -31,7 +31,7 @@ public class AvroKoalaspeedFormatFactory implements DeserializationFormatFactory
 
     @Override
     public String factoryIdentifier() {
-        return "dp-connector-ks";
+        return "ruisoft-koalaspeed";
     }
 
     @Override

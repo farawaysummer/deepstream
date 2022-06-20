@@ -29,8 +29,6 @@ class DataSourceConfig(
     val isAutoCommit = false
     var isReadOnly: Boolean = DEFAULT_READ_ONLY
 
-
-
     companion object {
         const val DS_TYPE_ORACLE = "oracle"
         const val DS_TYPE_MYSQL = "mysql"

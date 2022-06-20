@@ -96,6 +96,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.rui</groupId>
+            <artifactId>deepstream-connector-ks</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+<!--            <scope>provided</scope>-->
+        </dependency>
+
+        <dependency>
             <groupId>com.res.eig</groupId>
             <artifactId>transform</artifactId>
             <version>6.4.2.0-SNAPSHOT</version>

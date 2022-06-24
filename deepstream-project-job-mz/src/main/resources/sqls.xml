@@ -3,6 +3,7 @@
     <sql name="EMR_CASE_HISTORY_DOCUMENT"><![CDATA[
 CREATE TABLE EMR_CASE_HISTORY_DOCUMENT (
 `CH_ID` STRING,
+`CHT_ID` STRING,
 PRIMARY KEY (`CH_ID`) NOT ENFORCED
 )
  WITH (
@@ -33,7 +34,7 @@ PRIMARY KEY (`CH_ID`) NOT ENFORCED
 `CF_TYPE` VARCHAR,
 `IDCARD` VARCHAR,
 `CARDNUM` VARCHAR,
-`CLINIC_TIME` DATE,
+`CLINIC_TIME` VARCHAR,
 `IF_FIRSTVISIT` VARCHAR,
 `ALLERGIC_HISTORY` STRING,
 `CHIEF_COMPLAINT` STRING,
@@ -44,7 +45,7 @@ PRIMARY KEY (`CH_ID`) NOT ENFORCED
 `DIAGNOSE_NAME` STRING,
 `DIAGNOSE_MEASUR` STRING,
 `KTDOC_REMARK` STRING,
-`CREATE_TIME` DATE,
+`CREATE_TIME` VARCHAR,
 `HIS_EPIDEMIC` STRING,
 `HIS_DISEASE_INC` STRING,
 `HIS_PRE_INOCULATION` STRING,
@@ -113,10 +114,10 @@ PRIMARY KEY (`CH_ID`) NOT ENFORCED
 `HOSP_ID` VARCHAR,
 `PATIENT_ID` VARCHAR,
 `LK_CLI_REG` VARCHAR,
-`CREATE_DTIME` DATE,
-`UPDATE_DTIME` DATE,
-`RECORD_DTIME` DATE,
-`RECORD_UPDATE_DTIME` DATE,
+`CREATE_DTIME` VARCHAR,
+`UPDATE_DTIME` VARCHAR,
+`RECORD_DTIME` VARCHAR,
+`RECORD_UPDATE_DTIME` VARCHAR,
 `CASE_TYPE` VARCHAR,
 PRIMARY KEY (`BASE_ID`) NOT ENFORCED
 )
@@ -242,10 +243,10 @@ CAST(`CASE_TYPE` AS STRING) FROM DTable
         <![CDATA[
 SELECT
 
-(SELECT VVALUE FROM DIP.SYSVAR WHERE VNAME = 'ORG_CODE' AND LENGTH(VVALUE) = 8 AND ROWNUM = 1)		AS	ORG_CODE	,--	医疗机构代码	S3	AN..10	P	医疗机构代码基础字典库 NBD02.00.002 与就诊信息中clinic_id一致参考格式clinic_id=门诊号+接诊医生编号（不是五位的话在左边用0补足五位）+分院号（总院为00）
+(SELECT VVALUE FROM HMISW2003.SYSVAR WHERE VNAME = 'ORG_CODE' AND LENGTH(VVALUE) = 8 AND ROWNUM = 1)		AS	ORG_CODE	,--	医疗机构代码	S3	AN..10	P	医疗机构代码基础字典库 NBD02.00.002 与就诊信息中clinic_id一致参考格式clinic_id=门诊号+接诊医生编号（不是五位的话在左边用0补足五位）+分院号（总院为00）
 b.REGISTER_ID	AS	CLINIC_ID	,--	接诊编号	N	N..25	P
 D.CH_ID	AS	NO	,--	文书序号	S1	AN..8	P	病历的文书序号
-(SELECT ID FROM DIP.PUB_DEPT PD,DIP.KTDIC_DEPT KD WHERE KD.DEPT_CODE=PD.CODE AND KD.DEPT_ID=b.DEPT_ID)	AS	DEPT_CODE	,--	科室编号	S3	AN..8		中心科室库 NBD02.00.001
+(SELECT ID FROM KTHIS.PUB_DEPT PD,KTHIS.KTDIC_DEPT KD WHERE KD.DEPT_CODE=PD.CODE AND KD.DEPT_ID=b.DEPT_ID)	AS	DEPT_CODE	,--	科室编号	S3	AN..8		中心科室库 NBD02.00.001
 b.REGISTER_ID	AS	REGISTER_ID	,--	门诊号	S1	AN..30		与就诊信息中REGISTER_ID一致 参考格式REGISTER_ID =G是固定开头+分院号+门诊号
 A.CARD_DATA	AS	CARDID	,--	就诊卡号	S1	AN..128	Y
 B.EMP_ID	AS	EMP_ID	,--	医生编号	S3	N..10	Y	中心人员库NBD03.00.001	20220419调整必填
@@ -262,31 +263,31 @@ A.INSURANCE_NO	AS	CARDNUM	,--	保险号码	S1	AN..20
 B.START_TIME	AS	CLINIC_TIME	,--	就诊日期	DT	DT15	Y
 B.TYPE	AS	IF_FIRSTVISIT	,--	初诊标志	S2	N1	Y	1急诊，2初诊，3复诊,4会诊
   NVL ( (SELECT LISTAGG (name, ',')within group (order by name)
-                FROM DIP.pub_allergen, DIP.pat_allergen
+                FROM WDHIS.pub_allergen, WDHIS.pat_allergen
                WHERE pat_id = c.pat_id AND allergen_id = id),
             '未发现')	AS	ALLERGIC_HISTORY	,--	过敏史	S1	AN..1000
  nvl(nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ROWNUM = 1
                AND (ED_CODE IN ('DE04.01.119.00','EMR142') or ED_CODE like '%主诉%')),
                (SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND (ED_CODE IN ('DE02.10.071.00','EMR140') or ED_CODE like '%病%史%')
                AND ROWNUM = 1)),'无')	AS	CHIEF_COMPLAINT	,--	病人主诉	S1	AN..4000	Y
    nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND (ED_CODE IN ('DE02.10.071.00','EMR140') or ED_CODE like '%病%史%')
                AND ROWNUM = 1),'无')	AS	HPC	,--	现病史	S1	AN..4000	Y		20220419调整必填
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND (ED_CODE in ('DE02.10.099.00','DE02.10.103.00') or ED_CODE like '%既往史%') and rownum=1 ),'无')	AS	PMH	,--	既往史	S1	AN..4000	Y		20220419调整必填
 
  nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ROWNUM = 1
                AND (ED_CODE IN ('DE04.10.258.00','EMR141') or ED_CODE like '%体格检查%')),'无殊')	AS	PHYSIQUE	,--	体格检查	S1	AN..4000	Y		20220419调整必填
@@ -296,101 +297,101 @@ B.DIAGNOSE	AS	DIAGNOSE_NAME	,--	诊断	S1	AN..1000
 B.REMARKS	AS	KTDOC_REMARK	,--	备注	S1	AN..4000		除上述规范外的个性化字段，如流调史等，写在这里。要求自带标题，例：“流调史：患者无武汉旅行史”
 D.CREATE_TIME	AS	CREATE_TIME	,--	书写时间	DT	DT15	Y
    nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.099.01'
                AND ROWNUM = 1),'无')	AS	HIS_EPIDEMIC	,--	流行病学史	S1	AN..2000		患者流行病学史的详细描述	20220419新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='DE02.10.026.00'
                AND ROWNUM = 1),'无')		AS	HIS_DISEASE_INC	,--	疾病史（含外伤）	S1	AN..2000		患者既往健康状况和疾病（含外伤）的详细描述	20220419新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='DE02.10.101.00'
                AND ROWNUM = 1),'无')		AS	HIS_PRE_INOCULATION	,--	预防接种史	S1	AN..2000		患者预防接种情况的详细描述	20220419新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='DE02.10.061.00'
                AND ROWNUM = 1),'无')		AS	HIS_OPERATION	,--	手术史	S1	AN..2000		患者既往接受手术/操作经历的详细描述	20220419新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.099.02'
                AND ROWNUM = 1),'无')		AS	HIS_BIRTH	,--	出生史	S1	AN..2000		患者出生史的详细描述	20220419新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.099.03'
                AND ROWNUM = 1),'无')		AS	HIS_GROWN	,--	生长史	S1	AN..2000		患者生长史的详细描述	20220419新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.099.04'
                AND ROWNUM = 1),'无')		AS	HIS_FEED	,--	喂养史	S1	AN..2000		患者喂养史的详细描述	20220419新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='DE02.10.100.00'
                AND ROWNUM = 1),'无')		AS	HIS_METACHYSIS	,--	输血史	S1	AN..2000		患者既往输血史的详细描述	20220419新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='DE02.10.097.00'
                AND ROWNUM = 1),'无')		AS	HIS_PERSONAL	,--	个人史	S1	AN..2000		患者个人生活习惯及有无烟、酒、药物等嗜好，职业与工作条件及有无工业毒物、粉尘、放射性物质接触史，有无冶游史的描述	20220419新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='DE02.10.098.00'
                AND ROWNUM = 1),'无')		AS	HIS_MARRY_CHILD	,--	婚育史	S1	AN..2000		患者婚育史的详细描述	20220419新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='DE02.10.102.00'
                AND ROWNUM = 1),'无')		AS	HIS_MENSES	,--	月经史	S1	AN..2000		患者月经史的详细描述	20220419新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='DE02.10.103.00'
                AND ROWNUM = 1),'无')		AS	HIS_FAMILY	,--	家族史	S1	AN..2000		患者3代以内有血缘关系的家族成员中所患遗传疾病史的描述	20220419新增字段
  ''	AS	PULSE_RATE	,--	脉率	N	N..3		单位时间内脉搏次数的测量值，计量单位为次/min	20220419新增字段
 substr((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='02'
                AND ROWNUM = 1),1,instr((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='02'
                AND ROWNUM = 1),'/')-1)	AS	SPB	,--	收缩压	N	N..3		上臂收缩压的测量值，计量单位为mmHg	20220419新增字段
 substr((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='02'
                AND ROWNUM = 1),-1,length((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='02'
                AND ROWNUM = 1))-instr((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='02'
                AND ROWNUM = 1),'/'))	AS	DPB	,--	舒张压	N	N..3		上臂舒张压的测量值，计量单位为mmHg	20220419新增字段
 (SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='HEIGHT'
                AND ROWNUM = 1)	AS	HEIGHT	,--	身高	N	N..5,1		身高的测量值，计量单位为cm	20220419新增字段
 (SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='WEIGHT'
                AND ROWNUM = 1)	AS	WEIGHT	,--	体重	N	N..5,1		体重的测量值，计量单位为kg	20220419新增字段
 ''	AS	GESTATIONAL_AGE	,--	孕周（天）	N	N..3		孕妇的妊娠时长，计量单位为天	20220419新增字段
  nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='DE04.30.010.00'
                AND ROWNUM = 1),'无')		AS	ASSISTANT_EXAMINATION	,--	辅助检查项目	S1	AN..200		患者辅助检查、检验项目的通用名称	20220419新增字段
@@ -398,173 +399,173 @@ substr((SELECT VALUE
 ''AS	EVALUATION_ALL	,--	各项评估	S1	AN..200		患者的各项评估	20220419新增字段
 ''	AS	WEST_DIAG_INHOS_DES	,--	健康教育	S1	AN..2000			20220419新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.02'
                AND ROWNUM = 1),'无')		AS	WZWS	,--	望诊-望神	S1	AN..200		望诊-望神的描述	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.03'
                AND ROWNUM = 1),'无')	AS	WZWMS	,--	望诊-望面色	S1	AN..200		望诊-望面色的描述	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.04'
                AND ROWNUM = 1),'无')	AS	WZWXT	,--	望诊-望形态	S1	AN..200		望诊-望形态的描述	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.05'
                AND ROWNUM = 1),'无')	AS	WZWTLWGJQ	,--	望诊-望头颅五官九窍	S1	AN..200		望诊-望头颅五官九窍的描述	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.06'
                AND ROWNUM = 1),'无')	AS	WZWPF	,--	望诊-望皮肤	S1	AN..200		望诊-望皮肤的描述	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.07'
                AND ROWNUM = 1),'无')	AS	WZWLM	,--	望诊-望络脉	S1	AN..200		望诊-望络脉的描述	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.08'
                AND ROWNUM = 1),'无')	AS	WZWPXWYFMW	,--	望诊-望排泄物与分泌物	S1	AN..200		望诊-望排泄物与分泌物的描述	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.09'
                AND ROWNUM = 1),'无')	AS	WZSDM	,--	望诊-舌代码	S3	N..2		初诊必填。中医望诊舌代码NBE01.00.012有多个时以“|”分隔	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.10'
                AND ROWNUM = 1),'无')	AS	WZS	,--	望诊-舌	S1	AN..200		望诊-舌的描述	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.11'
                AND ROWNUM = 1),'无')	AS	WZTDM	,--	望诊-苔代码	S3	N..2		初诊必填。中医望诊苔代码NBE01.00.013有多个时以“|”分隔	20220522 新增字段
 
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.12'
                AND ROWNUM = 1),'无')	AS	WZT	,--	望诊-苔	S1	AN..200		望诊-苔的描述	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.13'
                AND ROWNUM = 1),'无')	AS	WZQT1	,--	望诊-其他	S1	AN..200		望诊-其他的描述	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.22'
                AND ROWNUM = 1),'无')	AS	WZTSY	,--	闻诊-听声音	S1	AN..200		闻诊-听声音的描述	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.23'
                AND ROWNUM = 1),'无')	AS	WZXQW	,--	闻诊-嗅气味	S1	AN..200		闻诊-嗅气味的描述	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.24'
                AND ROWNUM = 1),'无')	AS	WZQT2	,--	闻诊-其他	S1	AN..200		闻诊-其他的描述	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.42'
                AND ROWNUM = 1),'无')	AS	WZHR	,--	问诊-寒热	S1	AN..200		问诊-寒热的描述	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.43'
                AND ROWNUM = 1),'无')	AS	WZCH	,--	问诊-出汗	S1	AN..200		问诊-出汗的描述	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.44'
                AND ROWNUM = 1),'无')	AS	WZTS	,--	问诊-头身	S1	AN..200		问诊-头身的描述	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.45'
                AND ROWNUM = 1),'无')	AS	WZXXWF	,--	问诊-胸胁脘腹	S1	AN..200		问诊-胸胁脘腹的描述	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.46'
                AND ROWNUM = 1),'无')	AS	WZEM	,--	问诊-耳目	S1	AN..200		问诊-耳目的描述	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.47'
                AND ROWNUM = 1),'无')	AS	WZYSYKWDM	,--	问诊-饮食与口味代码	S3	N..2		初诊必填。中医问诊饮食与口味代码NBE01.00.014有多个时以“|”分隔	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.48'
                AND ROWNUM = 1),'无')	AS	WZYSYKW	,--	问诊-饮食与口味	S1	AN..200		问诊-饮食与口味的描述	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.49'
                AND ROWNUM = 1),'无')	AS	WZSMDM	,--	问诊-睡眠代码	S3	N..2		初诊必填。中医问诊睡眠代码NBE01.00.015有多个时以“|”分隔	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.50'
                AND ROWNUM = 1),'无')	AS	WZSM	,--	问诊-睡眠	S1	AN..200		问诊-睡眠的描述	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.51'
                AND ROWNUM = 1),'无')	AS	WZDBDM	,--	问诊-大便代码	S3	N..2		初诊必填。中医问诊大便代码NBE01.00.016有多个时以“|”分隔	20220522 新增字段
   nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.52'
                AND ROWNUM = 1),'无')	AS	WZDB	,--	问诊-大便	S1	AN..200		问诊-大便的描述	20220522 新增字段
  nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.53'
                AND ROWNUM = 1),'无')		AS	WZXB	,--	问诊-小便	S1	AN..200		问诊-小便的描述	20220522 新增字段
  nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.54'
                AND ROWNUM = 1),'无')		AS	WZFN	,--	问诊-妇女	S1	AN..200		患者为女性时必填	20220522 新增字段
  nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.55'
                AND ROWNUM = 1),'无')		AS	WZXE	,--	问诊-小儿	S1	AN..200		问诊-小儿的描述	20220522 新增字段
  nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.56'
                AND ROWNUM = 1),'无')		AS	WZQT3	,--	问诊-其他	S1	AN..200		问诊-其他的描述	20220522 新增字段
  nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.57'
                AND ROWNUM = 1),'无')		AS	QZMZDM	,--	切诊-脉诊代码	S3	N..2		初诊必填。中医切诊脉诊代码NBE01.00.017有多个时以“|”分隔	20220522 新增字段
  nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.58'
                AND ROWNUM = 1),'无')		AS	QZMZ	,--	切诊-脉诊	S1	AN..200		切诊-脉诊的描述	20220522 新增字段
  nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.59'
                AND ROWNUM = 1),'无')		AS	QZAZ	,--	切诊-按诊	S1	AN..200		切诊-按诊的描述	20220522 新增字段
  nvl((SELECT VALUE
-          FROM DIP.EMR_CASE_HISTORY_STRUCT_DATA
+          FROM WDHIS.EMR_CASE_HISTORY_STRUCT_DATA
          WHERE     CHD_ID = D.CHD_ID
                AND ED_CODE ='KT02.10.028.60'
                AND ROWNUM = 1),'无')		AS	QZQT	,--	切诊-其他	S1	AN..200		切诊-其他的描述	20220522 新增字段
@@ -576,9 +577,9 @@ substr((SELECT VALUE
 ''	AS	THERAPEUTIC_METHOD_CODE	,--	治则治法代码	S1	AN..200		根据辨证结果采用的治则治法名称术语GB/T 15657-2021有多个时以“|”分隔	20220522 新增字段
 ''	AS	THERAPEUTIC_METHOD	,--	治则治法名称	S1	AN..2000		根据辨证结果采用的治则治法名称术语	20220522 新增字段
 '1' AS CASE_TYPE,--病历类型	S1	AN..1		1西医 2 中医
-  D.CH_ID||(SELECT VVALUE FROM DIP.SYSVAR WHERE VNAME = 'ORG_CODE' AND LENGTH(VVALUE) = 8 AND ROWNUM = 1)	AS	 AUTO_ID ,-- varchar(64) COLLATE utf8_bin NOT NULL,
+  D.CH_ID||(SELECT VVALUE FROM HMISW2003.SYSVAR WHERE VNAME = 'ORG_CODE' AND LENGTH(VVALUE) = 8 AND ROWNUM = 1)	AS	 AUTO_ID ,-- varchar(64) COLLATE utf8_bin NOT NULL,
 
-  D.CH_ID||(SELECT VVALUE FROM DIP.SYSVAR WHERE VNAME = 'ORG_CODE' AND LENGTH(VVALUE) = 8 AND ROWNUM = 1)	AS BASE_ID ,--varchar(64) COLLATE utf8_bin NOT NULL,
+  D.CH_ID||(SELECT VVALUE FROM HMISW2003.SYSVAR WHERE VNAME = 'ORG_CODE' AND LENGTH(VVALUE) = 8 AND ROWNUM = 1)	AS BASE_ID ,--varchar(64) COLLATE utf8_bin NOT NULL,
 ''	 AS  HOSP_NAME,-- varchar(255) COLLATE utf8_bin DEFAULT NULL,
 '' AS  HOSP_ID,-- varchar(255) COLLATE utf8_bin DEFAULT NULL,
 B.SICK_ID	 AS  PATIENT_ID,-- varchar(255) COLLATE utf8_bin DEFAULT NULL COMMENT '患者ID，关联MPI',
@@ -586,14 +587,13 @@ B.REGISTER_ID	AS  LK_CLI_REG,
 D.CREATE_TIME	 AS CREATE_DTIME,-- datetime DEFAULT NULL,
 D.CHANGE_TIME	 AS  UPDATE_DTIME,-- datetime DEFAULT NULL,
 '' 	AS   RECORD_DTIME ,--datetime DEFAULT NULL,
-'' 	AS   RECORD_UPDATE_DTIME --datetime DEFAULT NULL,
+'' 	AS   RECORD_UPDATE_DTIME --datetime DEFAULT NULL
 
-      FROM DIP.OIS_REG_INFO A,
-       DIP.KTDOC_WORK_LOG B,
-       DIP.PAT_REGISTER C,
-       DIP.EMR_CASE_HISTORY_DOCUMENT D,
-       DIP.EMR_CASE_HISTORY_INFO E
-
+      FROM WDHIS.OIS_REG_INFO A,
+       KTHIS.KTDOC_WORK_LOG B,
+       WDHIS.PAT_REGISTER C,
+       WDHIS.EMR_CASE_HISTORY_DOCUMENT D,
+       WDHIS.EMR_CASE_HISTORY_INFO E
 
  WHERE   B.register_id = a.opc_no
  AND b.branch_code =  SUBSTR (A.branch_code, -2, 2)
@@ -602,13 +602,13 @@ D.CHANGE_TIME	 AS  UPDATE_DTIME,-- datetime DEFAULT NULL,
        AND E.SOURCE_TYPE=1
        AND D.CH_ID = E.CH_ID
        AND C.REG_ID = E.REG_ID
-       AND D.CHD_ID = ?
+       AND D.CH_ID = ?
 
         ]]>
     </sql>
     <sql name="querySingle">
         <![CDATA[
-select `CH_ID`
+select `CH_ID`,`CHT_ID`
 from EMR_CASE_HISTORY_DOCUMENT
         ]]>
     </sql>

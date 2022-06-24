@@ -112,6 +112,5 @@
         <field name="UPDATE_DTIME" type="DATE"/>
         <field name="RECORD_DTIME" type="CHAR"/>
         <field name="RECORD_UPDATE_DTIME" type="CHAR"/>
-        <field name="RBUSINESS_DATE" type="CHAR"/>
     </results>
 </business>

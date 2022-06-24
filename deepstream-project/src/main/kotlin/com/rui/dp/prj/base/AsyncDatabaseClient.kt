@@ -24,11 +24,13 @@ class AsyncDatabaseClient(private val business: BusinessData) {
 
         try {
             DatabaseSources.getConnection(business.dsName).use { connection ->
+                println("Input Row with Name: ${row.getFieldNames(true)}")
                 val sql = business.businessSql
                 val rows = mutableListOf<Row>()
                 val statement = connection!!.prepareStatement(sql)
                 for (index in 1..business.conditionFields.size) {
-                    statement.setObject(index, row.getField(business.conditionFields[index - 1]))
+                    statement.setObject(index, row.getField(index - 1))
+//                    statement.setObject(index, row.getField(business.conditionFields[index - 1]))
                 }
 
                 val result = statement.executeQuery()

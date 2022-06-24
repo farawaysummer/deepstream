@@ -88,22 +88,27 @@ object DatabaseSources : Logging {
         )
     }
 
+    @JvmStatic
     fun registryDataSource(config: DataSourceConfig) {
         dataSourceConfigs[config.name] = config
     }
 
+    @JvmStatic
     fun getDataSourceConfig(name: String): DataSourceConfig? {
         return dataSourceConfigs[name]
     }
 
+    @JvmStatic
     fun getDataSource(name: String): DataSource? {
         return dataSourceCache.get(name)
     }
 
+    @JvmStatic
     fun getConnection(name: String): Connection? {
         return dataSourceCache[name].connection
     }
 
+    @JvmStatic
     fun getAsyncConnection(name: String): AsyncConnection {
         return asyncConnCache.get(name)
     }

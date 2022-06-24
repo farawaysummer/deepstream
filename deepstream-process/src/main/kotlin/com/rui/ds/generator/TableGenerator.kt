@@ -5,6 +5,7 @@ import com.rui.ds.datasource.DatabaseSources
 
 object TableGenerator {
 
+    @JvmStatic
     fun getGenerator(dsName: String, tableType: String): FlinkTableGenerator {
         val dataSourceConfig = DatabaseSources.getDataSourceConfig(dsName)
         return when (tableType) {

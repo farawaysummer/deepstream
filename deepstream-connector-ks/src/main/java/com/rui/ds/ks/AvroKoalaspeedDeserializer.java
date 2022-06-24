@@ -54,7 +54,9 @@ public class AvroKoalaspeedDeserializer implements DeserializationSchema<RowData
         }
 
         AvroRecordEvent event = AvroRecordEvent.fromByteBuffer(ByteBuffer.wrap(message));
+        System.out.println("EVENT TABLE:"+ event.getTableName());
         Map<CharSequence, CharSequence> columnValues = event.getColumnValues();
+
         GenericRecord data = convertToGenericRecord(columnValues);
         RowData after = (RowData)runtimeConverter.convert(data);
 
@@ -86,7 +88,7 @@ public class AvroKoalaspeedDeserializer implements DeserializationSchema<RowData
         GenericRecord record = new KoalaSpeedGenericRecord();
 
         for(Map.Entry<CharSequence, CharSequence> entry : columnValues.entrySet()) {
-            record.put(entry.getKey().toString(), entry.getValue().toString());
+            record.put(entry.getKey().toString(), entry.getValue());
         }
 
         return record;

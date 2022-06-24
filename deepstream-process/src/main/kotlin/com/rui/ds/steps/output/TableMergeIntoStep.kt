@@ -46,10 +46,8 @@ class TableMergeIntoStep(name: String, override val meta: TableMergeIntoStepMeta
         }
 
         val insertFields = meta.outputFields.joinToString(
-            separator = ",",
-            prefix = "`",
-            postfix = "`"
-        )
+            separator = ","
+        ) { "`$it`" }
 
         val insertSql = """
             INSERT INTO ${meta.toTable.tableName.uppercase()} ($insertFields)

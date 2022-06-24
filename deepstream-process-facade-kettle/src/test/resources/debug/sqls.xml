@@ -1,420 +1,884 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql name="createFeeDetail">
-        <![CDATA[
-CREATE TABLE R_CLI_FEE_DETAIL (
-AUTO_ID VARCHAR,
-LP_CLI_FEE VARCHAR,
-LK_CLI_FEE VARCHAR,
-LK_CLI_SEE VARCHAR,
-LK_CLI_INVOICE VARCHAR,
-LK_CLI_RECIPE VARCHAR,
-LK_MPI_PATIENT VARCHAR,
-PATIENT_ID VARCHAR,
-OUTP_ID VARCHAR,
-OUTP_NO VARCHAR,
-RECIPE_NO VARCHAR,
-APPLY_NO VARCHAR,
-INVOICE_NO VARCHAR,
-TRANS_TYPE VARCHAR,
-ITEM_CODE VARCHAR,
-ITEM_NAME VARCHAR,
-FEE_TYPE_CODE VARCHAR,
-FEE_TYPE_NAME VARCHAR,
-UNIT_PRICE VARCHAR,
-QTY VARCHAR,
-UNIT VARCHAR,
-TOT_COST VARCHAR,
-SPEC VARCHAR,
-DRUG_FLAG VARCHAR,
-FEE_DTIME TIMESTAMP(3),
-RECIPE_DOC_DEPTCODE VARCHAR,
-RECIPE_DOC_DEPTNAME VARCHAR,
-EXEC_DEPTCODE VARCHAR,
-EXEC_DEPTNAME VARCHAR,
-NOTE VARCHAR,
-CREATE_DTIME TIMESTAMP(3),
-UPDATE_DTIME TIMESTAMP(3),
-RECORD_DTIME TIMESTAMP(3),
-RECORD_UPDATE_DTIME TIMESTAMP(3),
-ORG_ID VARCHAR,
-ORG_NAME VARCHAR,
-ITEM_TYPE_CODE VARCHAR,
-ITEM_TYPE_NAME VARCHAR,
-MEDICAL_TYPE_CODE VARCHAR,
-MEDICAL_TYPE_NAME VARCHAR,
-OPERATOR_CODE VARCHAR,
-OPERATOR_NAME VARCHAR,
-ORDER_DOCT_CODE VARCHAR,
-ORDER_DOCT_NAME VARCHAR,
-ORDER_NO VARCHAR,
-MIITEM_LEVEL_CODE VARCHAR,
-MIITEM_LEVEL_NAME VARCHAR,
-PRIMARY KEY (AUTO_ID) NOT ENFORCED
+    <sql name="MZCFXX"><![CDATA[
+CREATE TABLE MZCFXX (
+`KFDM` STRING,
+`LX` STRING,
+`NO` BIGINT,
+`SFNO` BIGINT,
+`SFNO1` STRING,
+`FYRY` STRING,
+`FYRYZH` STRING,
+`PYRY` STRING,
+`KSBH` STRING,
+`YSBH` STRING,
+`YSZH` STRING,
+`GHKSBH` STRING,
+`DYNO` STRING,
+`CKBH` STRING,
+`PYZT` STRING,
+`YPJJ` STRING,
+`PYSJ` STRING,
+`FYSJ` STRING,
+`CFMS` STRING,
+`MBBH` STRING,
+`PDAPYZT` STRING,
+`HJCS` STRING,
+`ZXCFH` STRING,
+`YXH` STRING,
+PRIMARY KEY (`KFDM`,`LX`,`NO`) NOT ENFORCED
 )
  WITH (
-'connector' = 'mysql-cdc',
-'table-name' = 'R_CLI_FEE_DETAIL',
-'database-name' = '',
-'username' = 'reseig',
-'password' = 'mu-xPL7C',
-'hostname' = '192.168.3.168',
-'port' = '3216')
-        ]]>
-    </sql>
-
-    <sql name="createPatientInfo">
-        <![CDATA[
-CREATE TABLE R_MPI_PATIENTINFO (
-AUTO_ID VARCHAR,
-LP_MPI_PATIENT VARCHAR,
-PATIENT_ID VARCHAR,
-NAME VARCHAR,
-SEX_CODE VARCHAR,
-SEX_NAME VARCHAR,
-BIRTH_DATE TIMESTAMP(3),
-PERSON_ID VARCHAR,
-OCCUP_CODE VARCHAR,
-OCCUP_NAME VARCHAR,
-EMAIL VARCHAR,
-NATIONALITY_CODE VARCHAR,
-NATIONALITY_NAME VARCHAR,
-NATION_CODE VARCHAR,
-NATION_NAME VARCHAR,
-EDUCATION_CODE VARCHAR,
-EDUCATION_NAME VARCHAR,
-MARRIAGE_CODE VARCHAR,
-MARRIAGE_NAME VARCHAR,
-BLOOD_TYPE_CODE VARCHAR,
-BLOOD_TYPE_NAME VARCHAR,
-BLOOD_RH_CODE VARCHAR,
-BLOOD_RH_NAME VARCHAR,
-PATIENT_BELONG_CODE VARCHAR,
-PATIENT_BELONG_NAME VARCHAR,
-PLACETYPE_CODE VARCHAR,
-PLACETYPE_NAME VARCHAR,
-REGISTERED_ADDRESS VARCHAR,
-HOME_ADDRESS VARCHAR,
-PROVINCE_NAME VARCHAR,
-CITY_NAME VARCHAR,
-COUNTY_NAME VARCHAR,
-PHONE_TEL VARCHAR,
-MOBILE_TEL VARCHAR,
-POST_CODE VARCHAR,
-WORK_UNIT VARCHAR,
-WORK_PLACE VARCHAR,
-WORK_TEL VARCHAR,
-WORK_POSTCODE VARCHAR,
-CONTACTS_NAME VARCHAR,
-RELATION_CODE VARCHAR,
-RELATION_NAME VARCHAR,
-CONTACTS_TEL VARCHAR,
-CONTACTS_WORK_PLACE VARCHAR,
-CONTACTS_HOME_ADDRESS VARCHAR,
-ID_TYPE_CODE VARCHAR,
-ID_TYPE_NAME VARCHAR,
-MEDICAL_TYPE_CODE VARCHAR,
-MEDICAL_TYPE_NAME VARCHAR,
-MEDICAL_ID VARCHAR,
-VAAC_ID VARCHAR,
-HEALTH_ID VARCHAR,
-OFFICER_ID VARCHAR,
-PASSPORT_ID VARCHAR,
-OTHER_ID VARCHAR,
-OPER_CODE VARCHAR,
-OPER_NAME VARCHAR,
-SOURCE_SYS VARCHAR,
-CREATE_DTIME TIMESTAMP(3),
-UPDATE_DTIME TIMESTAMP(3),
-RECORD_DTIME TIMESTAMP(3),
-RECORD_UPDATE_DTIME TIMESTAMP(3),
-ORG_ID VARCHAR,
-ORG_NAME VARCHAR,
-NATIVE_CODE VARCHAR,
-NATIVE_NAME VARCHAR,
-NEWBORN_FLAG VARCHAR,
-BIRTH_PLACE VARCHAR,
-PRIMARY KEY (AUTO_ID) NOT ENFORCED
+'connector' = 'kafka',
+'topic' = '2',
+'properties.bootstrap.servers' = 'localhost:9092',
+'properties.group.id' = 'k_default',
+'scan.startup.mode' = 'earliest-offset',
+'format' = 'ruisoft-koalaspeed')
+]]></sql>
+    <sql name="KTDOC_PRESCRIPTION_LIST"><![CDATA[
+CREATE TABLE KTDOC_PRESCRIPTION_LIST (
+`PRES_ID` INTEGER,
+`NO` INTEGER,
+`DISPENSARY_ID` STRING,
+`TIMES` INTEGER,
+`GROUPNO` INTEGER,
+`DRUG_ID` INTEGER,
+`EMP_ID` INTEGER,
+`DOSAGE` INTEGER,
+`DOSE` INTEGER,
+`USAGE` STRING,
+`DRUG_WAY` STRING,
+`REMARK` STRING,
+`QUANTITY` INTEGER,
+`SKIN_TEST` CHAR,
+`SELF_MARK` CHAR,
+`MED_INS_MARK` CHAR,
+`DETAIL_DOSE_FLAG` CHAR,
+`WARN_TAG` INTEGER,
+`SPE_MEDICINE` STRING,
+`HIS5_CP_NO` INTEGER,
+`HIS5_NODE_ID` INTEGER,
+`YJ_SQDBH` INTEGER,
+`HZ_SQDBH` INTEGER,
+`LIMIT_REASON` STRING,
+`ALLQUANTITY` INTEGER,
+`ZJ` INTEGER,
+`IS_MAIN` STRING
 )
  WITH (
 'connector' = 'jdbc',
-'url' = 'jdbc:mysql://192.168.3.168:3216/eigdb?useSSL=false&autoReconnect=true',
-'table-name' = 'R_MPI_PATIENTINFO',
-'username' = 'reseig',
-'password' = 'mu-xPL7C',
-'driver' = 'com.mysql.cj.jdbc.Driver',
-'lookup.cache.max-rows' = '5000',
-'lookup.cache.ttl' = '5min')
-        ]]>
-    </sql>
-
-    <sql name="selectFromFeeDetail">
-SELECT A.AUTO_ID || '-1' AS AUTO_ID,
-       &apos;&apos; AS BATCH_NUM, --批次号 不填
-       &apos;&apos; AS UPLOAD_TIME, --系统上传时间 不填
-       A.PATIENT_ID AS LOCAL_ID, --人员在本地域唯一 必填
-       &apos;&apos; AS RESULTDESC, --处理结果描述 不填
-       &apos;&apos; AS RESULTCODE, --处理结果代码 不填
-       A.LP_CLI_FEE AS SERIALNUM_ID, --流水号 不填
-       &apos;&apos; AS UNIQUEID, --文档唯一ID 必填
-       &apos;&apos; AS PID, --主索引唯一ID 不填
-       &apos;&apos; AS BUSINESS_RELATION_ID, --业务关联ID 不填
-       &apos;&apos; AS BUSINESS_ACTIVE_TYPE, --业务活动类别 不填
-       &apos;&apos; AS BUSINESS_ACTIVE_DES, --业务活动类别描述 不填
-       A.OUTP_NO AS BUSINESS_ID, --业务流水号 必填
-       &apos;&apos; AS BASIC_ACTIVE_TYPE, --基本活动类别 不填
-       &apos;&apos; AS BASIC_ACTIVE_DES, --基本活动类别描述 不填
-       A.INVOICE_NO AS BASIC_ACTIVE_ID, --基本活动流水号 必填
-       &apos;&apos; AS ORGANIZATION_CODE, --组织机构代码 必填
-       &apos;&apos; AS ORGANIZATION_NAME, --组织机构名称 必填
-       &apos;&apos; AS DOMAIN_CODE, --域代码 必填
-       &apos;&apos; AS DOMAIN_NAME, --域名称 必填
-       &apos;&apos; AS VER, --版本号 不填
-       &apos;&apos; AS VERDES, --版本描述 不填
-       &apos;&apos; AS REGION_IDEN, --地区标识 必填
-       &apos;&apos; AS DATA_SECURITY, --数据密级 不填
-       &apos;&apos; AS RECORD_IDEN, --记录标识 必填
-       &apos;&apos; AS CREATE_DATE, --新建时间 不填
-      CURRENT_TIMESTAMP AS UPDATE_DATE, --更新时间 不填
-       A.UPDATE_DTIME AS DATAGENERATE_DATE, --业务数据产生时间 必填
-       B.PATIENT_ID AS DE01_00_009_00, --健康档案标识符
-       B.NAME AS DE02_01_039_00, --姓名 必填
-       B.SEX_CODE AS DE02_01_040_00, --性别代码 必填
-       B.SEX_NAME AS AP02_01_102_01, --性别 必填
-       B.BIRTH_DATE AS DE02_01_005_01, --出生日期 必填
-       &apos;&apos; AS DE02_01_032_00, --实足年龄 必填
-       A.OUTP_NO AS DE01_00_010_00, --就诊流水号 必填
-       A.RECIPE_NO AS AP01_00_022_00, --处方号&#47;申请单号 必填
-       A.TRANS_TYPE AS AP07_00_031_00, --交易类别 必填
-       A.INVOICE_NO AS AP07_00_016_00, --发票编号 必填
-       A.FEE_DTIME AS AP07_00_030_00, --计费时间
-       A.RECIPE_DOC_DEPTCODE AS AP08_10_055_01, --计费科室代码
-       A.RECIPE_DOC_DEPTNAME AS AP08_10_055_02, --计费科室名称
-       A.FEE_DTIME AS AP07_00_026_00, --收费时间&#47;退费时间 必填
-       A.FEE_TYPE_CODE AS AP06_00_290_01, --费用项目类别代码 必填
-       A.ITEM_CODE AS AP07_00_017_00, --费用明细项目代码 必填
-       A.ITEM_NAME AS AP07_00_018_00, --费用明细项目名称 必填
-       A.UNIT AS AP07_00_019_00, --费用明细项目单位 必填
-       A.UNIT_PRICE AS AP07_00_020_00, --费用明细项目单价 必填
-       A.QTY AS AP07_00_021_00, --费用明细项目数量 必填
-       A.TOT_COST AS AP07_00_022_00, --费用明细项目金额 必填
-       A.AUTO_ID AS DE08_10_052_00, --就诊机构代码 必填
-      ''   AS AP08_10_013_04, --就诊机构名称 必填
-       A.EXEC_DEPTCODE AS AP08_10_025_01, --收费科室代码 必填
-       A.EXEC_DEPTNAME AS DE08_10_026_00 ,--收费科室名称 必填
-A.UPDATE_DTIME  AS         RBUSINESS_DATE
-  FROM R_CLI_FEE_DETAIL A
-  LEFT JOIN R_MPI_PATIENTINFO B ON A.LK_MPI_PATIENT = B.LP_MPI_PATIENT
-
- WHERE A.UPDATE_DTIME &gt;= '2000-01-01 00:00:00'
-   AND A.UPDATE_DTIME &lt; '2023-01-01 00:00:00'
-        LIMIT 10
-    </sql>
-
-    <sql name="selectFromDTable">
-        <![CDATA[
-            select * from DTable LIMIT 10
-        ]]>
-    </sql>
-
-    <sql name="insertIntoInterface">
-        <![CDATA[
-INSERT INTO DI_ADI_EXPSET_LIST_NEU (BATCH_NUM, UPLOAD_TIME, CREATE_DATE, UPDATE_DATE,
-                                    AUTO_ID)
-SELECT BATCH_NUM,
-       UPLOAD_TIME,
-       CREATE_DATE,
-       CAST(UPDATE_DATE AS STRING),
-       AUTO_ID
-FROM DTable
-        ]]>
-    </sql>
-
-    <sql name="select_from_nb_his">
-        <![CDATA[
-SELECT BBB.ORG_CODE,
-       DP_CONCAT(A.PRES_ID , '-' , A.`NO` , '-' , A.GROUPNO,'-1')  AS AUTO_ID, --序列号
-       DP_CONCAT(A.PRES_ID , '-' , A.`NO` , '-' , A.GROUPNO,'-1')  AS LP_CLI_RECIPE, --主键-门诊处方业务
-       A.PRES_ID AS LK_CLI_RECIPE, --关联键-门诊处方业务
-       C.REGISTER_ID AS LK_CLI_SEE, --关联键-门诊就诊业务
-       C.SICK_ID AS LK_MPI_PATIENT, --关联键-患者业务
-       C.SICK_ID AS PATIENT_ID, --患者号
-       C.REGISTER_ID AS OUTP_ID, --门诊号
-       C.REGISTER_ID AS OUTP_NO, --门诊就诊流水号
-       DP_CONCAT(A.PRES_ID,'-',B.CATEGORY) AS RECIPE_NO, --处方号
-       B.RECORD_TIME AS RECIPE_DTIME, --处方时间
-       C.DEPT_ID AS RECIPE_DEPT_CODE, --开立科室代码
-       '' AS RECIPE_DEPT_NAME, --开立科室名称
-       C.EMP_ID AS RECIPE_DOC_CODE, --开立医生代码
-       '' AS RECIPE_DOC_NAME, --开立医生名称
-       '1' AS DRUG_FLAG, --药品标识
-       A.DRUG_ID AS ITEM_CODE, --项目代码
-       D.HZMC AS ITEM_NAME, --项目名称
-       '' AS ITEM_TYPE_CODE, --项目类别代码
-       '' AS ITEM_TYPE_NAME, --项目类别名称
-       D.LSJ AS UNIT_PRICE, --单价
-       A.QUANTITY AS QTY, --数量
-       D.DW2 AS UNIT, --计价单位
-       D.GG AS SPEC, --规格
-       B.CATEGORY AS DRUG_RECP_TYPECODE, --处方类型代码
-       '' AS DRUG_RECP_TYPENAME, --处方类型名称
-       A.USAGE AS DRUG_USE_FREQCODE, --使用频次代码
-       '' AS DRUG_USE_FREQNAME, --使用频次名称
-       A.DOSE AS DRUG_EACH_DOSE, --药品每次使用剂量
-       D.JLDW AS DRUG_DOSE_UNIT, --剂量单位
-       A.DRUG_WAY AS DRUG_USAGE_CODE, --药品使用用法代码
-       '' AS DRUG_USAGE_NAME, --药品使用用法名称
-       D.JX AS DOSAGE_FORM_CODE, --药品剂型代码
-       '' AS DOSAGE_FORM_NAME, --药品剂型名称
-       A.QUANTITY AS DRUG_TOTAL_DOSE, --药品使用总剂量
-       D.DW2 AS DRUG_TOTAL_UNIT, --药品使用总剂量单位
-       '' AS DRUG_START_DTIME, --用药开始时间
-       '' AS DRUG_END_DTIME, --用药停止时间
-       '' AS DURG_SEND_DTIME, --发药时间
-       '' AS DRUG_USE_DAYS, --药品使用天数
-       '' AS DRUG_PACKAGE_QTY, --药品包装数量
-       '' AS DRUG_PACKAGE_UNIT, --药品包装单位
-       '' AS DRUG_MIN_UNIT, --最小单位
-       '' AS DRUG_BASE_DOSE, --药品基本剂量
-       '' AS DRUG_MAIN_FLAG, --主药标志
-       DP_CONCAT(A.PRES_ID , '-' , A.`NO` , '-' , A.GROUPNO) AS GROUP_NO, --组合号
-       '' AS DRUG_HERB_FOOTNOTES, --草药脚注
-       A.TIMES AS HERB_DOSE_QTY, --药品付数
-       '' AS CHARGE_FLAG, --是否收费
-       '' AS CHARGE_DTIME, --收费时间
-       DP_DECODE(D.PSBJ, 'Y', '1', 'N', '2', '2') AS DRUG_SKIN_FLAG, --皮试判别标识
-       DP_DECODE(A.SKIN_TEST,
-              '+',
-              '阳',
-              '-',
-              '阴',
-              'W',
-              '未',
-              'M',
-              '免',
-              'T',
-              '脱敏',
-              '') AS DRUG_SKIN_RESULT, --皮试结果
-       '' AS INSPECTION_PART_CODE, --检查部位代码
-       '' AS INSPECTION_PART_NAME, --检查部位名称
-       '' AS EMER_FLAG, --加急标志
-       '' AS APPLY_NO, --申请单号
-       '' AS REPORT_NO, --报告单号
-       B.DEMAND AS NOTE, --备注
-       '' AS USE_TIMES, -- 使用频率
-       D.CDMC AS PRODUCTION_PLACE, --生产产地
-       '' AS PRODUCTION_DTIME, --生产日期
-       '' AS VALID_DTIME, --有效日期
-	   	 '' AS MEDIC_CODE, --	中心药品代码
-     '' AS MEDIC_CODE_SAFETY, --	医保代码
-    A.SELF_MARK AS MEDIC_SELF, --	自备  默认N
-    A.MED_INS_MARK AS MEDIC_SAFETY, --	医保自负  默认N
-       B.RECORD_TIME AS CREATE_DTIME, --业务数据创建时间
-       B.RECORD_TIME AS UPDATE_DTIME, --业务数据更新时间
-       '' AS RECORD_DTIME, --记录时间
-       '' AS RECORD_UPDATE_DTIME --记录更新时间
-  FROM KTDOC_PRESCRIPTION_LIST A
-  LEFT JOIN YPMC D
-    ON A.DRUG_ID = D.YPBH,KTDOC_PRESCRIPTION B
-LEFT JOIN (SELECT ORG_CODE,CLINIC_ID FROM KTHRAEVT_CLINIC GROUP BY ORG_CODE,CLINIC_ID) BBB ON BBB.CLINIC_ID = B.CLINIC_ID
-  LEFT JOIN KTDOC_WORK_LOG C
-    ON B.CLINIC_ID = C.CLINIC_ID
- WHERE A.PRES_ID = B.PRES_ID
-        ]]>
-    </sql>
-
-    <sql name="select_from_nb_his_bak">
-        <![CDATA[
-SELECT BBB.ORG_CODE,
-       A.PRES_ID || '-' || A.`NO` || '-' || A.GROUPNO||'-1' AS AUTO_ID, --序列号
-       A.PRES_ID || '-' || A.`NO` || '-' || A.GROUPNO||'-1'  AS LP_CLI_RECIPE, --主键-门诊处方业务
-       A.PRES_ID AS LK_CLI_RECIPE, --关联键-门诊处方业务
-       C.REGISTER_ID AS LK_CLI_SEE, --关联键-门诊就诊业务
-       C.SICK_ID AS LK_MPI_PATIENT, --关联键-患者业务
-       C.SICK_ID AS PATIENT_ID, --患者号
-       C.REGISTER_ID AS OUTP_ID, --门诊号
-       C.REGISTER_ID AS OUTP_NO, --门诊就诊流水号
-       A.PRES_ID||'-'||B.CATEGORY AS RECIPE_NO, --处方号
-       B.RECORD_TIME AS RECIPE_DTIME, --处方时间
-       C.DEPT_ID AS RECIPE_DEPT_CODE, --开立科室代码
-       '' AS RECIPE_DEPT_NAME, --开立科室名称
-       C.EMP_ID AS RECIPE_DOC_CODE, --开立医生代码
-       '' AS RECIPE_DOC_NAME, --开立医生名称
-       '1' AS DRUG_FLAG, --药品标识
-       A.DRUG_ID AS ITEM_CODE, --项目代码
-       D.HZMC AS ITEM_NAME, --项目名称
-       '' AS ITEM_TYPE_CODE, --项目类别代码
-       '' AS ITEM_TYPE_NAME, --项目类别名称
-       D.LSJ AS UNIT_PRICE, --单价
-       A.QUANTITY AS QTY, --数量
-       D.DW2 AS UNIT, --计价单位
-       D.GG AS SPEC, --规格
-       B.CATEGORY AS DRUG_RECP_TYPECODE, --处方类型代码
-       '' AS DRUG_RECP_TYPENAME, --处方类型名称
-       A.USAGE AS DRUG_USE_FREQCODE, --使用频次代码
-       '' AS DRUG_USE_FREQNAME, --使用频次名称
-       A.DOSE AS DRUG_EACH_DOSE, --药品每次使用剂量
-       D.JLDW AS DRUG_DOSE_UNIT, --剂量单位
-       A.DRUG_WAY AS DRUG_USAGE_CODE, --药品使用用法代码
-       '' AS DRUG_USAGE_NAME, --药品使用用法名称
-       D.JX AS DOSAGE_FORM_CODE, --药品剂型代码
-       '' AS DOSAGE_FORM_NAME, --药品剂型名称
-       A.QUANTITY AS DRUG_TOTAL_DOSE, --药品使用总剂量
-       D.DW2 AS DRUG_TOTAL_UNIT, --药品使用总剂量单位
-       '' AS DRUG_START_DTIME, --用药开始时间
-       '' AS DRUG_END_DTIME, --用药停止时间
-       '' AS DURG_SEND_DTIME, --发药时间
-       '' AS DRUG_USE_DAYS, --药品使用天数
-       '' AS DRUG_PACKAGE_QTY, --药品包装数量
-       '' AS DRUG_PACKAGE_UNIT, --药品包装单位
-       '' AS DRUG_MIN_UNIT, --最小单位
-       '' AS DRUG_BASE_DOSE, --药品基本剂量
-       '' AS DRUG_MAIN_FLAG, --主药标志
-       A.PRES_ID || '-' || A.`NO` || '-' || A.GROUPNO AS GROUP_NO, --组合号
-       '' AS DRUG_HERB_FOOTNOTES, --草药脚注
-       A.TIMES AS HERB_DOSE_QTY, --药品付数
-       '' AS CHARGE_FLAG, --是否收费
-       '' AS CHARGE_DTIME, --收费时间
-       DP_DECODE(D.PSBJ, 'Y', '1', 'N', '2', '2') AS DRUG_SKIN_FLAG, --皮试判别标识
-       DP_DECODE(A.SKIN_TEST,
-              '+',
-              '阳',
-              '-',
-              '阴',
-              'W',
-              '未',
-              'M',
-              '免',
-              'T',
-              '脱敏',
-              '') AS DRUG_SKIN_RESULT, --皮试结果
-       '' AS INSPECTION_PART_CODE, --检查部位代码
-       '' AS INSPECTION_PART_NAME, --检查部位名称
-       '' AS EMER_FLAG, --加急标志
-       '' AS APPLY_NO, --申请单号
-       '' AS REPORT_NO, --报告单号
-       B.DEMAND AS NOTE, --备注
-       '' AS USE_TIMES, -- 使用频率
-       D.CDMC AS PRODUCTION_PLACE, --生产产地
-       '' AS PRODUCTION_DTIME, --生产日期
-       '' AS VALID_DTIME, --有效日期
-	   	 '' AS MEDIC_CODE, --	中心药品代码
-     '' AS MEDIC_CODE_SAFETY, --	医保代码
-    A.SELF_MARK AS MEDIC_SELF, --	自备  默认N
-    A.MED_INS_MARK AS MEDIC_SAFETY, --	医保自负  默认N
-       B.RECORD_TIME AS CREATE_DTIME, --业务数据创建时间
-       B.RECORD_TIME AS UPDATE_DTIME, --业务数据更新时间
-       '' AS RECORD_DTIME, --记录时间
-       '' AS RECORD_UPDATE_DTIME --记录更新时间
-  FROM KTDOC_PRESCRIPTION_LIST A
-  LEFT JOIN YPMC D
-    ON A.DRUG_ID = D.YPBH,KTDOC_PRESCRIPTION B
-LEFT JOIN (SELECT ORG_CODE,CLINIC_ID FROM KTHRAEVT_CLINIC GROUP BY ORG_CODE,CLINIC_ID) BBB ON BBB.CLINIC_ID = B.CLINIC_ID
-  LEFT JOIN KTDOC_WORK_LOG C
-    ON B.CLINIC_ID = C.CLINIC_ID
- WHERE A.PRES_ID = B.PRES_ID
-        ]]>
-    </sql>
-
+'url' = 'jdbc:oracle:thin:@10.48.100.105:1521:orcl',
+'table-name' = 'KTHIS.KTDOC_PRESCRIPTION_LIST',
+'username' = 'cdc',
+'password' = 'oracle',
+'driver' = 'oracle.jdbc.driver.OracleDriver',
+'lookup.cache.max-rows' = '100000',
+'lookup.cache.ttl' = '60min')
+]]></sql>
+    <sql name="KTDOC_PRESCRIPTION"><![CDATA[
+CREATE TABLE KTDOC_PRESCRIPTION (
+`PRES_ID` INTEGER,
+`CLINIC_ID` INTEGER,
+`CHARGE_ID` INTEGER,
+`RECORD_TIME` DATE,
+`TYPE` CHAR,
+`EMP_ID` INTEGER,
+`CATEGORY` INTEGER,
+`DECOCTION_DAY` INTEGER,
+`FEE_PRES_ID` INTEGER,
+`SERIAL_NUMBER` INTEGER,
+`DEMAND` STRING,
+`OUT_NO` INTEGER,
+`APPLY_NO` INTEGER,
+`SOURCE_NO` STRING,
+`CENTER_PRESID` STRING,
+`COMPOUND_FLAG` STRING,
+`SPEC_FLAG` STRING,
+`OUT_PRESID` STRING,
+`RESCUE` STRING,
+`YLLBDM` STRING,
+`BZDM` STRING,
+`INVALID_TIME` DATE,
+PRIMARY KEY (`PRES_ID`) NOT ENFORCED
+)
+ WITH (
+'connector' = 'jdbc',
+'url' = 'jdbc:oracle:thin:@10.48.100.105:1521:orcl',
+'table-name' = 'KTHIS.KTDOC_PRESCRIPTION',
+'username' = 'cdc',
+'password' = 'oracle',
+'driver' = 'oracle.jdbc.driver.OracleDriver',
+'lookup.cache.max-rows' = '50000',
+'lookup.cache.ttl' = '60min')
+]]></sql>
+    <sql name="YPMC"><![CDATA[
+CREATE TABLE YPMC (
+`YPBH` INTEGER,
+`DM` STRING,
+`HZMC` STRING,
+`GG` STRING,
+`DW` STRING,
+`CD` INTEGER,
+`CDMC` STRING,
+`PFJ` INTEGER,
+`LSJ` INTEGER,
+`YPJL` INTEGER,
+`JLDW` STRING,
+`LX` INTEGER,
+`JX` INTEGER,
+`YL` STRING,
+`FL` INTEGER,
+`PSBJ` STRING,
+`DW1` STRING,
+`SL1` INTEGER,
+`DW2` STRING,
+`SL2` INTEGER,
+`ZFBZ` STRING,
+`GFXL` INTEGER,
+`YBFL` STRING,
+`TYM` STRING,
+`YBYPBM` STRING,
+`YBTS` STRING,
+`YPGLBZ` STRING,
+`GZYP` STRING,
+`YBBL1` INTEGER,
+`YBBL2` INTEGER,
+`YBBL3` INTEGER,
+`YBBL4` INTEGER,
+`KWM` STRING,
+`NEXTNO1` INTEGER,
+`YPSY` STRING,
+`MZSY` STRING,
+`ZYSY` STRING,
+`LSJLX` INTEGER,
+`GJLSJ` INTEGER,
+`MZYBXL` INTEGER,
+`KSSJB` STRING,
+`YBSYBZ` STRING,
+`QZFS` STRING,
+`TSYPDJ` STRING,
+`SYPZZX` STRING,
+`ZDYSX` INTEGER,
+`CAT_HIS5_ORDER_ID` INTEGER,
+`HIS5_ORDER_ID` INTEGER,
+`TYM2` STRING,
+PRIMARY KEY (`YPBH`) NOT ENFORCED
+)
+ WITH (
+'connector' = 'jdbc',
+'url' = 'jdbc:oracle:thin:@10.48.100.105:1521:orcl',
+'table-name' = 'HMISW2003.YPMC',
+'username' = 'cdc',
+'password' = 'oracle',
+'driver' = 'oracle.jdbc.driver.OracleDriver',
+'lookup.cache.max-rows' = '50000',
+'lookup.cache.ttl' = '60min')
+]]></sql>
+    <sql name="KTDOC_WORK_LOG"><![CDATA[
+CREATE TABLE KTDOC_WORK_LOG (
+`CLINIC_ID` INTEGER,
+`REGISTER_ID` INTEGER,
+`EMP_ID` INTEGER,
+`DEPT_ID` INTEGER,
+`START_TIME` DATE,
+`END_TIME` DATE,
+`SICK_ID` INTEGER,
+`TYPE` STRING,
+`DIAGNOSE` STRING,
+`ICD10` STRING,
+`OPERTATION` STRING,
+`SICKEN_TIME` DATE,
+`RESULT` CHAR,
+`GREEN_CHANNEL` CHAR,
+`SPILE` CHAR,
+`RISK` CHAR,
+`ZYMOSIS` CHAR,
+`CHRONIC` CHAR,
+`FLU` CHAR,
+`TRANS` CHAR,
+`REMARKS` STRING,
+`BRANCH_CODE` STRING,
+`STATE` CHAR,
+`PARENTS_NAME` STRING,
+`COMPANY` STRING,
+`HOUSE_TYPE` INTEGER,
+`SICK_DURATION` INTEGER,
+`DURATION_UNIT` STRING,
+`ADDRESS` STRING,
+`TELE` STRING,
+`CURE_LEVEL` STRING,
+`SYSPTOM_CODE` STRING,
+`SURGERY_TIME` DATE,
+`ZZBZ` STRING,
+`ZZNR` STRING,
+`DZBL` STRING,
+`ZZSJ` DATE,
+PRIMARY KEY (`CLINIC_ID`) NOT ENFORCED
+)
+ WITH (
+'connector' = 'jdbc',
+'url' = 'jdbc:oracle:thin:@10.48.100.105:1521:orcl',
+'table-name' = 'KTHIS.KTDOC_WORK_LOG',
+'username' = 'cdc',
+'password' = 'oracle',
+'driver' = 'oracle.jdbc.driver.OracleDriver',
+'lookup.cache.max-rows' = '50000',
+'lookup.cache.ttl' = '60min')
+]]></sql>
+    <sql name="YPMCQT"><![CDATA[
+CREATE TABLE YPMCQT (
+`YPBH` INTEGER,
+`JHJJ` INTEGER,
+`JKYPZJDYXRQ` DATE,
+`ZCSB` STRING,
+`PZWH` STRING,
+`GMPBH` STRING,
+`GMPRZSJ` DATE,
+`GMPDQSJ` DATE,
+`YLCPZCZBH` STRING,
+`YLCPZCZYXRQ` DATE,
+`JKYPZCZBH` STRING,
+`JKYPZCZYXRQ` DATE,
+`JKYPJYBGSBH` STRING,
+`JKYPJYBGSYXRQ` DATE,
+`JKYPZJDBH` STRING,
+`ORIS` STRING,
+`CCHJSD` STRING,
+`CCHJZGBZ` STRING,
+`CCHJWD` INTEGER,
+`MAXL` INTEGER,
+`CKJYL` INTEGER,
+`YXQ` INTEGER,
+`CFYPFL` STRING,
+`MINL` INTEGER,
+`JHDW` STRING,
+`TJBZ` STRING,
+`JBYW` STRING,
+`FSSJ` DATE,
+`PSXSF` STRING,
+`WXYP` STRING,
+`WHYP` STRING,
+`SJLX` STRING,
+`TSTS` STRING,
+`JSBZ` STRING,
+`KBDJB` STRING,
+`MRFF` STRING,
+`KPY` STRING,
+`ZYJ` STRING,
+`PZWHYXRQ` DATE,
+`SCGRYPJYBGBH` STRING,
+`SCGRYPJYBGPH` STRING,
+`YPSCXKZBH` STRING,
+`YPSCXKZPZRQ` DATE,
+`YPSCXKZYXRQ` DATE,
+`JKYPJYBGSPH` STRING,
+`SWZPPQFHGZBH` STRING,
+`SWZPPQFHGZPH` STRING,
+`SWZPPQFHGZYXRQ` DATE,
+`FRWTSYXRQ` DATE,
+`DABH` STRING,
+`DDD` INTEGER,
+`ZZYP` CHAR,
+`WPYP` STRING,
+`YPZCZBH` STRING,
+`YPZCZYXRQ` DATE,
+`PSCS` INTEGER,
+`RSWXXJB` STRING,
+`TMCF` STRING,
+`SYYYBZ` STRING,
+`YMZLDM` STRING,
+`JZCS` INTEGER,
+`PSYP` INTEGER,
+`RJX` STRING,
+`TSPSYP` STRING,
+`JCYY` STRING,
+`JZTY` STRING,
+`JZTYTSXX` STRING,
+`YHXYP` STRING,
+`DZBZ` STRING,
+`DS` STRING,
+`SQMBZ` STRING,
+`PSSC` INTEGER,
+`DSXX` INTEGER,
+`DSSX` INTEGER,
+`DYBZ` STRING,
+`PHGL` STRING,
+`ZLYP` STRING,
+`JHBZBZ` STRING,
+`SYTSTS` STRING,
+`YLJLXSFS` STRING,
+`JMBZ` STRING,
+`KYJS` INTEGER,
+`SYYXQZ` INTEGER,
+`SFSQ` STRING,
+`NL` INTEGER,
+`SYTPXS` INTEGER,
+`JPCCWD` STRING,
+`JPCCSJ` INTEGER,
+`ZBDM` STRING,
+`MRYHFS` INTEGER,
+`GJYPID` STRING,
+`KZLYP` STRING,
+`YBGJYPBM` STRING,
+`ZYLSSY` STRING,
+`SPTYPID` STRING,
+`BRQYYWXDJ` STRING,
+`ECPS` STRING,
+`GTYP` INTEGER,
+PRIMARY KEY (`YPBH`) NOT ENFORCED
+)
+ WITH (
+'connector' = 'jdbc',
+'url' = 'jdbc:oracle:thin:@10.48.100.105:1521:orcl',
+'table-name' = 'HMISW2003.YPMCQT',
+'username' = 'cdc',
+'password' = 'oracle',
+'driver' = 'oracle.jdbc.driver.OracleDriver',
+'lookup.cache.max-rows' = '50000',
+'lookup.cache.ttl' = '60min')
+]]></sql>
+    <sql name="KSMC"><![CDATA[
+CREATE TABLE KSMC (
+`NO` STRING,
+`MC` STRING,
+PRIMARY KEY (`NO`) NOT ENFORCED
+)
+ WITH (
+'connector' = 'jdbc',
+'url' = 'jdbc:oracle:thin:@10.48.100.105:1521:orcl',
+'table-name' = 'HMISW2003.KSMC',
+'username' = 'cdc',
+'password' = 'oracle',
+'driver' = 'oracle.jdbc.driver.OracleDriver',
+'lookup.cache.max-rows' = '50000',
+'lookup.cache.ttl' = '60min')
+]]></sql>
+    <sql name="ZGXX"><![CDATA[
+CREATE TABLE ZGXX (
+`ID` INTEGER,
+`XM` STRING,
+`SRM1` STRING,
+`SRM2` STRING,
+`KSNO` STRING,
+`CF` STRING,
+`LX` STRING,
+`PSWORD` STRING,
+`FPNO` INTEGER,
+`SRMLX` STRING,
+`ZH` INTEGER,
+`STAT` STRING,
+`ZJF` INTEGER,
+`MZF` STRING,
+`JSF` STRING,
+`DPF` STRING,
+`PSF` STRING,
+`QTHM` INTEGER,
+`ZC` STRING,
+`BATJDYBH` STRING,
+`SSJB` STRING,
+`KSSJB` STRING,
+`ZYKSNO` STRING,
+`KSSTJQX` STRING,
+`ZW` STRING,
+`ZNZW` STRING,
+`WPF` STRING,
+`PWD_XGSJ` DATE,
+`KSSYJSHJB` STRING,
+`ZXID` STRING,
+PRIMARY KEY (`ID`) NOT ENFORCED
+)
+ WITH (
+'connector' = 'jdbc',
+'url' = 'jdbc:oracle:thin:@10.48.100.105:1521:orcl',
+'table-name' = 'HMISW2003.ZGXX',
+'username' = 'cdc',
+'password' = 'oracle',
+'driver' = 'oracle.jdbc.driver.OracleDriver',
+'lookup.cache.max-rows' = '50000',
+'lookup.cache.ttl' = '60min')
+]]></sql>
+    <sql name="MZGHXX"><![CDATA[
+CREATE TABLE MZGHXX (
+`MZH` INTEGER,
+`BRXM` STRING,
+`JZKH` STRING,
+`BRBH` INTEGER,
+`MZKB` STRING,
+`MZLX` STRING,
+`GHF` INTEGER,
+`ZLF` INTEGER,
+`ZJF` INTEGER,
+`BLKF` INTEGER,
+`CKF` INTEGER,
+`GHRY` INTEGER,
+`ZFRY` INTEGER,
+`KSBH` STRING,
+`YSBH` INTEGER,
+`YSZH` INTEGER,
+`ZTBZ` STRING,
+`FPNO` STRING,
+`LB` STRING,
+`GFNO` STRING,
+`YHLX` STRING,
+`YHHM` STRING,
+`YBRYDM` STRING,
+`GHSJ` DATE,
+`KSXH` INTEGER,
+`MZSJ` STRING,
+`SYBZ` STRING,
+`JZYSBH` INTEGER,
+`SFFYZT` STRING,
+`GHLY` INTEGER,
+`ZDH` STRING,
+`PBYS` INTEGER,
+`YHCX` STRING,
+`GHLB` STRING,
+`HZLY` STRING,
+`FZBZ` STRING,
+`HSZT` STRING,
+`QMLXDM` STRING,
+`QMJDDM` STRING,
+`GCPLX` STRING,
+`TYJSBRLY` STRING,
+`DKDM` STRING,
+PRIMARY KEY (`MZH`) NOT ENFORCED
+)
+ WITH (
+'connector' = 'jdbc',
+'url' = 'jdbc:oracle:thin:@10.48.100.105:1521:orcl',
+'table-name' = 'HMISW2003.MZGHXX',
+'username' = 'cdc',
+'password' = 'oracle',
+'driver' = 'oracle.jdbc.driver.OracleDriver',
+'lookup.cache.max-rows' = '50000',
+'lookup.cache.ttl' = '60min')
+]]></sql>
+    <sql name="SYSVAR"><![CDATA[
+CREATE TABLE SYSVAR (
+`PROG` STRING,
+`VNAME` STRING,
+`VVALUE` STRING,
+`TITLE` STRING,
+`MEMO` STRING,
+`RIGHT` STRING,
+`BZ` STRING,
+PRIMARY KEY (`PROG`,`VNAME`) NOT ENFORCED
+)
+ WITH (
+'connector' = 'jdbc',
+'url' = 'jdbc:oracle:thin:@10.48.100.105:1521:orcl',
+'table-name' = 'HMISW2003.SYSVAR',
+'username' = 'cdc',
+'password' = 'oracle',
+'driver' = 'oracle.jdbc.driver.OracleDriver',
+'lookup.cache.max-rows' = '50000',
+'lookup.cache.ttl' = '60min')
+]]></sql>
+    <sql name="CFFL"><![CDATA[
+CREATE TABLE CFFL (
+`XH` INTEGER,
+`MC` STRING,
+`TITLE` STRING,
+`BZ` STRING,
+`YFGS` STRING,
+`JC` STRING,
+`CFLSH` INTEGER,
+`YSGS` STRING,
+`YXTS` INTEGER,
+`KFDM` STRING,
+`SYBZ` STRING,
+`PXXH` INTEGER,
+`SWJBM` STRING
+)
+ WITH (
+'connector' = 'jdbc',
+'url' = 'jdbc:oracle:thin:@10.48.100.105:1521:orcl',
+'table-name' = 'HMISW2003.CFFL',
+'username' = 'cdc',
+'password' = 'oracle',
+'driver' = 'oracle.jdbc.driver.OracleDriver',
+'lookup.cache.max-rows' = '50000',
+'lookup.cache.ttl' = '60min')
+]]></sql>
+    <sql name="YZYFB"><![CDATA[
+CREATE TABLE YZYFB (
+`DM` STRING,
+`MC` STRING,
+`NUM` INTEGER,
+`TS` INTEGER,
+`XH` INTEGER,
+`SYSYBZ` STRING,
+`BZ` STRING,
+`SYBZ` STRING,
+`ZBPC` INTEGER,
+`ZSJGSJ` INTEGER,
+`HIS5_ORDER_ID` INTEGER,
+`YWMC` STRING,
+PRIMARY KEY (`DM`) NOT ENFORCED
+)
+ WITH (
+'connector' = 'jdbc',
+'url' = 'jdbc:oracle:thin:@10.48.100.105:1521:orcl',
+'table-name' = 'HMISW2003.YZYFB',
+'username' = 'cdc',
+'password' = 'oracle',
+'driver' = 'oracle.jdbc.driver.OracleDriver',
+'lookup.cache.max-rows' = '50000',
+'lookup.cache.ttl' = '60min')
+]]></sql>
+    <sql name="GYFSB"><![CDATA[
+CREATE TABLE GYFSB (
+`DM` STRING,
+`MC` STRING,
+`YLFYBH` STRING,
+`BZ` STRING,
+`SYSYBZ` STRING,
+`XH` INTEGER,
+`XEYLFYBH` STRING,
+`SYBZ` STRING,
+`LX` STRING,
+`CLYLFYBH` STRING,
+`XECLYLFYBH` STRING,
+`YLFYBH2` STRING,
+`HIS5_ORDER_ID` INTEGER,
+`ZYYLFYBH` STRING,
+`ZYXEYLFYBH` STRING,
+`YWMC` STRING,
+PRIMARY KEY (`DM`) NOT ENFORCED
+)
+ WITH (
+'connector' = 'jdbc',
+'url' = 'jdbc:oracle:thin:@10.48.100.105:1521:orcl',
+'table-name' = 'HMISW2003.GYFSB',
+'username' = 'cdc',
+'password' = 'oracle',
+'driver' = 'oracle.jdbc.driver.OracleDriver',
+'lookup.cache.max-rows' = '50000',
+'lookup.cache.ttl' = '60min')
+]]></sql>
+    <sql name="YPJX"><![CDATA[
+CREATE TABLE YPJX (
+`NO` INTEGER,
+`MC` STRING,
+`XH` STRING,
+`LX` STRING,
+`JC` STRING,
+`SRM1` STRING,
+`SRM2` STRING,
+`QDYL` STRING,
+PRIMARY KEY (`NO`) NOT ENFORCED
+)
+ WITH (
+'connector' = 'jdbc',
+'url' = 'jdbc:oracle:thin:@10.48.100.105:1521:orcl',
+'table-name' = 'HMISW2003.YPJX',
+'username' = 'cdc',
+'password' = 'oracle',
+'driver' = 'oracle.jdbc.driver.OracleDriver',
+'lookup.cache.max-rows' = '50000',
+'lookup.cache.ttl' = '60min')
+]]></sql>
+    <sql name="MZCFMXXX"><![CDATA[
+CREATE TABLE MZCFMXXX (
+`KFDM` STRING,
+`LX` STRING,
+`NO` INTEGER,
+`NO1` INTEGER,
+`ZH` INTEGER,
+`DM` INTEGER,
+`DM1` INTEGER,
+`JL` INTEGER,
+`SL` INTEGER,
+`DJ` INTEGER,
+`GYFS` STRING,
+`YF` STRING,
+`FF` STRING,
+`BYZSCS` INTEGER,
+`JS` INTEGER,
+`JE` INTEGER,
+`XFJE` INTEGER,
+`ZBBZ` STRING,
+`PSJG` STRING,
+`LSJLX` INTEGER,
+`GJLSJ` INTEGER,
+`YPJJ` INTEGER,
+`GZYP` STRING,
+`MK_TAG` INTEGER,
+`ZFBZ` STRING,
+`MCYL` INTEGER,
+`ZFJE` INTEGER,
+`JMJE` INTEGER,
+`YBZFJE` INTEGER,
+PRIMARY KEY (`KFDM`,`LX`,`NO`,`NO1`) NOT ENFORCED
+)
+ WITH (
+'connector' = 'jdbc',
+'url' = 'jdbc:oracle:thin:@10.48.100.105:1521:orcl',
+'table-name' = 'HMISW2003.MZCFMXXX',
+'username' = 'cdc',
+'password' = 'oracle',
+'driver' = 'oracle.jdbc.driver.OracleDriver',
+'lookup.cache.max-rows' = '50000',
+'lookup.cache.ttl' = '60min')
+]]></sql>
+    <!--    <sql name="MZCFXX"><![CDATA[-->
+    <!--CREATE TABLE MZCFXX (-->
+    <!--`KFDM` STRING,-->
+    <!--`LX` STRING,-->
+    <!--`NO` INTEGER,-->
+    <!--`SFNO` INTEGER,-->
+    <!--`SFNO1` INTEGER,-->
+    <!--`FYRY` INTEGER,-->
+    <!--`FYRYZH` INTEGER,-->
+    <!--`PYRY` INTEGER,-->
+    <!--`KSBH` STRING,-->
+    <!--`YSBH` INTEGER,-->
+    <!--`YSZH` INTEGER,-->
+    <!--`GHKSBH` STRING,-->
+    <!--`DYNO` INTEGER,-->
+    <!--`CKBH` INTEGER,-->
+    <!--`PYZT` STRING,-->
+    <!--`YPJJ` INTEGER,-->
+    <!--`PYSJ` DATE,-->
+    <!--`FYSJ` DATE,-->
+    <!--`CFMS` STRING,-->
+    <!--`MBBH` INTEGER,-->
+    <!--`PDAPYZT` STRING,-->
+    <!--`HJCS` INTEGER,-->
+    <!--`ZXCFH` STRING,-->
+    <!--`YXH` STRING,-->
+    <!--PRIMARY KEY (`KFDM`,`LX`,`NO`) NOT ENFORCED-->
+    <!--)-->
+    <!-- WITH (-->
+    <!--'connector' = 'jdbc',-->
+    <!--'url' = 'jdbc:oracle:thin:@10.48.100.105:1521:orcl',-->
+    <!--'table-name' = 'HMISW2003.MZCFXX',-->
+    <!--'username' = 'cdc',-->
+    <!--'password' = 'oracle',-->
+    <!--'driver' = 'oracle.jdbc.driver.OracleDriver',-->
+    <!--'lookup.cache.max-rows' = '50000',-->
+    <!--'lookup.cache.ttl' = '60min')-->
+    <!--]]></sql>-->
+    <sql name="MZSFXX"><![CDATA[
+CREATE TABLE MZSFXX (
+`NO` INTEGER,
+`BRXM` STRING,
+`FBLX` STRING,
+`GFNO` STRING,
+`YSBH` INTEGER,
+`YSZH` INTEGER,
+`KSBH` STRING,
+`FPNO` STRING,
+`DYNO` INTEGER,
+`KPRY` INTEGER,
+`KPRYZH` INTEGER,
+`MZH` INTEGER,
+`CD` STRING,
+`GHKSBH` STRING,
+`SFLY` STRING,
+`FSSJ` DATE,
+`GZCS` INTEGER,
+`SFZT` STRING,
+`YHLX` STRING,
+`YHHM` STRING,
+`YHCX` STRING,
+`ZFZT` STRING,
+`ZFNO` INTEGER,
+`DKLB` STRING,
+PRIMARY KEY (`NO`) NOT ENFORCED
+)
+ WITH (
+'connector' = 'jdbc',
+'url' = 'jdbc:oracle:thin:@10.48.100.105:1521:orcl',
+'table-name' = 'HMISW2003.MZSFXX',
+'username' = 'cdc',
+'password' = 'oracle',
+'driver' = 'oracle.jdbc.driver.OracleDriver',
+'lookup.cache.max-rows' = '50000',
+'lookup.cache.ttl' = '60min')
+]]></sql>
+    <sql name="KTDOC_DIAGNOSE"><![CDATA[
+CREATE TABLE KTDOC_DIAGNOSE (
+`CLINIC_ID` INTEGER,
+`NO` INTEGER,
+`ICD` STRING,
+`DISEASE_NAME` STRING,
+`REMARKS` STRING,
+`EMP_ID` INTEGER,
+`CREATE_ORG_CODE` STRING,
+`CREATE_ORG_NAME` STRING,
+`CREATE_DATE` DATE,
+`TECH_ID` INTEGER,
+`DETAIL` STRING,
+`DISEASE_TIME` DATE,
+`DISEASE_TYPE` STRING,
+`DISEASE_OUTCOME` STRING,
+`TCM_SYNDROME` INTEGER,
+PRIMARY KEY (`CLINIC_ID`,`NO`) NOT ENFORCED
+)
+ WITH (
+'connector' = 'jdbc',
+'url' = 'jdbc:oracle:thin:@10.48.100.105:1521:orcl',
+'table-name' = 'KTHIS.KTDOC_DIAGNOSE',
+'username' = 'cdc',
+'password' = 'oracle',
+'driver' = 'oracle.jdbc.driver.OracleDriver',
+'lookup.cache.max-rows' = '50000',
+'lookup.cache.ttl' = '60min')
+]]></sql>
+    <sql name="KTDOC_CASE_HISTORY"><![CDATA[
+CREATE TABLE KTDOC_CASE_HISTORY (
+`CLINIC_ID` INTEGER,
+`EMP_ID` INTEGER,
+`DEPT_ID` INTEGER,
+`RECORD_TIME` DATE,
+`FIELD` STRING,
+`REMARKS` STRING,
+`SOURCE_NO` STRING,
+PRIMARY KEY (`CLINIC_ID`,`FIELD`) NOT ENFORCED
+)
+ WITH (
+'connector' = 'jdbc',
+'url' = 'jdbc:oracle:thin:@10.48.100.105:1521:orcl',
+'table-name' = 'KTHIS.KTDOC_CASE_HISTORY',
+'username' = 'cdc',
+'password' = 'oracle',
+'driver' = 'oracle.jdbc.driver.OracleDriver',
+'lookup.cache.max-rows' = '50000',
+'lookup.cache.ttl' = '60min')
+]]></sql>
+    <sql name="S_CLI_RECIPE"><![CDATA[
+CREATE TABLE S_CLI_RECIPE (
+`BASE_ID` VARCHAR,
+`HOSP_ID` VARCHAR,
+`HOSP_NAME` VARCHAR,
+`BATCH_NO` VARCHAR,
+`PATIENT_ID` VARCHAR,
+`OUTP_ID` VARCHAR,
+`OUTP_NO` VARCHAR,
+`RECIPE_NO` VARCHAR,
+`RECIPE_DTIME` VARCHAR,
+`RECIPE_DEPT_CODE` VARCHAR,
+`RECIPE_DEPT_NAME` VARCHAR,
+`RECIPE_DOC_CODE` VARCHAR,
+`RECIPE_DOC_NAME` VARCHAR,
+`DRUG_FLAG` VARCHAR,
+`ITEM_CODE` VARCHAR,
+`ITEM_NAME` VARCHAR,
+`ITEM_TYPE_CODE` VARCHAR,
+`ITEM_TYPE_NAME` VARCHAR,
+`UNIT_PRICE` VARCHAR,
+`QTY` VARCHAR,
+`UNIT` VARCHAR,
+`SPEC` VARCHAR,
+`DRUG_RECP_TYPECODE` VARCHAR,
+`DRUG_RECP_TYPENAME` VARCHAR,
+`DRUG_USE_FREQCODE` VARCHAR,
+`DRUG_USE_FREQNAME` VARCHAR,
+`DRUG_EACH_DOSE` VARCHAR,
+`DRUG_DOSE_UNIT` VARCHAR,
+`DRUG_USAGE_CODE` VARCHAR,
+`DRUG_USAGE_NAME` VARCHAR,
+`DOSAGE_FORM_CODE` VARCHAR,
+`DOSAGE_FORM_NAME` VARCHAR,
+`DRUG_TOTAL_DOSE` VARCHAR,
+`DRUG_TOTAL_UNIT` VARCHAR,
+`DRUG_START_DTIME` VARCHAR,
+`DRUG_END_DTIME` VARCHAR,
+`DURG_SEND_DTIME` VARCHAR,
+`DRUG_USE_DAYS` VARCHAR,
+`DRUG_PACKAGE_QTY` VARCHAR,
+`DRUG_PACKAGE_UNIT` VARCHAR,
+`DRUG_MIN_UNIT` VARCHAR,
+`DRUG_BASE_DOSE` VARCHAR,
+`DRUG_MAIN_FLAG` VARCHAR,
+`GROUP_NO` VARCHAR,
+`DRUG_HERB_FOOTNOTES` VARCHAR,
+`HERB_DOSE_QTY` VARCHAR,
+`CHARGE_FLAG` VARCHAR,
+`CHARGE_DTIME` VARCHAR,
+`DRUG_SKIN_FLAG` VARCHAR,
+`DRUG_SKIN_RESULT` VARCHAR,
+`INSPECTION_PART_CODE` VARCHAR,
+`INSPECTION_PART_NAME` VARCHAR,
+`EMER_FLAG` VARCHAR,
+`APPLY_NO` VARCHAR,
+`REPORT_NO` VARCHAR,
+`NOTE` VARCHAR,
+`USE_TIMES` VARCHAR,
+`MEDIC_CODE` VARCHAR,
+`MEDIC_CODE_SAFETY` VARCHAR,
+`MEDIC_SELF` VARCHAR,
+`MEDIC_SAFETY` VARCHAR,
+`CREATE_DTIME` VARCHAR,
+`UPDATE_DTIME` VARCHAR,
+`RECORD_DTIME` VARCHAR,
+`RECORD_UPDATE_DTIME` VARCHAR,
+`DRUG_INTERFACE_CODE` VARCHAR,
+`DRUG_INTERFACE_NAME` VARCHAR,
+`OLD_RECIPE_DOC_CODE` VARCHAR,
+`IFOR_SOURCE` VARCHAR,
+`IFOR_IDETIFICATIO_CODE` VARCHAR,
+`IFOR_VALID_DATE` VARCHAR,
+`IFOR_REVIEWER_AME` VARCHAR,
+`IFOR_REVIEWER_ID` VARCHAR,
+`IFOR_REVIEW_TIME` DATE,
+`IFOR_PRESCRIBE_TIME` DATE,
+`IFOR_DISPESE_TIME` DATE,
+`IFOR_STATUS` VARCHAR,
+`IFOR_ccel_time` DATE,
+`IFOR_PRES_FEE` VARCHAR,
+`IFOR_PRESCRIBE_EMP_AME` VARCHAR,
+`IFOR_PRESCRIBE_EMP_ID` VARCHAR,
+`IFOR_DISPESE_EMP_AME` VARCHAR,
+`IFOR_DISPESE_EMP_ID` VARCHAR,
+`IFOR_REMARK` VARCHAR,
+`IFOR_CIRCULATE_FLAG` VARCHAR,
+`LIST_CHARGE_ID` VARCHAR,
+`LIST_IS_MEDI` VARCHAR,
+`LIST_IS_MAI` VARCHAR,
+`LIST_TIBIOS_FLAG` VARCHAR,
+`LIST_SPIRIT_FLAG` VARCHAR,
+`LIST_AESTHETIZTIO` VARCHAR,
+`LIST_BASE_FLAG` VARCHAR,
+`LIST_VACCIE_FLAG` VARCHAR,
+`LIST_IFUSIO_FLAG` VARCHAR,
+`LIST_WITHDRAWAL_FLAG` VARCHAR,
+`LIST_DOSAGE_FORM` VARCHAR,
+`LIST_SPECIFICATIO_UIT` VARCHAR,
+`LIST_SPECIFICATIO_` VARCHAR,
+`LIST_DISPESE_UMBER` VARCHAR,
+`LIST_DISPESE_UIT` VARCHAR,
+`LIST_DOSE_UNITNAME` VARCHAR,
+`LIST_DOSE_UNITID` VARCHAR,
+`LIST_USEUNIT_ID` VARCHAR,
+`LIST_IS_SKINTESTDRUG` VARCHAR,
+`LIST_REVISE_FLAG` VARCHAR,
+`LIST_POISON_FLAG` VARCHAR,
+`LIST_POISONMADE_FLAG` VARCHAR,
+`LIST_MEDI_TIMING` VARCHAR,
+`LIST_DRUGUSE_TOTAL` VARCHAR,
+`LIST_DRUG_SOURCE` VARCHAR,
+`LIST_MEDI_SPEED` VARCHAR,
+`LIST_LIMITED_TIME` VARCHAR,
+`LIST_MEDI_PURPOSE` VARCHAR,
+`LIST_PROJECT_AMOUNT` VARCHAR,
+`LIST_ANTI_TUMOR_DRUG` VARCHAR,
+`AUTO_ID` VARCHAR,
+`isUpload` INT,
+`isValidate` INT,
+`rbusiness_date` TIMESTAMP(3),
+PRIMARY KEY (`AUTO_ID`) NOT ENFORCED
+)
+ WITH (
+'connector' = 'jdbc',
+'url' = 'jdbc:mysql://localhost:3306/ods?useSSL=false&autoReconnect=true',
+'table-name' = 'S_CLI_RECIPE',
+'username' = 'ruisoft',
+'password' = 'Ruisoft@123',
+'driver' = 'com.mysql.jdbc.Driver')
+]]></sql>
     <sql name="queryCF">
         <![CDATA[
 SELECT (SELECT VVALUE
@@ -431,7 +895,7 @@ SELECT (SELECT VVALUE
        DP_CONCAT(E.PRES_ID, '-', C.CATEGORY)                                                           AS RECIPE_NO,                --处方号
        C.RECORD_TIME                                                                                   AS RECIPE_DTIME,             --处方时间
        F.DEPT_ID                                                                                       AS RECIPE_DEPT_CODE,         --开立科室代码
-       (SELECT MC FROM KSMC WHERE `NO` = F.DEPT_ID)                                            AS RECIPE_DEPT_NAME,         --开立科室名称
+       (SELECT MC FROM KSMC WHERE `NO` = CAST(F.DEPT_ID AS STRING))                                            AS RECIPE_DEPT_NAME,         --开立科室名称
        F.EMP_ID                                                                                        AS RECIPE_DOC_CODE,          --开立医生代码
        (SELECT XM FROM ZGXX WHERE ID = F.EMP_ID)                                             AS RECIPE_DOC_NAME,          --开立医生名称
        '1'                                                                                             AS DRUG_FLAG,                --药品标识
@@ -540,7 +1004,7 @@ SELECT (SELECT VVALUE
            ELSE '1' END                                                                                AS LIST_VACCINE_FLAG,--	疫苗标志	S3	AN..2	Y	是否代码表 NBP00.00.006	20211210新增
        DP_DECODE(D.YPGLBZ, 'S', '1', '2')                                                                 AS LIST_INFUSION_FLAG,--	输液用药标志	S3	AN..2	Y	是否代码表 NBP00.00.006	20211210新增
        CASE WHEN B.SL < 0 THEN '1' ELSE '2' END                                                        AS LIST_WITHDRAWAL_FLAG,--	退药标志	S3	AN..2	Y	是否代码表 NBP00.00.006	20211210新增
-       (SELECT MC FROM YPJX WHERE YPJX.`NO` = D.JX)                                                 AS LIST_DOSAGE_FORM,--	药物剂型代码	S3	AN..3	Y	药物剂型代码 NBC01.01.028	20211210新增	--------------------------------------------------值域转换
+       (SELECT MC FROM YPJX WHERE `NO` = D.JX)                                                 AS LIST_DOSAGE_FORM,--	药物剂型代码	S3	AN..3	Y	药物剂型代码 NBC01.01.028	20211210新增	--------------------------------------------------值域转换
        D.DW                                                                                            AS LIST_SPECIFICATION_UNIT,--	药品包装规格单位	S1	AN..30	Y	药品包装规格单位，若是药品，必填。发药包装单位，例如：瓶、盒。对于医院自定义的包装，可以提供自定义的包装单位。	20211210新增
        D.SL2                                                                                           AS LIST_SPECIFICATION_,--	药品包装规格系数	S1	AN..30	Y	若是药品，必填。例如：12支/每盒中的12 ，是指每盒中有12支。这里的12是指当前包装中有12个药品规格字段中的装量单位“支”的数量。对于医院自定义的包装，请提供自定义的包装中包含的最小装量单位的数量，比如包装中包含有6支，其值就为6。	20211210新增
        B.SL                                                                                            AS LIST_DISPENSE_NUMBER,--	发药数量	N	N..8,2	Y		20211210新增
@@ -581,7 +1045,6 @@ WHERE A.`NO` = B.`NO`
   AND B.ZH = E.GROUPNO
         ]]>
     </sql>
-
     <sql name="queryCLI">
         <![CDATA[
 SELECT DP_CONCAT(A.CLINIC_ID,'-',A.EMP_ID) AS AUTO_ID, --  源表物理主键
@@ -631,20 +1094,20 @@ SELECT DP_CONCAT(A.CLINIC_ID,'-',A.EMP_ID) AS AUTO_ID, --  源表物理主键
        '' AS DIAG_DTIME, --   诊断日期
        A.`RESULT` AS PATIENT_GONE, --   病人去向
        '' AS PATIENT_GONE_OTHER, --   病人其他去向详述
-A.END_TIME AS CLINIC_END_TIME,--诊毕时间 
+A.END_TIME AS CLINIC_END_TIME,--诊毕时间
        '' AS OUTHOS_RESULT_CODE, --   治疗结果代码(转归)
        '' AS OUTHOS_RESULT_NAME, --   治疗结果名称(转归)
        A.START_TIME AS CREATE_DTIME, --  业务数据创建时间
        A.START_TIME AS UPDATE_DTIME, --  业务数据更新时间
        '' AS RECORD_DTIME,
        '' AS RECORD_UPDATE_DTIME
-FROM KTDOC_WORK_LOG A, MZGHXX B 
-WHERE A.REGISTER_ID=B.MZH 
+FROM KTDOC_WORK_LOG A, MZGHXX B
+WHERE A.REGISTER_ID=B.MZH
     AND   B.BRBH=A.SICK_ID
 AND A.BRANCH_CODE='00'
         ]]>
     </sql>
-    <sql name="insert">
+    <sql name="insertCF">
         <![CDATA[
 insert into S_CLI_RECIPE (AUTO_ID, PATIENT_ID, OUTP_ID, OUTP_NO, RECIPE_NO, RECIPE_DTIME,
                           RECIPE_DEPT_CODE, RECIPE_DEPT_NAME, RECIPE_DOC_CODE, RECIPE_DOC_NAME, DRUG_FLAG, ITEM_CODE,
@@ -747,6 +1210,11 @@ CAST(LIST_MEDI_PURPOSE AS STRING),
 CAST(LIST_PROJECT_AMOUNT AS STRING),
 CAST(LIST_ANTI_TUMOR_DRUG  AS STRING)
 from DTable
+        ]]>
+    </sql>
+    <sql name="insertCLI">
+        <![CDATA[
+
         ]]>
     </sql>
 </sqls>

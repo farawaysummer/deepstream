@@ -19,20 +19,21 @@ import org.apache.flink.table.functions.UserDefinedFunction
 import org.apache.flink.types.Row
 import org.reflections.Reflections
 import java.io.File
+import java.time.Duration
 import java.util.concurrent.TimeUnit
 
 data class JobConfig(
-    val jobMode: String = "STREAM",
-    val miniBatchEnabled: Boolean = false,
-    val enableWebUI: Boolean = false,
+    var jobMode: String = "STREAM",
+    var miniBatchEnabled: Boolean = false,
+    var enableWebUI: Boolean = false,
 
     // kafka config, required
-    val kafkaServer: String = "",
+    var kafkaServer: String = "",
 
     // cache database config
-    val cacheDBUrl: String = "",
-    val cacheDBUser: String = "",
-    val cacheDBPassword: String = "",
+    var cacheDBUrl: String = "",
+    var cacheDBUser: String = "",
+    var cacheDBPassword: String = "",
 )
 
 class DeepStreamJob(
@@ -78,6 +79,7 @@ class DeepStreamJob(
             )
         }
 
+        @JvmStatic
         fun initProcessContext(jobConfig: JobConfig): ProcessContext {
             val fsSettings = if (jobConfig.jobMode == "STREAM") {
                 EnvironmentSettings.newInstance()
@@ -123,11 +125,14 @@ class DeepStreamJob(
             env.checkpointConfig.checkpointStorage =
                 FileSystemCheckpointStorage("file://${checkpointStorage.absolutePath}")
 
-            env.enableCheckpointing(5000L)  //头和头
+            env.enableCheckpointing(120000L)  //头和头
+            env.checkpointConfig.disableCheckpointing()
             env.checkpointConfig.checkpointingMode = CheckpointingMode.EXACTLY_ONCE
-            env.checkpointConfig.checkpointTimeout = 5000L
+            env.checkpointConfig.checkpointTimeout = 120000L
             env.checkpointConfig.maxConcurrentCheckpoints = 2
-            env.checkpointConfig.minPauseBetweenCheckpoints = 5000L
+            env.checkpointConfig.minPauseBetweenCheckpoints = 30000L
+            env.checkpointConfig.alignedCheckpointTimeout = Duration.ofMinutes(5)
+
 
             val tableEnv = StreamTableEnvironment.create(env, fsSettings)
             tableEnv.config.sqlDialect = SqlDialect.DEFAULT

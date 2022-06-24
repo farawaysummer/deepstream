@@ -34,6 +34,7 @@ public class AvroKoalaSpeedToRowDataConverters {
                 row.setField(i, fieldConverters[i].convert(value));
             }
 
+            System.out.println("Read:" + row);
             return row;
         };
     }
@@ -44,6 +45,7 @@ public class AvroKoalaSpeedToRowDataConverters {
             if (avroObject == null) {
                 return null;
             }
+
             return converter.convert(avroObject);
         };
     }
@@ -51,30 +53,40 @@ public class AvroKoalaSpeedToRowDataConverters {
     private static AvroToRowDataConverters.AvroToRowDataConverter createConverter(LogicalType type) {
         switch (type.getTypeRoot()) {
             case NULL:
-                //return avroObject -> null;
+                return avroObject -> null;
+            case BOOLEAN: // boolean
+                return obj -> Boolean.parseBoolean(String.valueOf(obj));
             case TINYINT:
                 //return avroObject -> ((Integer)Integer.parseInt(String.valueOf(avroObject))).byteValue();
             case SMALLINT:
                 //return avroObject -> ((Integer)Integer.parseInt(String.valueOf(avroObject))).shortValue();
-            case BOOLEAN: // boolean
             case INTEGER: // int
                 return obj -> Integer.parseInt(String.valueOf(obj));
             case INTERVAL_YEAR_MONTH: // long
             case BIGINT: // long
+
+                return obj -> {
+                    return Long.parseLong(String.valueOf(obj));
+                };
             case INTERVAL_DAY_TIME: // long
             case FLOAT: // float
+                return obj -> Float.parseFloat(String.valueOf(obj));
             case DOUBLE: // double
                 //return avroObject -> avroObject;
+                return obj -> Double.parseDouble(String.valueOf(obj));
             case DATE:
             case TIME_WITHOUT_TIME_ZONE:
             case TIMESTAMP_WITHOUT_TIME_ZONE:
             case CHAR:
             case VARCHAR:
-                return obj -> StringData.fromString(String.valueOf(obj));
-            case BINARY:
-            case VARBINARY:
+
+                return obj -> {
+                    return StringData.fromString(String.valueOf(obj));
+                };
             case DECIMAL:
                 return obj -> String.valueOf(obj);
+            case BINARY:
+            case VARBINARY:
             case ARRAY:
             case ROW:
             case MAP:

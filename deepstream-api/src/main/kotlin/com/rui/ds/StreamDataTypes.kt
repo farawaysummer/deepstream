@@ -144,14 +144,17 @@ data class StreamDataTypes internal constructor(
             SQLTypes.NUMERIC to Types.BIG_DEC
         )
 
+        @JvmStatic
         fun of(fields: Array<String>, typeInfos: Array<TypeInformation<*>>): StreamDataTypes {
             return StreamDataTypes(fields, typeInfos)
         }
 
+        @JvmStatic
         fun of(fields: Array<String>, dataTypes: Array<DataType>): StreamDataTypes {
             return of (fields, dataTypes.map { TypeInfoDataTypeConverter.fromDataTypeToTypeInfo(it) }.toTypedArray())
         }
 
+        @JvmStatic
         fun of(fields: Array<String>, dataTypes: Array<Int>): StreamDataTypes {
             return of (fields, dataTypes.map { typeMap[it]!! }.toTypedArray())
         }

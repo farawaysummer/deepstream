@@ -1,4 +1,4 @@
-package com.rui.ds.facade.kettle.debug
+package com.rui.dp.prj.job
 
 import com.rui.ds.ProcessContext
 import com.rui.ds.StreamDataTypes
@@ -11,49 +11,52 @@ import com.rui.ds.job.JobConfig
 import org.apache.flink.table.api.Table
 import org.apache.flink.table.api.TableResult
 import org.apache.flink.table.catalog.ResolvedSchema
-import org.dom4j.DocumentHelper
-import org.dom4j.io.OutputFormat
 import org.dom4j.io.SAXReader
-import org.dom4j.io.XMLWriter
-import java.io.ByteArrayOutputStream
 
-open class DeepStreamDebugger {
-    protected val SQL: MutableMap<String, String> = mutableMapOf()
-    private val tableSqlDoc = DocumentHelper.createDocument()
-    private val rootElement = tableSqlDoc.addElement("sqls")
+object DeepStreamHelper {
+    val SQL: MutableMap<String, String> = mutableMapOf()
 
+    @JvmStatic
     fun initEnv(): ProcessContext {
-        val jobConfig = JobConfig()
-        val processContext = DeepStreamJob.initProcessContext(jobConfig)
-
-        // 初始化运行环境, 注册数据源
         loadDatasource()
 
         loadSql()
 
+        val jobConfig = JobConfig(miniBatchEnabled = false)
+
+        val processContext = DeepStreamJob.initProcessContext(jobConfig)
+
+        // 初始化运行环境, 注册数据源
+
+
         return processContext
     }
 
-    private fun loadDatasource() {
-        val inputStream = javaClass.getResourceAsStream("/debug/data_source.xml")!!
+    @JvmStatic
+    fun loadDatasource() {
+        val inputStream = javaClass.getResourceAsStream("/data_source.xml")!!
 
         // read from xml
         val reader = SAXReader()
         val document = reader.read(inputStream)
         val rootElement = document.rootElement
+
         val connections = rootElement.elements("connection")
 
         val configs = connections.map {
+            println("parse $it")
             KettleJobParser.parseConnection(it)
         }
 
         configs.forEach {
+            println("registey $it")
             DatabaseSources.registryDataSource(it)
         }
     }
 
-    private fun loadSql() {
-        val inputStream = javaClass.getResourceAsStream("/debug/debug_sqls.xml")!!
+    @JvmStatic
+    fun loadSql() {
+        val inputStream = javaClass.getResourceAsStream("/sqls.xml")!!
         val reader = SAXReader()
         val document = reader.read(inputStream)
         val rootElement = document.rootElement
@@ -65,40 +68,34 @@ open class DeepStreamDebugger {
         }
     }
 
+    @JvmStatic
     fun createTable(process: ProcessContext, dsName: String, tableContext: TableContext): TableResult {
         val tableEnv = process.tableEnv
 
-        val sql = TableGenerator.getGenerator(dsName, tableContext.tableType).createTableSQL(
-            dbName = tableContext.catalog,
-            tableName = tableContext.tableName
-        )
-
-        val sqlElement = rootElement.addElement("sql")
-        sqlElement.addAttribute("name", tableContext.tableName)
-        sqlElement.addCDATA("\n$sql\n")
-
         return tableEnv.executeSql(
-            sql
+            TableGenerator.getGenerator(dsName, tableContext.tableType).createTableSQL(
+                dbName = tableContext.catalog,
+                tableName = tableContext.tableName
+            )
         )
     }
 
-    fun outputSqlDocument(): String {
-        val format: OutputFormat = OutputFormat.createPrettyPrint()
-        val outputStream = ByteArrayOutputStream()
-        val writer = XMLWriter(outputStream, format)
-        writer.write(tableSqlDoc)
-
-        return String(outputStream.toByteArray())
+    @JvmStatic
+    fun getSql(name: String): String? {
+        return SQL[name]
     }
 
+    @JvmStatic
     fun executeQuery(context: ProcessContext, sql: String): Table {
         return context.tableEnv.sqlQuery(sql)
     }
 
+    @JvmStatic
     fun executeSQL(context: ProcessContext, sql: String): TableResult {
         return context.tableEnv.executeSql(sql)
     }
 
+    @JvmStatic
     fun dataByTable(schema: ResolvedSchema): StreamDataTypes {
         val columns = schema.columns
         val types = StreamDataTypes.of(

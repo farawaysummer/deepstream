@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #JAVA_HOME="/home/reseig/DQC/jdk"
-JAVA_OPTS="-server -Xms2048m -Xmx4096m"
+JAVA_OPTS="-server -Xms4096m -Xmx8192m"
 APP_HOME="$(dirname "$PWD")"
 APP_LOG=${APP_HOME}/logs
 APP_TITLE="DeepStream"

@@ -9,7 +9,7 @@ import java.lang.Integer.min
 
 typealias SQLTypes = java.sql.Types
 
-data class StreamDataTypes internal constructor(
+data class StreamDataTypes(
     val fields: Array<String>,
     val types: Array<TypeInformation<*>>
 ) {

@@ -67,12 +67,10 @@ class NBDebugCase : DeepStreamDebugger() {
         Files.asCharSink(File("/Users/starlesscity/workspace/product/opensource/deepstream/sqls_all.xml"), Charset.defaultCharset()).write(outputSqlDocument())
 
         val listTable = context.tableEnv.from("S_CLI_RECIPE")
-        val targetType = dataByTable(
-            listTable.resolvedSchema
-        )
+
         val sourceType = dataByTable(table.resolvedSchema)
-        println("===================$sourceType)}")
-        println("===================$targetType)}")
+        println("--${sourceType.fields.map { "\"$it\"" }.toList()}")
+        println("--${sourceType.types.map { "\"$it\"" }.toList()}")
 
         executeSQL(
             context, SQL["insert"]!!

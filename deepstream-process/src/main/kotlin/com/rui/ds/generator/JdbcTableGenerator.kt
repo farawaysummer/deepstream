@@ -10,7 +10,8 @@ open class JdbcTableGenerator(
     override val typeMap: Map<String, String> = mapOf(
         "DATETIME" to "TIMESTAMP(3)",
         "NUMBER" to "INTEGER",
-        "VARCHAR2" to "STRING"
+        "VARCHAR2" to "STRING",
+        "TEXT" to "STRING"
     )
 
     override val excludeTypes: Set<String> = setOf("BLOB")

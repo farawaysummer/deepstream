@@ -170,55 +170,55 @@ PRIMARY KEY (`YPBH`) NOT ENFORCED
 'password' = 'oracle',
 'driver' = 'oracle.jdbc.driver.OracleDriver')
 ]]></sql>
-    <sql name="KTDOC_WORK_LOG"><![CDATA[
-CREATE TABLE KTDOC_WORK_LOG (
-`CLINIC_ID` INTEGER,
-`REGISTER_ID` INTEGER,
-`EMP_ID` INTEGER,
-`DEPT_ID` INTEGER,
-`START_TIME` DATE,
-`END_TIME` DATE,
-`SICK_ID` INTEGER,
-`TYPE` STRING,
-`DIAGNOSE` STRING,
-`ICD10` STRING,
-`OPERTATION` STRING,
-`SICKEN_TIME` DATE,
-`RESULT` CHAR,
-`GREEN_CHANNEL` CHAR,
-`SPILE` CHAR,
-`RISK` CHAR,
-`ZYMOSIS` CHAR,
-`CHRONIC` CHAR,
-`FLU` CHAR,
-`TRANS` CHAR,
-`REMARKS` STRING,
-`BRANCH_CODE` STRING,
-`STATE` CHAR,
-`PARENTS_NAME` STRING,
-`COMPANY` STRING,
-`HOUSE_TYPE` INTEGER,
-`SICK_DURATION` INTEGER,
-`DURATION_UNIT` STRING,
-`ADDRESS` STRING,
-`TELE` STRING,
-`CURE_LEVEL` STRING,
-`SYSPTOM_CODE` STRING,
-`SURGERY_TIME` DATE,
-`ZZBZ` STRING,
-`ZZNR` STRING,
-`DZBL` STRING,
-`ZZSJ` DATE,
-PRIMARY KEY (`CLINIC_ID`) NOT ENFORCED
-)
- WITH (
-'connector' = 'jdbc',
-'url' = 'jdbc:oracle:thin:@10.48.100.105:1521:orcl',
-'table-name' = 'KTHIS.KTDOC_WORK_LOG',
-'username' = 'cdc',
-'password' = 'oracle',
-'driver' = 'oracle.jdbc.driver.OracleDriver')
-]]></sql>
+<!--    <sql name="KTDOC_WORK_LOG"><![CDATA[-->
+<!--CREATE TABLE KTDOC_WORK_LOG (-->
+<!--`CLINIC_ID` INTEGER,-->
+<!--`REGISTER_ID` INTEGER,-->
+<!--`EMP_ID` INTEGER,-->
+<!--`DEPT_ID` INTEGER,-->
+<!--`START_TIME` DATE,-->
+<!--`END_TIME` DATE,-->
+<!--`SICK_ID` INTEGER,-->
+<!--`TYPE` STRING,-->
+<!--`DIAGNOSE` STRING,-->
+<!--`ICD10` STRING,-->
+<!--`OPERTATION` STRING,-->
+<!--`SICKEN_TIME` DATE,-->
+<!--`RESULT` CHAR,-->
+<!--`GREEN_CHANNEL` CHAR,-->
+<!--`SPILE` CHAR,-->
+<!--`RISK` CHAR,-->
+<!--`ZYMOSIS` CHAR,-->
+<!--`CHRONIC` CHAR,-->
+<!--`FLU` CHAR,-->
+<!--`TRANS` CHAR,-->
+<!--`REMARKS` STRING,-->
+<!--`BRANCH_CODE` STRING,-->
+<!--`STATE` CHAR,-->
+<!--`PARENTS_NAME` STRING,-->
+<!--`COMPANY` STRING,-->
+<!--`HOUSE_TYPE` INTEGER,-->
+<!--`SICK_DURATION` INTEGER,-->
+<!--`DURATION_UNIT` STRING,-->
+<!--`ADDRESS` STRING,-->
+<!--`TELE` STRING,-->
+<!--`CURE_LEVEL` STRING,-->
+<!--`SYSPTOM_CODE` STRING,-->
+<!--`SURGERY_TIME` DATE,-->
+<!--`ZZBZ` STRING,-->
+<!--`ZZNR` STRING,-->
+<!--`DZBL` STRING,-->
+<!--`ZZSJ` DATE,-->
+<!--PRIMARY KEY (`CLINIC_ID`) NOT ENFORCED-->
+<!--)-->
+<!-- WITH (-->
+<!--'connector' = 'jdbc',-->
+<!--'url' = 'jdbc:oracle:thin:@10.48.100.105:1521:orcl',-->
+<!--'table-name' = 'KTHIS.KTDOC_WORK_LOG',-->
+<!--'username' = 'cdc',-->
+<!--'password' = 'oracle',-->
+<!--'driver' = 'oracle.jdbc.driver.OracleDriver')-->
+<!--]]></sql>-->
     <sql name="YPMCQT"><![CDATA[
 CREATE TABLE YPMCQT (
 `YPBH` INTEGER,
@@ -1303,7 +1303,7 @@ A.FYSJ	AS	INFOR_REVIEW_TIME	,--	处方审核时间	D	DT15			20211210新增
 A.PYSJ	AS	INFOR_PRESCRIBE_TIME	,--	配药时间	D	DT15			20211210新增
 A.FYSJ	AS	INFOR_DISPENSE_TIME	,--	发药时间	D	DT15	Y		20211210新增
 '0' 	AS	INFOR_STATUS	,--	处方状态	S3	AN..2	Y	处方状态代码 NBC01.01.025	20211210新增，20220419字典扩增
-NULL AS	INFOR_cancel_time	,--	作废时间	D	DT15			20211215新增
+NULL AS	INFOR_CANCEL_TIME	,--	作废时间	D	DT15			20211215新增
 (SELECT SUM(JE) FROM HMISW2003.MZCFMXXX WHERE NO = A.NO )	AS	INFOR_PRES_FEE	,--	处方金额	N	N..20	Y	处方计价金额，单位为分	20220419新增
 (SELECT XM FROM HMISW2003.ZGXX WHERE ID = A.PYRY)	AS	INFOR_PRESCRIBE_EMP_NAME	,--	处方调配药剂师姓名	S1	AN..50		对门急诊处方进行调配的药剂师签署的在公安户籍管理部门正式登记注册的姓氏和名称	20220419新增
 (SELECT XM FROM HMISW2003.ZGXX WHERE ID = A.PYRY)	AS	INFOR_PRESCRIBE_EMP_ID	,--	处方调配药剂师编号	S1	AN..50		中心人员库 NBD03.00.001	20220419新增--------------------------------------------------上报市平台处理
@@ -1378,6 +1378,233 @@ select KFDM,
        ZXCFH,
        YXH
 from MZCFXX
+        ]]>
+    </sql>
+
+    <sql name="KTDOC_WORK_LOG"><![CDATA[
+CREATE TABLE KTDOC_WORK_LOG (
+`CLINIC_ID` INTEGER,
+`REGISTER_ID` INTEGER,
+`SICK_ID` INTEGER,
+PRIMARY KEY (`CLINIC_ID`) NOT ENFORCED
+)
+ WITH (
+'connector' = 'kafka',
+'topic' = '7',
+'properties.bootstrap.servers' = 'localhost:9092',
+'properties.group.id' = 'k_default',
+'scan.startup.mode' = 'earliest-offset',
+'format' = 'ruisoft-koalaspeed')
+]]></sql>
+
+    <sql name="selectCLI">
+        <![CDATA[
+SELECT A.CLINIC_ID||'-'||A.EMP_ID AS AUTO_ID, --  源表物理主键
+       A.CLINIC_ID||'-'||A.EMP_ID AS LP_CLI_SEE, --  主键-门诊就诊业务
+       A.REGISTER_ID AS LK_CLI_SEE, --  关联键-门诊就诊业务
+       A.REGISTER_ID AS LK_CLI_REG, --  关联键-门诊挂号业务
+       B.BRBH AS LK_MPI_PATIENT, --  关联键-患者业务
+       B.BRBH AS PATIENT_ID, --  患者标识
+       A.CLINIC_ID AS OUTP_ID, --  门诊号
+       A.REGISTER_ID AS OUTP_NO, --  门诊就诊流水号
+       B.BRXM AS NAME, --  患者姓名
+       A.DEPT_ID AS CLI_DEPT_CODE, --  就诊科室代码
+      (SELECT MC FROM HMISW2003.KSMC WHERE NO = A.DEPT_ID) AS CLI_DEPT_NAME, --  就诊科室名称
+       A.START_TIME AS CLI_DTIME, --  就诊时间
+       A.EMP_ID AS CLI_DOCT_CODE, --  医生代码
+       (SELECT XM FROM HMISW2003.ZGXX WHERE ID = A.EMP_ID)  AS CLI_DOCT_NAME, --  医生名称
+       (SELECT C.ICD FROM KTHIS.KTDOC_DIAGNOSE C WHERE C.CLINIC_ID=A.CLINIC_ID AND C.NO = 1) AS DIAG_CODE, --  诊断编码
+       (SELECT C.DISEASE_NAME FROM KTHIS.KTDOC_DIAGNOSE C WHERE C.CLINIC_ID=A.CLINIC_ID AND C.NO = 1) AS DIAG_NAME, --  诊断名称
+       '' AS CHIEF_COMPLIANT, --  主诉
+       A.SYSPTOM_CODE AS SYMPTOM_CODE, --  症状代码
+       REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(A.SYSPTOM_CODE,'00','无下列症状'),'01','发热（低热）'),'02','发热（中热）'),'03','发热（高热）'),'04','发热（超高热）'),'05','腹泻'),'06','呕吐'),'07','皮疹'),'08','红眼'),'09','腮腺肿大'),'10','流感样症状'),'11','神经系统') AS SYMPTOM_NAME, --  症状名称
+       '' AS MEDICAL_HISTORY, --  病史
+       '' AS ALLERGIC_HISTORY, --  过敏史
+       '' AS CHECK_UP, --  查体
+       '' AS TREATMENT_PLAN, --  处置意见
+       '' AS SBP, --  收缩压(MMHG)
+       '' AS DBP, --  舒张压(MMHG)
+(SELECT SUBSTR(REMARKS,INSTR(REMARKS,'身高')+3,INSTR(REMARKS,'cm')-INSTR(REMARKS,'身高')-1) FROM KTHIS.KTDOC_CASE_HISTORY WHERE field = 'JCSJ' AND CLINIC_ID = A.CLINIC_ID) AS HEIGHT, --  身高(CM)
+(SELECT SUBSTR(REMARKS,INSTR(REMARKS,'体重')+3,INSTR(REMARKS,'kg')-INSTR(REMARKS,'体重')-1) FROM KTHIS.KTDOC_CASE_HISTORY WHERE field = 'JCSJ' AND CLINIC_ID = A.CLINIC_ID) AS WEIGHT, --  体重(KG)
+       '' AS CONSULT_QUESTION, --  咨询问题
+       '' AS HEALTH_REQUEST, --  卫生服务要求
+       '' AS HEALTH_EVALUATION, --  健康问题评估
+       '' AS OTHER_MEDICAL_TREATMENT, --  其他医学处置
+       '' AS DIAG_CODING_TYPE, --  编码类型
+       '' AS DIAG_NOTE, --  门诊诊断说明
+       '' AS REFERRAL_FLAG, --  转诊标志
+       '' AS REFERRAL_NOTE, --  转诊说明
+       '' AS OTHER_DIAG_CODE, --   次诊断编码
+       '' AS OTHER_DIAG_NAME, --  次诊断名称
+       '' AS INFECTIOUS_FLAG, --  传染病标志
+       DECODE(A.CHRONIC, 'N', '2', '1') AS CHRONIC_FLAG, --   慢病标志
+ (SELECT max(SUBSTR(REMARKS,INSTR(REMARKS,'体温')+3,INSTR(REMARKS,'℃')-INSTR(REMARKS,'体温')-3)) FROM KTHIS.KTDOC_CASE_HISTORY WHERE CLINIC_ID = A.CLINIC_ID) AS TEMP, --   体温
+       '' AS PULSE_CONDITION, --  脉象
+       '' AS HEART_RATE, --   心率
+       '' AS PAST_HISTORY, --   既往史
+       A.SICKEN_TIME AS GETILL_DTIME, --   发病日期
+       '' AS DIAG_DTIME, --   诊断日期
+       A.RESULT AS PATIENT_GONE, --   病人去向
+       '' AS PATIENT_GONE_OTHER, --   病人其他去向详述
+A.END_TIME AS CLINIC_END_TIME,--诊毕时间
+       '' AS OUTHOS_RESULT_CODE, --   治疗结果代码(转归)
+       '' AS OUTHOS_RESULT_NAME, --   治疗结果名称(转归)
+       A.START_TIME AS CREATE_DTIME, --  业务数据创建时间
+       A.START_TIME AS UPDATE_DTIME, --  业务数据更新时间
+       '' AS RECORD_DTIME,
+       '' AS RECORD_UPDATE_DTIME
+FROM KTHIS.KTDOC_WORK_LOG A, HMISW2003.MZGHXX B
+WHERE A.REGISTER_ID=B.MZH
+    AND B.BRBH=A.SICK_ID
+AND A.BRANCH_CODE='00'
+AND A.CLINIC_ID = ?
+
+        ]]>
+    </sql>
+
+    <sql name="selectDIP">
+        <![CDATA[
+SELECT (SELECT VVALUE FROM DIP.SYSVAR WHERE VNAME = 'ORG_CODE' AND LENGTH(VVALUE) = 8 AND ROWNUM = 1) AS ORG_CODE,   --2022年6月21日10:04:32
+       E.PRES_ID || '-' || E.NO || '-' || E.GROUPNO||'-1' AS AUTO_ID, --序列号
+       E.PRES_ID || '-' || E.NO || '-' || E.GROUPNO||'-1'  AS LP_CLI_RECIPE, --主键-门诊处方业务
+       E.PRES_ID AS LK_CLI_RECIPE, --关联键-门诊处方业务
+       F.REGISTER_ID AS LK_CLI_SEE, --关联键-门诊就诊业务
+       F.SICK_ID AS LK_MPI_PATIENT, --关联键-患者业务
+       F.SICK_ID AS PATIENT_ID, --患者号
+       F.REGISTER_ID AS OUTP_ID, --门诊号
+       F.REGISTER_ID AS OUTP_NO, --门诊就诊流水号
+       E.PRES_ID||'-'||C.CATEGORY AS RECIPE_NO, --处方号
+       C.RECORD_TIME AS RECIPE_DTIME, --处方时间
+       F.DEPT_ID AS RECIPE_DEPT_CODE, --开立科室代码
+       (SELECT MC FROM DIP.KSMC WHERE NO = F.DEPT_ID) AS RECIPE_DEPT_NAME, --开立科室名称
+       F.EMP_ID AS RECIPE_DOC_CODE, --开立医生代码
+       (SELECT XM FROM DIP.ZGXX WHERE ID = F.EMP_ID) AS RECIPE_DOC_NAME, --开立医生名称
+       '1' AS DRUG_FLAG, --药品标识
+       E.DRUG_ID AS ITEM_CODE, --项目代码
+       D.HZMC AS ITEM_NAME, --项目名称
+       NVL(C.TYPE,'Q') AS ITEM_TYPE_CODE, --项目类别代码
+       DECODE(C.TYPE,'Y','西药','Z','成药','C','中药','M','免煎','G','膏方','其他') AS ITEM_TYPE_NAME, --项目类别名称
+       D.LSJ AS UNIT_PRICE, --单价
+       E.QUANTITY AS QTY, --数量
+       D.DW2 AS UNIT, --计价单位
+       D.GG AS SPEC, --规格
+       C.CATEGORY AS DRUG_RECP_TYPECODE, --处方类型代码
+       (SELECT TITLE FROM DIP.CFFL WHERE XH = C.CATEGORY) AS DRUG_RECP_TYPENAME, --处方类型名称
+       E.USAGE AS DRUG_USE_FREQCODE, --使用频次代码
+       (SELECT MC FROM DIP.YZYFB WHERE DM = B.YF) AS DRUG_USE_FREQNAME, --使用频次名称
+       E.DOSE AS DRUG_EACH_DOSE, --药品每次使用剂量
+       D.JLDW AS DRUG_DOSE_UNIT, --剂量单位
+       E.DRUG_WAY AS DRUG_USAGE_CODE, --药品使用用法代码
+       (SELECT MC FROM DIP.GYFSB WHERE DM = E.DRUG_WAY) AS DRUG_USAGE_NAME, --药品使用用法名称
+       D.JX AS DOSAGE_FORM_CODE, --药品剂型代码
+       (SELECT MC FROM DIP.YPJX WHERE NO = D.JX) AS DOSAGE_FORM_NAME, --药品剂型名称
+       E.QUANTITY AS DRUG_TOTAL_DOSE, --药品使用总剂量
+       D.DW2 AS DRUG_TOTAL_UNIT, --药品使用总剂量单位
+       '' AS DRUG_START_DTIME, --用药开始时间
+       '' AS DRUG_END_DTIME, --用药停止时间
+       A.FYSJ AS DURG_SEND_DTIME, --发药时间
+       ROUND((SELECT TS/NUM FROM DIP.YZYFB WHERE DM = B.YF)*E.TIMES,2) AS DRUG_USE_DAYS, --药品使用天数
+       D.SL2 AS DRUG_PACKAGE_QTY, --药品包装数量
+       D.DW AS DRUG_PACKAGE_UNIT, --药品包装单位
+       ''  AS DRUG_MIN_UNIT, --最小单位
+       '' AS DRUG_BASE_DOSE, --药品基本剂量
+       DECODE(E.IS_MAIN,'Y','1','2') AS DRUG_MAIN_FLAG, --主药标志
+       E.PRES_ID || '-' || E.NO || '-' || E.GROUPNO AS GROUP_NO, --组合号
+       '' AS DRUG_HERB_FOOTNOTES, --草药脚注
+       E.TIMES AS HERB_DOSE_QTY, --药品付数
+       CASE WHEN C.CHARGE_ID IS NOT NULL THEN '1' ELSE '2' END AS CHARGE_FLAG, --是否收费
+       G.FSSJ AS CHARGE_DTIME, --收费时间
+       DECODE(D.PSBJ, 'Y', '1', 'N', '2', '2') AS DRUG_SKIN_FLAG, --皮试判别标识
+       DECODE(E.SKIN_TEST,
+              '+',
+              '阳',
+              '-',
+              '阴',
+              'W',
+              '未',
+              'M',
+              '免',
+              'T',
+              '脱敏',
+              '') AS DRUG_SKIN_RESULT, --皮试结果
+       '' AS INSPECTION_PART_CODE, --检查部位代码
+       '' AS INSPECTION_PART_NAME, --检查部位名称
+       '' AS EMER_FLAG, --加急标志
+       '' AS APPLY_NO, --申请单号
+       '' AS REPORT_NO, --报告单号
+       C.DEMAND AS NOTE, --备注
+       '' AS USE_TIMES, -- 使用频率
+       D.CDMC AS PRODUCTION_PLACE, --生产产地
+       '' AS PRODUCTION_DTIME, --生产日期
+       '' AS VALID_DTIME, --有效日期
+	   	 B.DM AS MEDIC_CODE, --	中心药品代码--------------------------------------------------上报市平台处理
+     NVL(D.YBYPBM,'999')	 AS MEDIC_CODE_SAFETY, --	医保代码
+    E.SELF_MARK AS MEDIC_SELF, --	自备  默认N
+    E.MED_INS_MARK AS MEDIC_SAFETY, --	医保自负  默认N
+       C.RECORD_TIME AS CREATE_DTIME, --业务数据创建时间
+       C.RECORD_TIME AS UPDATE_DTIME, --业务数据更新时间
+       '' AS RECORD_DTIME, --记录时间
+       '' AS RECORD_UPDATE_DTIME, --记录更新时间
+
+
+
+/****以下为2022年6月21日处方HIS贯通增加****/
+
+'3'		AS	INFOR_SOURCE	,--	处方来源	S3	AN..2	Y	处方来源代码 NBC01.01.027	20211210新增
+DECODE(C.CATEGORY ,'2','1','3','2','7','3','8','3','9','5','10','5','9')	AS	INFOR_IDENTIFICATION_CODE	,--	处方辨识代码	S3	AN..50	Y	处方辨识代码 NBC01.01.026	20211210新增
+NVL(ROUND((SELECT TS/NUM FROM DIP.YZYFB WHERE DM = B.YF)*E.TIMES,2),'1')	AS	INFOR_VALID_DATE	,--	处方有效天数	N	N..4	Y	指处方超过多少天就不能核销（用于院内审核发药，外配药店发药）。	20211210新增
+(SELECT XM FROM DIP.ZGXX WHERE ID = A.FYRY)	AS	INFOR_REVIEWER_NAME	,--	处方审核药剂师姓名	S1	AN..50	Y		20211210新增
+(SELECT XM FROM DIP.ZGXX WHERE ID = A.FYRY)	AS	INFOR_REVIEWER_ID	,--	处方审核药剂师id	S3	N..10		中心人员库 NBD03.00.001	20211210新增 --------------------------------------------------上报市平台处理
+A.FYSJ	AS	INFOR_REVIEW_TIME	,--	处方审核时间	D	DT15			20211210新增
+A.PYSJ	AS	INFOR_PRESCRIBE_TIME	,--	配药时间	D	DT15			20211210新增
+A.FYSJ	AS	INFOR_DISPENSE_TIME	,--	发药时间	D	DT15	Y		20211210新增
+'0' 	AS	INFOR_STATUS	,--	处方状态	S3	AN..2	Y	处方状态代码 NBC01.01.025	20211210新增，20220419字典扩增
+NULL AS	INFOR_cancel_time	,--	作废时间	D	DT15			20211215新增
+(SELECT SUM(JE) FROM DIP.MZCFMXXX WHERE NO = A.NO )	AS	INFOR_PRES_FEE	,--	处方金额	N	N..20	Y	处方计价金额，单位为分	20220419新增
+(SELECT XM FROM DIP.ZGXX WHERE ID = A.PYRY)	AS	INFOR_PRESCRIBE_EMP_NAME	,--	处方调配药剂师姓名	S1	AN..50		对门急诊处方进行调配的药剂师签署的在公安户籍管理部门正式登记注册的姓氏和名称	20220419新增
+(SELECT XM FROM DIP.ZGXX WHERE ID = A.PYRY)	AS	INFOR_PRESCRIBE_EMP_ID	,--	处方调配药剂师编号	S1	AN..50		中心人员库 NBD03.00.001	20220419新增--------------------------------------------------上报市平台处理
+(SELECT XM FROM DIP.ZGXX WHERE ID = A.FYRY)	AS	INFOR_DISPENSE_EMP_NAME	,--	处方发药药剂师姓名	S1	AN..50		按照审核、调配后的门急诊处方，给患者发药的药剂师签署的在公安户籍管理部门正式登记注册的姓氏和名称	20220419新增
+(SELECT XM FROM DIP.ZGXX WHERE ID = A.FYRY)	AS	INFOR_DISPENSE_EMP_ID	,--	处方发药药剂师编号	S1	AN..50		中心人员库 NBD03.00.001	20220419新增--------------------------------------------------上报市平台处理
+C.DEMAND	AS	INFOR_REMARK	,--	处方备注信息	S1	AN..2000		对处方信息的重要提示和补充说明	20220419新增
+
+NULL	AS	INFOR_CIRCULATE_FLAG	,--	允许流转标志	S2	N1		1. 允许流转 2.不允许流转	20220419新增
+A.SFNO	AS	LIST_CHARGE_ID	,--	收费号	N	AN..20	Y	与门诊收费表ORG_CHARGE_ID保持一致
+'1'	AS	LIST_IS_MEDI	,--	是否药品	S3	AN..2	Y	是否代码表 NBP00.00.006	20211210新增
+DECODE(E.IS_MAIN,'Y','1','2')	AS	LIST_IS_MAIN	,--	是否主药	S3	AN..2	Y	是否代码表 NBP00.00.006，输液处方，溶药为主药	20211210新增
+CASE WHEN D.KSSJB>0 THEN '1' ELSE '2' END	AS	LIST_ANTIBIOS_FLAG	,--	抗菌药物标志	S3	AN..2	Y	抗生素级别代码表 NBD06.00.011	20211210新增
+CASE WHEN D.YPGLBZ = 'J' AND D.TSYPDJ = '1' THEN '1' WHEN D.YPGLBZ = 'J' AND D.TSYPDJ = '2' THEN '2' WHEN D.YPGLBZ = 'J' AND D.TSYPDJ NOT IN('1','2') THEN '9' ELSE '8' END	AS	LIST_SPIRIT_FLAG	,--	精神药物标志	S3	AN..2		精神药物代码表 NBC01.01.032	20211213新增
+DECODE(D.YPGLBZ,'M','1','2')	AS	LIST_ANAESTHETIZTION	,--	麻醉药物标志	S3	AN..2	Y	是否代码表 NBP00.00.006	20211210新增
+(SELECT DECODE(JBYW,'Y','1','2') FROM DIP.YPMCQT WHERE YPBH = B.DM) AS	LIST_BASE_FLAG	,--	基本药物标志	S3	AN..2	Y	基药标志代码 NBC01.01.033	20211210新增
+CASE WHEN (SELECT YMZLDM FROM DIP.YPMCQT WHERE YPBH = B.DM ) IS NULL THEN '2' ELSE '1' END	AS	LIST_VACCINE_FLAG	,--	疫苗标志	S3	AN..2	Y	是否代码表 NBP00.00.006	20211210新增
+DECODE(D.YPGLBZ,'S','1','2')	AS	LIST_INFUSION_FLAG	,--	输液用药标志	S3	AN..2	Y	是否代码表 NBP00.00.006	20211210新增
+CASE WHEN B.SL<0 THEN '1' ELSE '2' END	AS	LIST_WITHDRAWAL_FLAG	,--	退药标志	S3	AN..2	Y	是否代码表 NBP00.00.006	20211210新增
+(SELECT MC FROM DIP.YPJX WHERE NO = D.JX)	AS	LIST_DOSAGE_FORM	,--	药物剂型代码	S3	AN..3	Y	药物剂型代码 NBC01.01.028	20211210新增	--------------------------------------------------值域转换
+D.DW	AS	LIST_SPECIFICATION_UNIT	,--	药品包装规格单位	S1	AN..30	Y	药品包装规格单位，若是药品，必填。发药包装单位，例如：瓶、盒。对于医院自定义的包装，可以提供自定义的包装单位。	20211210新增
+D.SL2	AS	LIST_SPECIFICATION_	,--	药品包装规格系数	S1	AN..30	Y	若是药品，必填。例如：12支/每盒中的12 ，是指每盒中有12支。这里的12是指当前包装中有12个药品规格字段中的装量单位“支”的数量。对于医院自定义的包装，请提供自定义的包装中包含的最小装量单位的数量，比如包装中包含有6支，其值就为6。	20211210新增
+B.SL	AS	LIST_DISPENSE_NUMBER	,--	发药数量	N	N..8,2	Y		20211210新增
+D.DW2	AS	LIST_DISPENSE_UNIT	,--	发药单位	S1	AN..6	Y		20211210新增
+D.JLDW	AS	LIST_DOSE_UNITNAME	,--	剂量单位名称	S1	AN..16	Y		20211210新增
+D.JLDW	AS	LIST_DOSE_UNITID	,--	剂量单位代码	S3	AN..16	Y	药物剂量单位代码 NBC01.01.029	20211210新增	--------------------------------------------------值域转换
+D.DW1	AS	LIST_USEUNIT_ID	,--	用量单位代码	S3	AN..6	Y	药物用量单位代码 NBC01.01.030	20211210新增--------------------------------------------------值域转换
+DECODE(D.PSBJ,'Y','1','2')	AS	LIST_IS_SKINTESTDRUG	,--	是否皮试药品	S3	AN..2	Y	是否代码表 NBP00.00.006	20211210新增
+'0'	AS	LIST_REVISE_FLAG	,--	修改标志	S3	AN..2	Y	正常作废代码 NBC01.01.031	20211210新增
+DECODE(D.YPGLBZ,'D','1','2')	AS	LIST_POISON_FLAG	,--	毒性药物标志	S2	N1		是否代码表 NBP00.00.006	20220419新增
+DECODE(D.YPGLBZ,'D','1','2') AS	LIST_POISONMADE_FLAG	,--	易制毒药物标志	S2	N1		是否代码表 NBP00.00.006	20220419新增
+NULL	AS	LIST_MEDI_TIMING	,--	给药时机	S1	AN..50		给药时机，如：饭前、饭后、空腹等	20220419新增
+B.SL*D.SL1	AS	LIST_DRUGUSE_TOTAL	,--	药物使用总剂量	N	N..10,4		药物使用总剂量	20220419新增
+DECODE(B.ZBBZ,'Y','2','1')	AS	LIST_DRUG_SOURCE	,--	药品来源代码	S2	N1		1.医院药品 2.自备药品	20220419新增
+NULL	AS	LIST_MEDI_SPEED	,--	给药速度	S1	AN..20		给药速度，静脉输液药品滴注时间和速度的描述，如：1小时、20滴/分钟，需同时传入数字和单位，单位为小时或滴/分钟	20220419新增
+NULL	AS	LIST_LIMITED_TIME	,--	限用时间	S1	AN..20		限用时间，静脉输液药品配制后使用时间的描述，如：现配现用、立即使用、2h内使用等	20220419新增
+NULL	AS	LIST_MEDI_PURPOSE	,--	药嘱目的	S1	AN..50		药嘱目的，（药嘱开具的目的，科室领药、带手术室等）	20220419新增
+B.JE	AS	LIST_PROJECT_AMOUNT	,--	项目金额	N	N..10		项目金额，单位：分	20220419新增
+CASE WHEN (SELECT KZLYP FROM DIP.YPMCQT WHERE YPBH = B.DM )>0 THEN '1' ELSE '2' END		AS	LIST_ANTI_TUMOR_DRUG	--	抗肿瘤药物标志	S2	N1	Y	是否代码表 NBP00.00.006	20220516新增
+
+
+
+FROM DIP.MZCFXX A ,DIP.MZCFMXXX B LEFT JOIN DIP.YPMC D ON B.DM = D.YPBH
+,DIP.KTDOC_PRESCRIPTION C,DIP.KTDOC_PRESCRIPTION_LIST E,DIP.KTDOC_WORK_LOG F, DIP.MZSFXX G
+WHERE A.NO = B.NO AND A.KFDM = B.KFDM AND A.LX = B.LX AND A.NO = C.FEE_PRES_ID AND A.SFNO = G.NO AND  G.MZH = F.REGISTER_ID AND F.CLINIC_ID = C.CLINIC_ID AND C.PRES_ID = E.PRES_ID AND B.DM= E.DRUG_ID AND B.ZH =E.GROUPNO
+    AND A.NO= ? AND A.KFDM = ? AND A.LX = ? AND A.SFNO = ?
         ]]>
     </sql>
 </sqls>

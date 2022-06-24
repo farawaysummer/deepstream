@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<business name="CLI">
+    <datasource name="HIS"/>
+    <businessSql name="selectHIS"/>
+    <relates>
+        <table name="KTDOC_WORK_LOG"/>
+        <table name="S_CLI_SEERECORD"/>
+    </relates>
+    <conditions>
+        <condition name="CLINIC_ID"/>
+    </conditions>
+    <results>
+        <field name="AUTO_ID" type="VARCHAR2"/>
+        <field name="BASE_ID" type="VARCHAR2"/>
+        <field name="LP_CLI_SEE" type="VARCHAR2"/>
+        <field name="LK_CLI_SEE" type="VARCHAR2"/>
+        <field name="LK_CLI_REG" type="VARCHAR2"/>
+        <field name="LK_MPI_PATIENT" type="VARCHAR2"/>
+        <field name="PATIENT_ID" type="VARCHAR2"/>
+        <field name="OUTP_ID" type="VARCHAR2"/>
+        <field name="OUTP_NO" type="VARCHAR2"/>
+        <field name="NAME" type="VARCHAR2"/>
+        <field name="CLI_DEPT_CODE" type="VARCHAR2"/>
+        <field name="CLI_DEPT_NAME" type="VARCHAR2"/>
+        <field name="CLI_DTIME" type="DATE"/>
+        <field name="CLI_DOCT_CODE" type="VARCHAR2"/>
+        <field name="CLI_DOCT_NAME" type="VARCHAR2"/>
+        <field name="DIAG_CODE" type="VARCHAR2"/>
+        <field name="DIAG_NAME" type="VARCHAR2"/>
+        <field name="CHIEF_COMPLIANT" type="CHAR"/>
+        <field name="SYMPTOM_CODE" type="VARCHAR2"/>
+        <field name="SYMPTOM_NAME" type="VARCHAR2"/>
+        <field name="MEDICAL_HISTORY" type="CHAR"/>
+        <field name="ALLERGIC_HISTORY" type="CHAR"/>
+        <field name="CHECK_UP" type="CHAR"/>
+        <field name="TREATMENT_PLAN" type="CHAR"/>
+        <field name="SBP" type="CHAR"/>
+        <field name="DBP" type="CHAR"/>
+        <field name="HEIGHT" type="VARCHAR2"/>
+        <field name="WEIGHT" type="VARCHAR2"/>
+        <field name="CONSULT_QUESTION" type="CHAR"/>
+        <field name="HEALTH_REQUEST" type="CHAR"/>
+        <field name="HEALTH_EVALUATION" type="CHAR"/>
+        <field name="OTHER_MEDICAL_TREATMENT" type="CHAR"/>
+        <field name="DIAG_CODING_TYPE" type="CHAR"/>
+        <field name="DIAG_NOTE" type="CHAR"/>
+        <field name="REFERRAL_FLAG" type="CHAR"/>
+        <field name="REFERRAL_NOTE" type="CHAR"/>
+        <field name="OTHER_DIAG_CODE" type="CHAR"/>
+        <field name="OTHER_DIAG_NAME" type="CHAR"/>
+        <field name="INFECTIOUS_FLAG" type="CHAR"/>
+        <field name="CHRONIC_FLAG" type="VARCHAR2"/>
+        <field name="TEMP" type="VARCHAR2"/>
+        <field name="PULSE_CONDITION" type="CHAR"/>
+        <field name="HEART_RATE" type="CHAR"/>
+        <field name="PAST_HISTORY" type="CHAR"/>
+        <field name="GETILL_DTIME" type="DATE"/>
+        <field name="DIAG_DTIME" type="CHAR"/>
+        <field name="PATIENT_GONE" type="CHAR"/>
+        <field name="PATIENT_GONE_OTHER" type="CHAR"/>
+        <field name="CLINIC_END_TIME" type="DATE"/>
+        <field name="OUTHOS_RESULT_CODE" type="CHAR"/>
+        <field name="OUTHOS_RESULT_NAME" type="CHAR"/>
+        <field name="CREATE_DTIME" type="DATE"/>
+        <field name="UPDATE_DTIME" type="DATE"/>
+        <field name="RECORD_DTIME" type="CHAR"/>
+        <field name="RECORD_UPDATE_DTIME" type="CHAR"/>
+    </results>
+</business>

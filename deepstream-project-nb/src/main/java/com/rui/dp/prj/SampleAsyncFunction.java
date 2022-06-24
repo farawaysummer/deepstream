@@ -1,5 +1,6 @@
 package com.rui.dp.prj;
 
+import com.rui.dp.prj.function.AsyncClient;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.async.ResultFuture;
 import org.apache.flink.streaming.api.functions.async.RichAsyncFunction;

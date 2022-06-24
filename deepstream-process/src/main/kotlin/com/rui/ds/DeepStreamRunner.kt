@@ -2,7 +2,7 @@ package com.rui.ds
 
 object DeepStreamRunner {
 //    @JvmStatic
-//    fun main(args: Array<String>) {
+//    function main(args: Array<String>) {
 //
 //        // init env
 //        val sourceProperties = Properties()

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<business name="CF">
+    <datasource name="HIS"/>
+    <businessSql name="selectHIS"/>
+    <relates>
+        <table name="MZCFXX"/>
+        <table name="S_CLI_RECIPE"/>
+    </relates>
+    <conditions>
+        <condition name="NO"/>
+        <condition name="KFDM"/>
+        <condition name="LX"/>
+        <condition name="SFNO"/>
+    </conditions>
+    <results>
+        <field name="ORG_CODE" type="VARCHAR2"/>
+        <field name="AUTO_ID" type="VARCHAR2"/>
+        <field name="LP_CLI_RECIPE" type="VARCHAR2"/>
+        <field name="LK_CLI_RECIPE" type="VARCHAR2"/>
+        <field name="LK_CLI_SEE" type="VARCHAR2"/>
+        <field name="LK_MPI_PATIENT" type="VARCHAR2"/>
+        <field name="PATIENT_ID" type="VARCHAR2"/>
+        <field name="OUTP_ID" type="VARCHAR2"/>
+        <field name="OUTP_NO" type="VARCHAR2"/>
+        <field name="RECIPE_NO" type="VARCHAR2"/>
+        <field name="RECIPE_DTIME" type="DATE"/>
+        <field name="RECIPE_DEPT_CODE" type="VARCHAR2"/>
+        <field name="RECIPE_DEPT_NAME" type="VARCHAR2"/>
+        <field name="RECIPE_DOC_CODE" type="VARCHAR2"/>
+        <field name="RECIPE_DOC_NAME" type="VARCHAR2"/>
+        <field name="DRUG_FLAG" type="CHAR"/>
+        <field name="ITEM_CODE" type="VARCHAR2"/>
+        <field name="ITEM_NAME" type="VARCHAR2"/>
+        <field name="ITEM_TYPE_CODE" type="VARCHAR2"/>
+        <field name="ITEM_TYPE_NAME" type="VARCHAR2"/>
+        <field name="UNIT_PRICE" type="VARCHAR2"/>
+        <field name="QTY" type="VARCHAR2"/>
+        <field name="UNIT" type="VARCHAR2"/>
+        <field name="SPEC" type="VARCHAR2"/>
+        <field name="DRUG_RECP_TYPECODE" type="VARCHAR2"/>
+        <field name="DRUG_RECP_TYPENAME" type="VARCHAR2"/>
+        <field name="DRUG_USE_FREQCODE" type="VARCHAR2"/>
+        <field name="DRUG_USE_FREQNAME" type="VARCHAR2"/>
+        <field name="DRUG_EACH_DOSE" type="VARCHAR2"/>
+        <field name="DRUG_DOSE_UNIT" type="VARCHAR2"/>
+        <field name="DRUG_USAGE_CODE" type="VARCHAR2"/>
+        <field name="DRUG_USAGE_NAME" type="VARCHAR2"/>
+        <field name="DOSAGE_FORM_CODE" type="VARCHAR2"/>
+        <field name="DOSAGE_FORM_NAME" type="VARCHAR2"/>
+        <field name="DRUG_TOTAL_DOSE" type="VARCHAR2"/>
+        <field name="DRUG_TOTAL_UNIT" type="VARCHAR2"/>
+        <field name="DRUG_START_DTIME" type="CHAR"/>
+        <field name="DRUG_END_DTIME" type="CHAR"/>
+        <field name="DURG_SEND_DTIME" type="DATE"/>
+        <field name="DRUG_USE_DAYS" type="VARCHAR2"/>
+        <field name="DRUG_PACKAGE_QTY" type="VARCHAR2"/>
+        <field name="DRUG_PACKAGE_UNIT" type="VARCHAR2"/>
+        <field name="DRUG_MIN_UNIT" type="CHAR"/>
+        <field name="DRUG_BASE_DOSE" type="CHAR"/>
+        <field name="DRUG_MAIN_FLAG" type="VARCHAR2"/>
+        <field name="GROUP_NO" type="VARCHAR2"/>
+        <field name="DRUG_HERB_FOOTNOTES" type="CHAR"/>
+        <field name="HERB_DOSE_QTY" type="VARCHAR2"/>
+        <field name="CHARGE_FLAG" type="CHAR"/>
+        <field name="CHARGE_DTIME" type="DATE"/>
+        <field name="DRUG_SKIN_FLAG" type="VARCHAR2"/>
+        <field name="DRUG_SKIN_RESULT" type="VARCHAR2"/>
+        <field name="INSPECTION_PART_CODE" type="CHAR"/>
+        <field name="INSPECTION_PART_NAME" type="CHAR"/>
+        <field name="EMER_FLAG" type="CHAR"/>
+        <field name="APPLY_NO" type="CHAR"/>
+        <field name="REPORT_NO" type="CHAR"/>
+        <field name="NOTE" type="VARCHAR2"/>
+        <field name="USE_TIMES" type="CHAR"/>
+        <field name="PRODUCTION_PLACE" type="VARCHAR2"/>
+        <field name="PRODUCTION_DTIME" type="CHAR"/>
+        <field name="VALID_DTIME" type="CHAR"/>
+        <field name="MEDIC_CODE" type="VARCHAR2"/>
+        <field name="MEDIC_CODE_SAFETY" type="VARCHAR2"/>
+        <field name="MEDIC_SELF" type="CHAR"/>
+        <field name="MEDIC_SAFETY" type="CHAR"/>
+        <field name="CREATE_DTIME" type="DATE"/>
+        <field name="UPDATE_DTIME" type="DATE"/>
+        <field name="RECORD_DTIME" type="CHAR"/>
+        <field name="RECORD_UPDATE_DTIME" type="CHAR"/>
+        <field name="INFOR_SOURCE" type="CHAR"/>
+        <field name="INFOR_IDENTIFICATION_CODE" type="VARCHAR2"/>
+        <field name="INFOR_VALID_DATE" type="VARCHAR2"/>
+        <field name="INFOR_REVIEWER_NAME" type="VARCHAR2"/>
+        <field name="INFOR_REVIEWER_ID" type="VARCHAR2"/>
+        <field name="INFOR_REVIEW_TIME" type="DATE"/>
+        <field name="INFOR_PRESCRIBE_TIME" type="DATE"/>
+        <field name="INFOR_DISPENSE_TIME" type="DATE"/>
+        <field name="INFOR_STATUS" type="CHAR"/>
+        <field name="INFOR_CANCEL_TIME" type="VARCHAR2"/>
+        <field name="INFOR_PRES_FEE" type="VARCHAR2"/>
+        <field name="INFOR_PRESCRIBE_EMP_NAME" type="VARCHAR2"/>
+        <field name="INFOR_PRESCRIBE_EMP_ID" type="VARCHAR2"/>
+        <field name="INFOR_DISPENSE_EMP_NAME" type="VARCHAR2"/>
+        <field name="INFOR_DISPENSE_EMP_ID" type="VARCHAR2"/>
+        <field name="INFOR_REMARK" type="VARCHAR2"/>
+        <field name="INFOR_CIRCULATE_FLAG" type="VARCHAR2"/>
+        <field name="LIST_CHARGE_ID" type="VARCHAR2"/>
+        <field name="LIST_IS_MEDI" type="CHAR"/>
+        <field name="LIST_IS_MAIN" type="VARCHAR2"/>
+        <field name="LIST_ANTIBIOS_FLAG" type="CHAR"/>
+        <field name="LIST_SPIRIT_FLAG" type="CHAR"/>
+        <field name="LIST_ANAESTHETIZTION" type="VARCHAR2"/>
+        <field name="LIST_BASE_FLAG" type="VARCHAR2"/>
+        <field name="LIST_VACCINE_FLAG" type="CHAR"/>
+        <field name="LIST_INFUSION_FLAG" type="VARCHAR2"/>
+        <field name="LIST_WITHDRAWAL_FLAG" type="CHAR"/>
+        <field name="LIST_DOSAGE_FORM" type="VARCHAR2"/>
+        <field name="LIST_SPECIFICATION_UNIT" type="VARCHAR2"/>
+        <field name="LIST_SPECIFICATION_" type="VARCHAR2"/>
+        <field name="LIST_DISPENSE_NUMBER" type="VARCHAR2"/>
+        <field name="LIST_DISPENSE_UNIT" type="VARCHAR2"/>
+        <field name="LIST_DOSE_UNITNAME" type="VARCHAR2"/>
+        <field name="LIST_DOSE_UNITID" type="VARCHAR2"/>
+        <field name="LIST_USEUNIT_ID" type="VARCHAR2"/>
+        <field name="LIST_IS_SKINTESTDRUG" type="VARCHAR2"/>
+        <field name="LIST_REVISE_FLAG" type="CHAR"/>
+        <field name="LIST_POISON_FLAG" type="VARCHAR2"/>
+        <field name="LIST_POISONMADE_FLAG" type="VARCHAR2"/>
+        <field name="LIST_MEDI_TIMING" type="VARCHAR2"/>
+        <field name="LIST_DRUGUSE_TOTAL" type="VARCHAR2"/>
+        <field name="LIST_DRUG_SOURCE" type="VARCHAR2"/>
+        <field name="LIST_MEDI_SPEED" type="VARCHAR2"/>
+        <field name="LIST_LIMITED_TIME" type="VARCHAR2"/>
+        <field name="LIST_MEDI_PURPOSE" type="VARCHAR2"/>
+        <field name="LIST_PROJECT_AMOUNT" type="VARCHAR2"/>
+        <field name="LIST_ANTI_TUMOR_DRUG" type="CHAR"/>
+    </results>
+</business>

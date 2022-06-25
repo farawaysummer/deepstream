@@ -27,6 +27,7 @@ public class AvroKoalaspeedDeserializer implements DeserializationSchema<RowData
     private final TypeInformation<RowData> producedTypeInfo;
     private final DeserializationSchema<AvroRecordEvent> nestedSchema;
     private final AvroKoalaSpeedToRowDataConverters.RowDataConverter runtimeConverter;
+
     public AvroKoalaspeedDeserializer(
             DataType dataType,
             DynamicTableSource.DataStructureConverter converter,
@@ -35,7 +36,7 @@ public class AvroKoalaspeedDeserializer implements DeserializationSchema<RowData
         this.dataType = dataType;
         this.converter = converter;
         this.producedTypeInfo = producedTypeInfo;
-        this.rowType = (RowType)dataType.getLogicalType();
+        this.rowType = (RowType) dataType.getLogicalType();
         this.nestedSchema = AvroDeserializationSchema.forSpecific(AvroRecordEvent.class);
         this.runtimeConverter = AvroKoalaSpeedToRowDataConverters.createRowConverter(rowType);
     }
@@ -54,16 +55,14 @@ public class AvroKoalaspeedDeserializer implements DeserializationSchema<RowData
         }
 
         AvroRecordEvent event = AvroRecordEvent.fromByteBuffer(ByteBuffer.wrap(message));
-        System.out.println("EVENT TABLE:"+ event.getTableName());
         Map<CharSequence, CharSequence> columnValues = event.getColumnValues();
-        System.out.println("Columns:"+ columnValues);
 
         GenericRecord data = convertToGenericRecord(columnValues);
-        RowData after = (RowData)runtimeConverter.convert(data);
+        RowData after = (RowData) runtimeConverter.convert(data);
 
         columnValues = event.getBeforeUpdatedColumns();
         data = convertToGenericRecord(columnValues);
-        RowData before = (RowData)runtimeConverter.convert(data);
+        RowData before = (RowData) runtimeConverter.convert(data);
         int operationType = parseOperationType(event.getOperationType());
 
         switch (operationType) {
@@ -88,7 +87,7 @@ public class AvroKoalaspeedDeserializer implements DeserializationSchema<RowData
     private GenericRecord convertToGenericRecord(Map<CharSequence, CharSequence> columnValues) {
         GenericRecord record = new KoalaSpeedGenericRecord();
 
-        for(Map.Entry<CharSequence, CharSequence> entry : columnValues.entrySet()) {
+        for (Map.Entry<CharSequence, CharSequence> entry : columnValues.entrySet()) {
             record.put(entry.getKey().toString(), entry.getValue());
         }
 
@@ -108,7 +107,7 @@ public class AvroKoalaspeedDeserializer implements DeserializationSchema<RowData
 
     private static int parseOperationType(Object obj) {
         if (obj == null) return OperationType.INSERT_CODE;
-        if (obj instanceof Integer) return (Integer)obj;
+        if (obj instanceof Integer) return (Integer) obj;
         try {
             return Integer.parseInt(String.valueOf(obj));
         } catch (Throwable t) {

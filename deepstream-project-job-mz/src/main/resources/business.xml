@@ -11,19 +11,19 @@
     </conditions>
     <results>
         <field name="ORG_CODE" type="VARCHAR2"/>
-        <field name="CLINIC_ID" type="NUMBER"/>
-        <field name="NO" type="NUMBER"/>
-        <field name="DEPT_CODE" type="NUMBER"/>
-        <field name="REGISTER_ID" type="NUMBER"/>
+        <field name="CLINIC_ID" type="VARCHAR2"/>
+        <field name="NO" type="VARCHAR2"/>
+        <field name="DEPT_CODE" type="VARCHAR2"/>
+        <field name="REGISTER_ID" type="VARCHAR2"/>
         <field name="CARDID" type="VARCHAR2"/>
-        <field name="EMP_ID" type="NUMBER"/>
-        <field name="PAT_NO" type="NUMBER"/>
-        <field name="PERSONID" type="NUMBER"/>
+        <field name="EMP_ID" type="VARCHAR2"/>
+        <field name="PAT_NO" type="VARCHAR2"/>
+        <field name="PERSONID" type="VARCHAR2"/>
         <field name="NAME" type="VARCHAR2"/>
         <field name="SEX" type="VARCHAR2"/>
         <field name="BIRTHDAY" type="DATE"/>
-        <field name="AGE" type="NUMBER"/>
-        <field name="AGE2" type="NUMBER"/>
+        <field name="AGE" type="VARCHAR2"/>
+        <field name="AGE2" type="VARCHAR2"/>
         <field name="CF_TYPE" type="CHAR"/>
         <field name="IDCARD" type="VARCHAR2"/>
         <field name="CARDNUM" type="VARCHAR2"/>
@@ -106,8 +106,8 @@
         <field name="BASE_ID" type="VARCHAR2"/>
         <field name="HOSP_NAME" type="CHAR"/>
         <field name="HOSP_ID" type="CHAR"/>
-        <field name="PATIENT_ID" type="NUMBER"/>
-        <field name="LK_CLI_REG" type="NUMBER"/>
+        <field name="PATIENT_ID" type="VARCHAR2"/>
+        <field name="LK_CLI_REG" type="VARCHAR2"/>
         <field name="CREATE_DTIME" type="DATE"/>
         <field name="UPDATE_DTIME" type="DATE"/>
         <field name="RECORD_DTIME" type="CHAR"/>

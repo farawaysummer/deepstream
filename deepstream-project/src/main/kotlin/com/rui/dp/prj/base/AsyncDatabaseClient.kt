@@ -24,13 +24,18 @@ class AsyncDatabaseClient(private val business: BusinessData) {
 
         try {
             DatabaseSources.getConnection(business.dsName).use { connection ->
-                println("Input Row with Name: ${row.getFieldNames(true)}")
+                val rowFields = row.getFieldNames(true)
+
                 val sql = business.businessSql
                 val rows = mutableListOf<Row>()
                 val statement = connection!!.prepareStatement(sql)
                 for (index in 1..business.conditionFields.size) {
-                    statement.setObject(index, row.getField(index - 1))
-//                    statement.setObject(index, row.getField(business.conditionFields[index - 1]))
+                    val fieldIndex = rowFields?.indexOf(business.conditionFields[index - 1])
+                    if (fieldIndex == null) {
+                        statement.setObject(index, row.getField(index - 1))
+                    } else {
+                        statement.setObject(index, row.getField(fieldIndex))
+                    }
                 }
 
                 val result = statement.executeQuery()
@@ -38,7 +43,7 @@ class AsyncDatabaseClient(private val business: BusinessData) {
                     val values =
                         business.resultFields.keys.associateBy({ it }, { result.getObject(it) })
                             .mapValues { (_, value) ->
-                                if (value is BigDecimal) {
+                                if (value is BigDecimal) {  // big decimal can't be cast to string automatically
                                     value.toString()
                                 } else {
                                     value

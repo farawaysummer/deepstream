@@ -7,9 +7,9 @@
         <table name="S_CLI_RECIPE"/>
     </relates>
     <conditions>
-        <condition name="NO"/>
         <condition name="KFDM"/>
         <condition name="LX"/>
+        <condition name="NO"/>
         <condition name="SFNO"/>
     </conditions>
     <results>

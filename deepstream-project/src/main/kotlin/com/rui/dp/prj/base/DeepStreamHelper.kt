@@ -10,6 +10,7 @@ import com.rui.ds.job.DeepStreamJob
 import com.rui.ds.job.JobConfig
 import org.apache.flink.api.common.typeinfo.BasicTypeInfo
 import org.apache.flink.api.common.typeinfo.TypeInformation
+import org.apache.flink.api.common.typeinfo.Types
 import org.apache.flink.table.api.Table
 import org.apache.flink.table.api.TableResult
 import org.apache.flink.table.catalog.ResolvedSchema
@@ -42,8 +43,8 @@ object DeepStreamHelper {
         val rootElement = document.rootElement
 
         val businessName = rootElement.attributeValue("name")
-        val dsName = rootElement.element("datasource").attributeValue("name")
-        val sqlName = rootElement.element("businessSql").attributeValue("name")
+        val dsName = rootElement.element("datasource").attributeValue("name").trim()
+        val sqlName = rootElement.element("businessSql").attributeValue("name").trim()
         val businessSql = getSql(sqlName)!!
 
         val relatedTables = rootElement.element("relates").elements("table").map { it.attributeValue("name") }
@@ -52,7 +53,7 @@ object DeepStreamHelper {
             rootElement.element("conditions").elements("condition").map { it.attributeValue("name") }.toList()
 
         val resultFields = rootElement.element("results").elements("field")
-            .associateBy({ it.attributeValue("name") }, { it.attributeValue("type") })
+            .associateBy({ it.attributeValue("name").trim() }, { it.attributeValue("type").trim() })
 
         return BusinessData(
             businessName = businessName,
@@ -101,17 +102,14 @@ object DeepStreamHelper {
     fun toStreamDataTypes(typeMap: Map<String, String>): StreamDataTypes {
         val allTypes = typeMap.mapValues { (_, value) ->
             when (value) {
-                "String" -> BasicTypeInfo.STRING_TYPE_INFO
-                "Integer" -> BasicTypeInfo.INT_TYPE_INFO
-                "LocalDate" -> BasicTypeInfo.DATE_TYPE_INFO
-                "Double" -> BasicTypeInfo.DOUBLE_TYPE_INFO
-                "VARCHAR2" -> BasicTypeInfo.STRING_TYPE_INFO
-                "CHAR" -> BasicTypeInfo.STRING_TYPE_INFO
-                "DATE" -> BasicTypeInfo.DATE_TYPE_INFO
-
-                "NUMBER" -> BasicTypeInfo.BIG_DEC_TYPE_INFO
-                "Timestamp" -> TimestampDataTypeInfo(6)
-                else -> BasicTypeInfo.STRING_TYPE_INFO
+                "VARCHAR" -> Types.STRING
+                "VARCHAR2" -> Types.STRING
+                "CHAR" -> Types.STRING
+                "TIMESTAMP" -> Types.LOCAL_DATE_TIME
+                "DATE" -> Types.LOCAL_DATE
+                "TIME" -> Types.LOCAL_TIME
+                "NUMBER" -> Types.BIG_DEC
+                else -> Types.STRING
             } as TypeInformation<*>
         }
 

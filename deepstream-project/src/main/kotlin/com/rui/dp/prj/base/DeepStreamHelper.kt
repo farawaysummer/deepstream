@@ -8,6 +8,7 @@ import com.rui.ds.facade.kettle.KettleJobParser
 import com.rui.ds.generator.TableGenerator
 import com.rui.ds.job.DeepStreamJob
 import com.rui.ds.job.JobConfig
+import io.debezium.util.Strings
 import org.apache.flink.api.common.typeinfo.BasicTypeInfo
 import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.api.common.typeinfo.Types
@@ -46,6 +47,7 @@ object DeepStreamHelper {
         val dsName = rootElement.element("datasource").attributeValue("name").trim()
         val sqlName = rootElement.element("businessSql").attributeValue("name").trim()
         val businessSql = getSql(sqlName)!!
+        val dictTransform = rootElement.element("transformJobName")?.text
 
         val relatedTables = rootElement.element("relates").elements("table").map { it.attributeValue("name") }
 
@@ -59,6 +61,7 @@ object DeepStreamHelper {
             businessName = businessName,
             dsName = dsName,
             relatedTables = relatedTables,
+            dictTransformName = dictTransform,
             businessSql = businessSql,
             conditionFields = conditionFields,
             resultFields = resultFields

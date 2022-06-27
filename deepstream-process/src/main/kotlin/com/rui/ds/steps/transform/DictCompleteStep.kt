@@ -7,6 +7,8 @@ import com.rui.ds.common.TransformStep
 import com.rui.ds.steps.transform.dm.DPTransformGateway
 import com.ruisoft.eig.transform.transformer.Transformer
 import org.apache.flink.api.common.functions.MapFunction
+import org.apache.flink.api.common.functions.RichMapFunction
+import org.apache.flink.configuration.Configuration
 import org.apache.flink.types.Row
 
 class DictCompleteStep(name: String, override val meta: DictCompleteStepMeta) : TransformStep(name, meta) {
@@ -25,17 +27,25 @@ data class DictCompleteStepMeta(
 ) : StepMeta
 
 class DictMappingFunction(
-    jobId: Long,
-    private val fields: Array<String>
-) : MapFunction<Row, Row> {
-    @Transient
-    private val transformGateway: DPTransformGateway = DPTransformGateway.gateway
+    val jobId: Long,
+    val fields: Array<String>
+) : RichMapFunction<Row, Row>() {
 
     @Transient
-    private val transforms: Map<String, Transformer> = transformGateway.match(jobId, fields)
+    private var transformGateway: DPTransformGateway? = null
+
+    @Transient
+    private var transforms: Map<String, Transformer> = emptyMap()
+
+    override fun open(parameters: Configuration?) {
+        super.open(parameters)
+        transformGateway = DPTransformGateway.gateway
+        transforms = transformGateway!!.match(jobId, fields)
+    }
 
     override fun map(value: Row): Row {
-        fields.forEach { field ->
+        val transFields = transforms.keys
+        transFields.forEach { field ->
             val fieldValue = value.getField(field)
             val transform = transforms[field]
             if (fieldValue != null && transform != null) {

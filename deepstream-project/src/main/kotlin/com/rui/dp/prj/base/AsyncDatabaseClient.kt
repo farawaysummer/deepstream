@@ -43,11 +43,7 @@ class AsyncDatabaseClient(private val business: BusinessData) {
                     val values =
                         business.resultFields.keys.associateBy({ it }, { result.getObject(it) })
                             .mapValues { (_, value) ->
-                                if (value is BigDecimal) {  // big decimal can't be cast to string automatically
-                                    value.toString()
-                                } else {
-                                    value
-                                }
+                                typeNormalize(value)
                             }
                     val newRow = Row.withNames()
                     business.resultFields.keys.forEach { newRow.setField(it, values[it]) }
@@ -59,6 +55,20 @@ class AsyncDatabaseClient(private val business: BusinessData) {
         } catch (e: SQLException) {
             e.printStackTrace()
             throw RuntimeException(e)
+        }
+    }
+
+    private fun typeNormalize(value: Any?): Any? {
+        if (value == null) {
+            return null
+        }
+
+        return when(value) {
+            is BigDecimal -> value.toString()
+            is java.sql.Timestamp -> value.toLocalDateTime()
+            is java.sql.Date -> value.toLocalDate()
+            is java.sql.Time -> value.toLocalTime()
+            else -> value
         }
     }
 }

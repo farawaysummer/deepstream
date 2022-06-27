@@ -2,6 +2,7 @@
 <business name="CDR">
     <datasource name="HIS"/>
     <businessSql name="selectHIS"/>
+    <transformJobName>NB_E12010000-门诊电子病历</transformJobName>
     <relates>
         <table name="EMR_CASE_HISTORY_DOCUMENT"/>
         <table name="NB_E12010000"/>

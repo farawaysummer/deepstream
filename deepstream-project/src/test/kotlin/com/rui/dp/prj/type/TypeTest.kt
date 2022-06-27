@@ -1,5 +1,6 @@
 package com.rui.dp.prj.type
 
+import com.rui.dp.prj.base.DeepStreamFunctions
 import com.rui.dp.prj.base.DeepStreamHelper
 import com.rui.ds.StreamDataTypes
 import org.apache.flink.api.common.functions.MapFunction
@@ -72,7 +73,7 @@ object TypeTest {
                     "QTY",
                     "ADDF"
                 ),
-                Types.STRING, Types.LONG, Types.LOCAL_DATE_TIME, Types.LOCAL_DATE, Types.BIG_DEC, Types.STRING
+                Types.STRING, Types.BIG_DEC, Types.SQL_TIMESTAMP, Types.SQL_DATE, Types.BIG_DEC, Types.STRING
             ))
 //            .returns(dataTypes.toTypeInformation())
 

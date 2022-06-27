@@ -2,6 +2,7 @@
 <business name="CF">
     <datasource name="HIS"/>
     <businessSql name="selectHIS"/>
+    <transformJobName>NB_C01.04.00.00-门诊处方</transformJobName>
     <relates>
         <table name="MZCFXX"/>
         <table name="S_CLI_RECIPE"/>
@@ -23,7 +24,7 @@
         <field name="OUTP_ID" type="VARCHAR2"/>
         <field name="OUTP_NO" type="VARCHAR2"/>
         <field name="RECIPE_NO" type="VARCHAR2"/>
-        <field name="RECIPE_DTIME" type="DATE"/>
+        <field name="RECIPE_DTIME" type="TIMESTAMP"/>
         <field name="RECIPE_DEPT_CODE" type="VARCHAR2"/>
         <field name="RECIPE_DEPT_NAME" type="VARCHAR2"/>
         <field name="RECIPE_DOC_CODE" type="VARCHAR2"/>
@@ -51,7 +52,7 @@
         <field name="DRUG_TOTAL_UNIT" type="VARCHAR2"/>
         <field name="DRUG_START_DTIME" type="CHAR"/>
         <field name="DRUG_END_DTIME" type="CHAR"/>
-        <field name="DURG_SEND_DTIME" type="DATE"/>
+        <field name="DURG_SEND_DTIME" type="TIMESTAMP"/>
         <field name="DRUG_USE_DAYS" type="VARCHAR2"/>
         <field name="DRUG_PACKAGE_QTY" type="VARCHAR2"/>
         <field name="DRUG_PACKAGE_UNIT" type="VARCHAR2"/>
@@ -62,7 +63,7 @@
         <field name="DRUG_HERB_FOOTNOTES" type="CHAR"/>
         <field name="HERB_DOSE_QTY" type="VARCHAR2"/>
         <field name="CHARGE_FLAG" type="CHAR"/>
-        <field name="CHARGE_DTIME" type="DATE"/>
+        <field name="CHARGE_DTIME" type="TIMESTAMP"/>
         <field name="DRUG_SKIN_FLAG" type="VARCHAR2"/>
         <field name="DRUG_SKIN_RESULT" type="VARCHAR2"/>
         <field name="INSPECTION_PART_CODE" type="CHAR"/>
@@ -79,8 +80,8 @@
         <field name="MEDIC_CODE_SAFETY" type="VARCHAR2"/>
         <field name="MEDIC_SELF" type="CHAR"/>
         <field name="MEDIC_SAFETY" type="CHAR"/>
-        <field name="CREATE_DTIME" type="DATE"/>
-        <field name="UPDATE_DTIME" type="DATE"/>
+        <field name="CREATE_DTIME" type="TIMESTAMP"/>
+        <field name="UPDATE_DTIME" type="TIMESTAMP"/>
         <field name="RECORD_DTIME" type="CHAR"/>
         <field name="RECORD_UPDATE_DTIME" type="CHAR"/>
         <field name="INFOR_SOURCE" type="CHAR"/>
@@ -88,9 +89,9 @@
         <field name="INFOR_VALID_DATE" type="VARCHAR2"/>
         <field name="INFOR_REVIEWER_NAME" type="VARCHAR2"/>
         <field name="INFOR_REVIEWER_ID" type="VARCHAR2"/>
-        <field name="INFOR_REVIEW_TIME" type="DATE"/>
-        <field name="INFOR_PRESCRIBE_TIME" type="DATE"/>
-        <field name="INFOR_DISPENSE_TIME" type="DATE"/>
+        <field name="INFOR_REVIEW_TIME" type="TIMESTAMP"/>
+        <field name="INFOR_PRESCRIBE_TIME" type="TIMESTAMP"/>
+        <field name="INFOR_DISPENSE_TIME" type="TIMESTAMP"/>
         <field name="INFOR_STATUS" type="CHAR"/>
         <field name="INFOR_CANCEL_TIME" type="VARCHAR2"/>
         <field name="INFOR_PRES_FEE" type="VARCHAR2"/>

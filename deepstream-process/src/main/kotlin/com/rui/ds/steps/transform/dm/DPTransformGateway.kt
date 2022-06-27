@@ -71,7 +71,7 @@ class DPTransformGateway private constructor(
 
         val gateway: DPTransformGateway by lazy {
             // registry datasource for eig mc
-            val resource = javaClass.getResourceAsStream("/source.properties")!!
+            val resource = DPTransformGateway::class.java.getResourceAsStream("/source.properties")!!
             val sourceProp = Properties()
             sourceProp.load(resource)
 

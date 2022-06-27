@@ -74,6 +74,8 @@ object ProjectToolkits {
                 val insertFieldStr = insertColumns.joinToString(separator = ",") {"`$it`"}
                 val fromFieldStr = insertColumns.joinToString(separator = ",\n") { "CAST(`$it` AS STRING)" }
 
+                // cast function
+
                 val insertSql = "INSERT INTO $tableName ($insertFieldStr) \n" +
                         " SELECT $fromFieldStr FROM DTable"
 

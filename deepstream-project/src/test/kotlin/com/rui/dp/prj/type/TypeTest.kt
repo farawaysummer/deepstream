@@ -16,7 +16,7 @@ object TypeTest {
         DeepStreamHelper.executeSQL(
             context, "CREATE TABLE F_SRC_RECORD (\n" +
                     "`AUTO_ID` STRING,\n" +
-                    "`REC_ID` BIGINT,\n" +  // BIGINT TO LONG
+                    "`REC_ID` DECIMAL,\n" +  // BIGINT TO LONG
                     "`UPDATE_TIME` TIMESTAMP(6),\n" +
                     "`REC_DATE` DATE,\n" +
                     "`QTY` DECIMAL(10,2),\n" +
@@ -36,7 +36,7 @@ object TypeTest {
         DeepStreamHelper.executeSQL(
             context, "CREATE TABLE F_TAR_RECORD (\n" +
                     "`AUTO_ID` VARCHAR,\n" +
-                    "`REC_ID` VARCHAR,\n" +
+                    "`REC_ID` BIGINT,\n" +
                     "`UPDATE_TIME` TIMESTAMP,\n" +
                     "`REC_DATE` DATE,\n" +
                     "`QTY` DECIMAL(10,2),\n" +
@@ -83,7 +83,7 @@ object TypeTest {
 
         // insert into table2
         val insertSql = "insert into F_TAR_RECORD (AUTO_ID, REC_ID, UPDATE_TIME, REC_DATE, QTY) select AUTO_ID, " +
-                "CAST(REC_ID AS STRING) AS REC_ID, " +
+                "CAST(REC_ID AS BIGINT) AS REC_ID, " +
                 "UPDATE_TIME, " +
                 "REC_DATE, " +
                 "QTY from DTable"

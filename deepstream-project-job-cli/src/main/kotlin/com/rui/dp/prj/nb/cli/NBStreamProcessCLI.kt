@@ -48,7 +48,7 @@ class NBStreamProcessCLI : ProjectJob {
             .returns(
                 streamDataType.toTypeInformation()
             )
-
+        // source TypeInformation, target string to standard type name(flink type name)
         context.tableEnv.createTemporaryView("DTable", queryResult)
 
         val insertSql = getSql("insert")

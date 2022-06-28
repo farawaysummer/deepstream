@@ -19,6 +19,7 @@
         <module>deepstream-project-job-cf</module>
         <module>deepstream-project-job-cli</module>
         <module>deepstream-project-job-mz</module>
+        <module>deepstream-project-job-dc</module>
     </modules>
 
     <properties>

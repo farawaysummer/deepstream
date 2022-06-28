@@ -72,8 +72,8 @@ object ProjectToolkits {
                 val insertColumns = Sets.intersection(fields, sourceFields.keys)
 
                 val insertFieldStr = insertColumns.joinToString(separator = ",") {"`$it`"}
-                val fromFieldStr = insertColumns.joinToString(separator = ",\n") { "CAST(`$it` AS STRING)" }
-
+//                val fromFieldStr = insertColumns.joinToString(separator = ",\n") { "CAST(`$it` AS STRING)" }
+                val fromFieldStr = insertColumns.joinToString(separator = ",\n") { "`$it`" }
                 // cast function
 
                 val insertSql = "INSERT INTO $tableName ($insertFieldStr) \n" +

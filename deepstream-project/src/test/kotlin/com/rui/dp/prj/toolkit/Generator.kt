@@ -5,20 +5,19 @@ import com.rui.dp.prj.utils.ProjectToolkits
 object Generator {
     @JvmStatic
     fun main(args: Array<String>) {
-//        val fields = mutableMapOf<String, String>()
-//        val sql = ProjectToolkits.getSql("selectCDR")
-//        val fieldContent = ProjectToolkits.generateResultFields("DIP", sql, fields)
-//        println("\n===============fields xml==============\n")
-//        println(fieldContent)
-//
-//        println("\n===============insert table sql==============\n")
-//
-//        val insertSql = ProjectToolkits.generateInsertSql("eigdb", "test","NB_E12010000", fields)
-//        println(insertSql)
+        val fields = mutableMapOf<String, String>()
+        val sql = ProjectToolkits.getSql("selectC01")
+        val fieldContent = ProjectToolkits.generateResultFields("DIP", sql, fields)
+        println("\n===============fields xml==============\n")
+        println(fieldContent)
 
-        println("\n===============create table sql==============\n")
+        println("\n===============insert table sql==============\n")
 
-        val tableSql = ProjectToolkits.generateFlinkTableSql("DIP", "DIP", "F_SRC_RECORD")
-        println(tableSql)
+        val insertSql = ProjectToolkits.generateInsertSql("DIP", "DIP","S_CLI_RECIPE_CDC", fields)
+        println(insertSql)
+
+//        println("\n===============create table sql==============\n")
+//        val tableSql = ProjectToolkits.generateFlinkTableSql("eigdb", "test", "c01040000")
+//        println(tableSql)
     }
 }

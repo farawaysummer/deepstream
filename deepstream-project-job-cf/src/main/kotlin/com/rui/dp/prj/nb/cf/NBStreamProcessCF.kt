@@ -58,7 +58,8 @@ class NBStreamProcessCF : ProjectJob {
         context.tableEnv.createTemporaryView("DTable", queryResult)
 
         val insertSql = getSql("insert")
-        executeSQL(context, insertSql!!)
+        val insertResult = executeSQL(context, insertSql!!)
+        
     }
 
     override fun clean() {

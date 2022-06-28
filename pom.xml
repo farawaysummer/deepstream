@@ -14,12 +14,7 @@
         <module>deepstream-process</module>
         <module>deepstream-process-facade-kettle</module>
         <module>deepstream-connector-ks</module>
-        <module>deepstream-project-nb</module>
         <module>deepstream-project</module>
-        <module>deepstream-project-job-cf</module>
-        <module>deepstream-project-job-cli</module>
-        <module>deepstream-project-job-mz</module>
-        <module>deepstream-project-job-dc</module>
     </modules>
 
     <properties>

@@ -46,6 +46,17 @@
         <kotlin.coroutines.version>1.6.1</kotlin.coroutines.version>
     </properties>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <url>http://192.168.3.167:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>nexus-releases</id>
+            <url>http://192.168.3.167:8081/repository/maven-releases/</url>
+        </repository>
+    </distributionManagement>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -402,7 +413,6 @@
                     <skipTests>true</skipTests>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 

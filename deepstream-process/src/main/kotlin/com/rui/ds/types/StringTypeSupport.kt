@@ -7,12 +7,12 @@ class StringTypeSupport : TypeSupport {
 
     override fun convert(fieldName: String, sourceType: TypeInformation<*>): String {
         val convertWord = when (sourceType) {
-            Types.STRING -> fieldName
-            Types.INT -> "CAST($fieldName AS STRING)"
-            Types.BIG_DEC -> "CAST($fieldName AS STRING)"
-            Types.LOCAL_DATE_TIME -> "DATE_FORMAT($fieldName, \"${DeepStreamTypes.DATE_TIME_FORMAT}\")"
-            Types.LOCAL_DATE -> "DATE_FORMAT($fieldName, \"${DeepStreamTypes.DATE_FORMAT}\")"
-            Types.LOCAL_TIME -> "DATE_FORMAT($fieldName, \"${DeepStreamTypes.TIME_FORMAT}\")"
+            Types.STRING -> "`$fieldName`"
+            Types.INT -> "CAST(`$fieldName` AS STRING)"
+            Types.BIG_DEC -> "CAST(`$fieldName` AS STRING)"
+            Types.LOCAL_DATE_TIME -> "DATE_FORMAT(`$fieldName`, '${DeepStreamTypes.DATE_TIME_FORMAT}')"
+            Types.LOCAL_DATE -> "CAST(`$fieldName` AS STRING)"
+            Types.LOCAL_TIME -> "CAST(`$fieldName` AS STRING)"
 
             else -> throw IllegalArgumentException(
                 "Cannot convert $sourceType field '$fieldName' to Boolean"

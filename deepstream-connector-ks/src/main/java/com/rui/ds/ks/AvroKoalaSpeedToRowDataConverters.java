@@ -34,7 +34,6 @@ public class AvroKoalaSpeedToRowDataConverters {
                 row.setField(i, fieldConverters[i].convert(value));
             }
 
-            System.out.println("Read:" + row);
             return row;
         };
     }

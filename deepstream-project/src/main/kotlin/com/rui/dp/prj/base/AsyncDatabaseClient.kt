@@ -3,6 +3,7 @@ package com.rui.dp.prj.base
 import com.rui.ds.datasource.DatabaseSources
 import org.apache.flink.types.Row
 import org.apache.flink.types.RowKind
+import org.slf4j.LoggerFactory
 import java.math.BigDecimal
 import java.sql.SQLException
 import java.util.concurrent.CompletableFuture
@@ -21,7 +22,7 @@ class AsyncDatabaseClient(private val business: BusinessData) {
         if (row.kind == RowKind.UPDATE_BEFORE) {
             return emptyList()
         }
-
+        logger.info("Process data $row ")
         try {
             DatabaseSources.getConnection(business.dsName).use { connection ->
                 val rowFields = row.getFieldNames(true)
@@ -50,10 +51,11 @@ class AsyncDatabaseClient(private val business: BusinessData) {
 
                     rows.add(newRow)
                 }
+                logger.info("Finish with $rows ")
                 return rows
             }
         } catch (e: SQLException) {
-            e.printStackTrace()
+            logger.error("Process data $row failed.", e)
             throw RuntimeException(e)
         }
     }
@@ -70,5 +72,9 @@ class AsyncDatabaseClient(private val business: BusinessData) {
             is java.sql.Time -> value.toLocalTime()
             else -> value
         }
+    }
+
+    companion object {
+        val logger = LoggerFactory.getLogger(AsyncDatabaseClient::class.java)
     }
 }

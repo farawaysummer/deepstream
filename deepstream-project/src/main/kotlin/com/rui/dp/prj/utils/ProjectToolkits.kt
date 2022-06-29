@@ -4,6 +4,8 @@ import com.google.common.collect.Sets
 import com.rui.dp.prj.base.DeepStreamHelper
 import com.rui.ds.datasource.DatabaseSources
 import com.rui.ds.generator.JdbcDimTableGenerator
+import com.rui.ds.types.DeepStreamTypes
+import org.dom4j.DocumentHelper
 
 object ProjectToolkits {
 
@@ -63,17 +65,24 @@ object ProjectToolkits {
             while (tableResult.next()) {
                 val tName = tableResult.getString("TABLE_NAME").uppercase()
                 val columnResult = dbMetaData.getColumns(schemaName, null, tName, null)
-                val fields = mutableSetOf<String>()
+                val fields = mutableMapOf<String, String>()
                 while (columnResult.next()) {
                     val columnName = columnResult.getString("COLUMN_NAME")
-                    fields.add(columnName)
+                    val columnType = columnResult.getString("TYPE_NAME")
+                    fields[columnName] = columnType
                 }
 
-                val insertColumns = Sets.intersection(fields, sourceFields.keys)
+                val insertColumns = Sets.intersection(fields.keys, sourceFields.keys)
+
+                val functions = insertColumns.map{
+                    val sourceType = DeepStreamHelper.mappingTypeNameToInformation(sourceFields[it]!!)
+                    val tarTypeName = DeepStreamHelper.mappingTypeNameToNormalize(fields[it]!!)
+                    DeepStreamTypes.convertFunction(it, sourceType, tarTypeName)
+                }
 
                 val insertFieldStr = insertColumns.joinToString(separator = ",") {"`$it`"}
 //                val fromFieldStr = insertColumns.joinToString(separator = ",\n") { "CAST(`$it` AS STRING)" }
-                val fromFieldStr = insertColumns.joinToString(separator = ",\n") { "`$it`" }
+                val fromFieldStr = functions.joinToString(separator = ",\n") { "$it" }
                 // cast function
 
                 val insertSql = "INSERT INTO $tableName ($insertFieldStr) \n" +

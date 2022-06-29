@@ -8,6 +8,7 @@ import com.rui.ds.facade.kettle.KettleJobParser
 import com.rui.ds.generator.TableGenerator
 import com.rui.ds.job.DeepStreamJob
 import com.rui.ds.job.JobConfig
+import com.rui.ds.types.DeepStreamTypes
 import io.debezium.util.Strings
 import org.apache.flink.api.common.typeinfo.BasicTypeInfo
 import org.apache.flink.api.common.typeinfo.TypeInformation
@@ -104,19 +105,36 @@ object DeepStreamHelper {
 
     fun toStreamDataTypes(typeMap: Map<String, String>): StreamDataTypes {
         val allTypes = typeMap.mapValues { (_, value) ->
-            when (value) {
-                "VARCHAR" -> Types.STRING
-                "VARCHAR2" -> Types.STRING
-                "CHAR" -> Types.STRING
-                "TIMESTAMP" -> Types.LOCAL_DATE_TIME
-                "DATE" -> Types.LOCAL_DATE
-                "TIME" -> Types.LOCAL_TIME
-                "NUMBER" -> Types.BIG_DEC
-                else -> Types.STRING
-            } as TypeInformation<*>
+            mappingTypeNameToInformation(value)
         }
 
         return StreamDataTypes(allTypes.keys.toTypedArray(), allTypes.values.toTypedArray())
+    }
+
+    fun mappingTypeNameToInformation(typeName: String): TypeInformation<*> {
+        return when (typeName) {
+            "VARCHAR" -> Types.STRING
+            "VARCHAR2" -> Types.STRING
+            "CHAR" -> Types.STRING
+            "TIMESTAMP" -> Types.LOCAL_DATE_TIME
+            "DATE" -> Types.LOCAL_DATE
+            "TIME" -> Types.LOCAL_TIME
+            "NUMBER" -> Types.BIG_DEC
+            else -> Types.STRING
+        } as TypeInformation<*>
+    }
+
+    fun mappingTypeNameToNormalize(typeName: String): String {
+        return when (typeName) {
+            "VARCHAR" -> DeepStreamTypes.DATA_TYPE_STRING
+            "VARCHAR2" -> DeepStreamTypes.DATA_TYPE_STRING
+            "CHAR" -> DeepStreamTypes.DATA_TYPE_STRING
+            "TIMESTAMP" -> DeepStreamTypes.DATA_TYPE_TIMESTAMP
+            "DATE" -> DeepStreamTypes.DATA_TYPE_DATE
+            "TIME" -> DeepStreamTypes.DATA_TYPE_TIME
+            "NUMBER" -> DeepStreamTypes.DATA_TYPE_DECIMAL
+            else -> DeepStreamTypes.DATA_TYPE_STRING
+        }
     }
 
     @JvmStatic

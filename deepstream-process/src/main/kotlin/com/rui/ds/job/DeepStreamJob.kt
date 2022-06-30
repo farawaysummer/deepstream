@@ -93,6 +93,8 @@ class DeepStreamJob(
 
             val configuration = Configuration()
 
+            configuration.setString("table.exec.sink.not-null-enforcer", "DROP")
+
             if (jobConfig.miniBatchEnabled) {
                 configuration.setString("table.exec.mini-batch.enabled", "true") // enable mini-batch optimization
                 configuration.setString(

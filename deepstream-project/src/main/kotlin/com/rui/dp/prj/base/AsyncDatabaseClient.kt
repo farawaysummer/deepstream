@@ -12,6 +12,7 @@ class AsyncDatabaseClient(private val business: BusinessData) {
     init {
         DeepStreamHelper.loadDatasource()
         DeepStreamHelper.loadSql()
+        System.getProperties().setProperty("oracle.jdbc.J2EE13Compliant", "true")
     }
 
     fun query(key: Row): CompletableFuture<Collection<Row?>> {
@@ -42,7 +43,11 @@ class AsyncDatabaseClient(private val business: BusinessData) {
                 val result = statement.executeQuery()
                 while (result.next()) {
                     val values =
-                        business.resultFields.keys.associateBy({ it }, { result.getObject(it) })
+                        business.resultFields.keys.associateBy({
+                            it
+                        }, {
+                            result.getObject(it)
+                        })
                             .mapValues { (_, value) ->
                                 typeNormalize(value)
                             }
@@ -65,7 +70,7 @@ class AsyncDatabaseClient(private val business: BusinessData) {
             return null
         }
 
-        return when(value) {
+        return when (value) {
             is BigDecimal -> value.toString()
             is java.sql.Timestamp -> value.toLocalDateTime()
             is java.sql.Date -> value.toLocalDate()

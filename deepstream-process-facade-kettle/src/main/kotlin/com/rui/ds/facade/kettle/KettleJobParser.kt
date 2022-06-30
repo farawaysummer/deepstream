@@ -95,6 +95,9 @@ object KettleJobParser : JobMetaParser<String> {
         val elements = attributesEle.elements("attribute")
         val attributes =
             elements.associateBy({ it.elementText("code") }, { it.elementText("attribute") })
+        val subType = conElement.element("subType")?.text
+
+        val subTypeValue = subType?.toInt() ?: DataSourceConfig.DATABASE_SUBTYPE_DEFAULT
 
         return DataSourceConfig(
             name = name,
@@ -104,7 +107,8 @@ object KettleJobParser : JobMetaParser<String> {
             type = type,
             host = host,
             port = port.toInt(),
-            properties = attributes
+            properties = attributes,
+            subType = subTypeValue
         )
     }
 

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<job name="Standard">
+    <!--捕获的变更事件相关配置-->
+    <event name="queryEvent">
+        <!--数据变更事件的索引字段信息-->
+        <eventKeys>
+            <field name="AUTO_ID" type="STRING" isKey="true"/>
+        </eventKeys>
+        <!--读取的事件来源类型，一般为kafka或jdbc-cdc-->
+        <eventType name="kafka">
+            <!--读取的kafka主题名-->
+            <config name="topic" value="10"/>
+            <!--kafka的服务地址-->
+            <config name="properties.bootstrap.servers" value="localhost:9092"/>
+            <!--kafka的读取分组，默认即可-->
+            <config name="properties.group.id" value="k_default"/>
+            <!--kafka的读取偏移量设置，调试阶段可设置为earliest-offset , 正式运行时设置为group-offsets-->
+            <config name="scan.startup.mode" value="group-offsets"/>
+            <!--kafka的读取格式，从CDC的数据主题中读取格式为ruisoft-koalaspeed-->
+            <config name="format" value="ruisoft-koalaspeed"/>
+        </eventType>
+    </event>
+    <!--处理过程中涉及到的表定义-->
+    <relates>
+        <!--表定义，包括表名和引用的字段定义，引用名与同目录下的table-*.xml文件相同-->
+        <table name="EMR_CASE_HISTORY_DOCUMENT" ref="sample">
+            <!--表与真实物理数据存储的映射，类型为jdbc意味着这张表与真实数据库中的某张表形成了映射关系-->
+            <tableType name="jdbc">
+                <!--连接信息-->
+                <config name="url" value="jdbc:mysql://10.48.251.50:3306/ods?useSSL=false&amp;autoReconnect=true"/>
+                <!--用户名-->
+                <config name="username" value="ruisoft"/>
+                <!--密码-->
+                <config name="password" value="Ruisoft@123"/>
+                <!--驱动类名-->
+                <config name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <!--真实表名-->
+                <config name="table-name" value="E12010000"/>
+            </tableType>
+
+        </table>
+    </relates>
+    <process>
+        <datasource name="HIS"/>
+        <processSQL name="selectHIS"/>
+        <sinkSQL name="insert"/>
+        <transformJobs>
+            <tranform name=""/>
+        </transformJobs>
+        <delayQuerySecond>0</delayQuerySecond>
+        <results>
+            <field name="ORG_CODE" type="VARCHAR2"/>
+            <field name="CLINIC_ID" type="VARCHAR2"/>
+            <field name="NO" type="VARCHAR2"/>
+            <field name="DEPT_CODE" type="VARCHAR2"/>
+            <field name="REGISTER_ID" type="VARCHAR2"/>
+            <field name="CARDID" type="VARCHAR2"/>
+            <field name="EMP_ID" type="VARCHAR2"/>
+            <field name="PAT_NO" type="VARCHAR2"/>
+            <field name="PERSONID" type="VARCHAR2"/>
+            <field name="NAME" type="VARCHAR2"/>
+            <field name="SEX" type="VARCHAR2"/>
+            <field name="BIRTHDAY" type="TIMESTAMP"/>
+            <field name="AGE" type="VARCHAR2"/>
+            <field name="AGE2" type="VARCHAR2"/>
+            <field name="CF_TYPE" type="CHAR"/>
+            <field name="IDCARD" type="VARCHAR2"/>
+            <field name="CARDNUM" type="VARCHAR2"/>
+            <field name="CLINIC_TIME" type="TIMESTAMP"/>
+            <field name="IF_FIRSTVISIT" type="VARCHAR2"/>
+            <field name="ALLERGIC_HISTORY" type="VARCHAR2"/>
+            <field name="CHIEF_COMPLAINT" type="VARCHAR2"/>
+            <field name="HPC" type="VARCHAR2"/>
+            <field name="PMH" type="VARCHAR2"/>
+            <field name="PHYSIQUE" type="VARCHAR2"/>
+            <field name="CLINIC_DISPOSE" type="VARCHAR2"/>
+            <field name="DIAGNOSE_NAME" type="VARCHAR2"/>
+            <field name="DIAGNOSE_MEASUR" type="CHAR"/>
+            <field name="KTDOC_REMARK" type="VARCHAR2"/>
+            <field name="CREATE_TIME" type="TIMESTAMP"/>
+            <field name="HIS_EPIDEMIC" type="VARCHAR2"/>
+            <field name="HIS_DISEASE_INC" type="VARCHAR2"/>
+            <field name="HIS_PRE_INOCULATION" type="VARCHAR2"/>
+            <field name="HIS_OPERATION" type="VARCHAR2"/>
+            <field name="HIS_BIRTH" type="VARCHAR2"/>
+            <field name="HIS_GROWN" type="VARCHAR2"/>
+            <field name="HIS_FEED" type="VARCHAR2"/>
+            <field name="HIS_METACHYSIS" type="VARCHAR2"/>
+            <field name="HIS_PERSONAL" type="VARCHAR2"/>
+            <field name="HIS_MARRY_CHILD" type="VARCHAR2"/>
+            <field name="HIS_MENSES" type="VARCHAR2"/>
+            <field name="HIS_FAMILY" type="VARCHAR2"/>
+            <field name="PULSE_RATE" type="CHAR"/>
+            <field name="SPB" type="VARCHAR2"/>
+            <field name="DPB" type="VARCHAR2"/>
+            <field name="HEIGHT" type="VARCHAR2"/>
+            <field name="WEIGHT" type="VARCHAR2"/>
+            <field name="GESTATIONAL_AGE" type="CHAR"/>
+            <field name="ASSISTANT_EXAMINATION" type="VARCHAR2"/>
+            <field name="PAIN_GRADE" type="CHAR"/>
+            <field name="EVALUATION_ALL" type="CHAR"/>
+            <field name="WEST_DIAG_INHOS_DES" type="CHAR"/>
+            <field name="WZWS" type="VARCHAR2"/>
+            <field name="WZWMS" type="VARCHAR2"/>
+            <field name="WZWXT" type="VARCHAR2"/>
+            <field name="WZWTLWGJQ" type="VARCHAR2"/>
+            <field name="WZWPF" type="VARCHAR2"/>
+            <field name="WZWLM" type="VARCHAR2"/>
+            <field name="WZWPXWYFMW" type="VARCHAR2"/>
+            <field name="WZSDM" type="VARCHAR2"/>
+            <field name="WZS" type="VARCHAR2"/>
+            <field name="WZTDM" type="VARCHAR2"/>
+            <field name="WZT" type="VARCHAR2"/>
+            <field name="WZQT1" type="VARCHAR2"/>
+            <field name="WZTSY" type="VARCHAR2"/>
+            <field name="WZXQW" type="VARCHAR2"/>
+            <field name="WZQT2" type="VARCHAR2"/>
+            <field name="WZHR" type="VARCHAR2"/>
+            <field name="WZCH" type="VARCHAR2"/>
+            <field name="WZTS" type="VARCHAR2"/>
+            <field name="WZXXWF" type="VARCHAR2"/>
+            <field name="WZEM" type="VARCHAR2"/>
+            <field name="WZYSYKWDM" type="VARCHAR2"/>
+            <field name="WZYSYKW" type="VARCHAR2"/>
+            <field name="WZSMDM" type="VARCHAR2"/>
+            <field name="WZSM" type="VARCHAR2"/>
+            <field name="WZDBDM" type="VARCHAR2"/>
+            <field name="WZDB" type="VARCHAR2"/>
+            <field name="WZXB" type="VARCHAR2"/>
+            <field name="WZFN" type="VARCHAR2"/>
+            <field name="WZXE" type="VARCHAR2"/>
+            <field name="WZQT3" type="VARCHAR2"/>
+            <field name="QZMZDM" type="VARCHAR2"/>
+            <field name="QZMZ" type="VARCHAR2"/>
+            <field name="QZAZ" type="VARCHAR2"/>
+            <field name="QZQT" type="VARCHAR2"/>
+            <field name="TCM_DIEASE_CODE" type="CHAR"/>
+            <field name="TCM_DIEASE_NAME" type="CHAR"/>
+            <field name="TCM_SYNDROME_CODE" type="CHAR"/>
+            <field name="TCM_SYNDROME_NAME" type="CHAR"/>
+            <field name="THERAPEUTIC_METHOD_CODE" type="CHAR"/>
+            <field name="THERAPEUTIC_METHOD" type="CHAR"/>
+            <field name="CASE_TYPE" type="CHAR"/>
+            <field name="AUTO_ID" type="VARCHAR2"/>
+            <field name="HOSP_NAME" type="CHAR"/>
+            <field name="HOSP_ID" type="CHAR"/>
+            <field name="PATIENT_ID" type="VARCHAR2"/>
+            <field name="LK_CLI_REG" type="VARCHAR2"/>
+            <field name="CREATE_DTIME" type="TIMESTAMP"/>
+            <field name="UPDATE_DTIME" type="TIMESTAMP"/>
+            <field name="RECORD_DTIME" type="CHAR"/>
+            <field name="RECORD_UPDATE_DTIME" type="CHAR"/>
+        </results>
+    </process>
+
+</job>

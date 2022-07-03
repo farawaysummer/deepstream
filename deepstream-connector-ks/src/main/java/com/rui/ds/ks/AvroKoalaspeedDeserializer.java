@@ -60,16 +60,16 @@ public class AvroKoalaspeedDeserializer implements DeserializationSchema<RowData
         GenericRecord data = convertToGenericRecord(columnValues);
         RowData after = (RowData) runtimeConverter.convert(data);
 
-        columnValues = event.getBeforeUpdatedColumns();
-        data = convertToGenericRecord(columnValues);
-        RowData before = (RowData) runtimeConverter.convert(data);
+//        columnValues = event.getBeforeUpdatedColumns();
+//        data = convertToGenericRecord(columnValues);
+//        RowData before = (RowData) runtimeConverter.convert(data);
         int operationType = parseOperationType(event.getOperationType());
 
         switch (operationType) {
             case OperationType.UPDATE_CODE:
-                before.setRowKind(RowKind.UPDATE_BEFORE);
+//                before.setRowKind(RowKind.UPDATE_BEFORE);
                 after.setRowKind(RowKind.UPDATE_AFTER);
-                out.collect(before);
+//                out.collect(before);
                 out.collect(after);
                 break;
             case OperationType.DELETE_CODE:

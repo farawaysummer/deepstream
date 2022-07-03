@@ -17,7 +17,7 @@ class DataSourceConfig(
     val port: Int = 0,
     val properties: Map<String, String> = mapOf(),
     val subType: Int = DATABASE_SUBTYPE_DEFAULT
-) {
+) : java.io.Serializable {
     val driverClassName: String = driverMap.getOrDefault(type, "")
     val connectString: String = String.format(connectURLFormat.get(type, subType)!!, host, port, dbName)
 
@@ -43,14 +43,14 @@ class DataSourceConfig(
         public const val DATABASE_SUBTYPE_DEFAULT = 0
         public const val DATABASE_SUBTYPE_CLUSTER = 1
         private val connectURLFormat: Table<String, Int, String> = ImmutableTable.Builder<String, Int, String>().put(
-                DS_TYPE_ORACLE, DATABASE_SUBTYPE_DEFAULT, "jdbc:oracle:thin:@%s:%d:%s"
-            ).put(
-                DS_TYPE_ORACLE, DATABASE_SUBTYPE_CLUSTER, "jdbc:oracle:thin:@%s:%d%s"
-            ).put(
-                DS_TYPE_MYSQL, DATABASE_SUBTYPE_DEFAULT, "jdbc:mysql://%s:%d/%s?useSSL=false&autoReconnect=true"
-            ).put(
-                DS_TYPE_MSSQL, DATABASE_SUBTYPE_DEFAULT, "jdbc:sqlserver://%s\\MSSQLSERVER2008:%d;database=%s"
-            ).build()
+            DS_TYPE_ORACLE, DATABASE_SUBTYPE_DEFAULT, "jdbc:oracle:thin:@%s:%d:%s"
+        ).put(
+            DS_TYPE_ORACLE, DATABASE_SUBTYPE_CLUSTER, "jdbc:oracle:thin:@%s:%d%s"
+        ).put(
+            DS_TYPE_MYSQL, DATABASE_SUBTYPE_DEFAULT, "jdbc:mysql://%s:%d/%s?useSSL=false&autoReconnect=true"
+        ).put(
+            DS_TYPE_MSSQL, DATABASE_SUBTYPE_DEFAULT, "jdbc:sqlserver://%s\\MSSQLSERVER2008:%d;database=%s"
+        ).build()
         private val driverMap: Map<String, String> = mapOf(
             DS_TYPE_ORACLE to "oracle.jdbc.driver.OracleDriver",
             DS_TYPE_MYSQL to "com.mysql.cj.jdbc.Driver",

@@ -128,9 +128,8 @@ class DeepStreamJob(
                 FileSystemCheckpointStorage("file://${checkpointStorage.absolutePath}")
 
             env.enableCheckpointing(10000L)  //头和头
-            env.checkpointConfig.disableCheckpointing()
             env.checkpointConfig.checkpointingMode = CheckpointingMode.EXACTLY_ONCE
-            env.checkpointConfig.checkpointTimeout = 120000L
+            env.checkpointConfig.checkpointTimeout = 30000L
             env.checkpointConfig.checkpointInterval = 3000L
             env.checkpointConfig.maxConcurrentCheckpoints = 2
             env.checkpointConfig.minPauseBetweenCheckpoints = 3000L

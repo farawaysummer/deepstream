@@ -1,5 +1,6 @@
-package com.rui.dp.prj.base;
+package com.rui.dp.prj.base.funs;
 
+import com.rui.dp.prj.base.QueryData;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.async.ResultFuture;
 import org.apache.flink.streaming.api.functions.async.RichAsyncFunction;
@@ -8,21 +9,21 @@ import org.apache.flink.types.Row;
 public class AsyncDBJoinFunction extends RichAsyncFunction<Row, Row> {
     private static final long serialVersionUID = 1L;
     private transient AsyncDatabaseClient client;
-    private final BusinessData businessData;
+    private final QueryData queryData;
     private int delay = 1;
 
-    public AsyncDBJoinFunction(BusinessData businessData) {
-        this.businessData = businessData;
+    public AsyncDBJoinFunction(QueryData queryData) {
+        this.queryData = queryData;
     }
 
-    public AsyncDBJoinFunction(BusinessData businessData, int delayQueryTime) {
-        this.businessData = businessData;
+    public AsyncDBJoinFunction(QueryData businessData, int delayQueryTime) {
+        this.queryData = businessData;
         this.delay = delayQueryTime;
     }
 
     @Override
     public void open(Configuration parameters) {
-        client = new AsyncDatabaseClient(businessData, delay);
+        client = new AsyncDatabaseClient(queryData, delay);
     }
 
     @Override

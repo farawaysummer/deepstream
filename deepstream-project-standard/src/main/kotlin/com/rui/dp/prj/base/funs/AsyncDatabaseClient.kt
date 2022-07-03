@@ -1,19 +1,18 @@
-package com.rui.dp.prj.base
+package com.rui.dp.prj.base.funs
 
+import com.rui.dp.prj.base.QueryData
 import com.rui.ds.datasource.DatabaseSources
 import org.apache.flink.types.Row
 import org.apache.flink.types.RowKind
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.math.BigDecimal
 import java.sql.SQLException
 import java.util.concurrent.CompletableFuture
 
-class AsyncDatabaseClient(private val business: BusinessData, private val delayQueryTime: Int) {
-
+class AsyncDatabaseClient(private val queryData: QueryData, private val delayQueryTime: Int) {
     init {
-        DeepStreamHelper.loadDatasource()
-        DeepStreamHelper.loadSql()
-        System.getProperties().setProperty("oracle.jdbc.J2EE13Compliant", "true")
+        queryData.loadDataSource()
     }
 
     fun query(key: Row): CompletableFuture<Collection<Row?>> {
@@ -24,20 +23,21 @@ class AsyncDatabaseClient(private val business: BusinessData, private val delayQ
         if (row.kind == RowKind.UPDATE_BEFORE) {
             return emptyList()
         }
-        logger.info("Process data $row ")
+
+        logger.debug("Process data $row ")
         try {
             if (delayQueryTime > 0) { // delay query, in case required data not exist
                 Thread.sleep(delayQueryTime * 1000L)
             }
 
-            DatabaseSources.getConnection(business.dsName).use { connection ->
+            DatabaseSources.getConnection(queryData.dsName).use { connection ->
                 val rowFields = row.getFieldNames(true)
 
-                val sql = business.businessSql
+                val sql = queryData.businessSql
                 val rows = mutableListOf<Row>()
                 val statement = connection!!.prepareStatement(sql)
-                for (index in 1..business.conditionFields.size) {
-                    val fieldIndex = rowFields?.indexOf(business.conditionFields[index - 1])
+                for (index in 1..queryData.conditionFields.size) {
+                    val fieldIndex = rowFields?.indexOf(queryData.conditionFields[index - 1])
                     if (fieldIndex == null) {
                         statement.setObject(index, row.getField(index - 1))
                     } else {
@@ -48,7 +48,7 @@ class AsyncDatabaseClient(private val business: BusinessData, private val delayQ
                 val result = statement.executeQuery()
                 while (result.next()) {
                     val values =
-                        business.resultFields.keys.associateBy({
+                        queryData.resultFields.keys.associateBy({
                             it
                         }, {
                             result.getObject(it)
@@ -57,11 +57,11 @@ class AsyncDatabaseClient(private val business: BusinessData, private val delayQ
                                 typeNormalize(value)
                             }
                     val newRow = Row.withNames()
-                    business.resultFields.keys.forEach { newRow.setField(it, values[it]) }
+                    queryData.resultFields.keys.forEach { newRow.setField(it, values[it]) }
 
                     rows.add(newRow)
                 }
-                logger.info("Finish with $rows ")
+                logger.debug("Finish with $rows ")
                 return rows
             }
         } catch (e: SQLException) {
@@ -85,6 +85,6 @@ class AsyncDatabaseClient(private val business: BusinessData, private val delayQ
     }
 
     companion object {
-        val logger = LoggerFactory.getLogger(AsyncDatabaseClient::class.java)
+        val logger: Logger = LoggerFactory.getLogger(AsyncDatabaseClient::class.java)
     }
 }

@@ -20,7 +20,7 @@ import org.apache.flink.table.runtime.typeutils.TimestampDataTypeInfo
 import org.dom4j.io.SAXReader
 
 object DeepStreamHelper {
-    val SQL: MutableMap<String, String> = mutableMapOf()
+    private val SQL: MutableMap<String, String> = mutableMapOf()
 
     @JvmStatic
     fun initEnv(): ProcessContext {
@@ -38,6 +38,7 @@ object DeepStreamHelper {
         return processContext
     }
 
+    @JvmStatic
     fun loadBusiness(): BusinessData {
         val inputStream = javaClass.getResourceAsStream("/business.xml")!!
         val reader = SAXReader()
@@ -48,7 +49,12 @@ object DeepStreamHelper {
         val dsName = rootElement.element("datasource").attributeValue("name").trim()
         val sqlName = rootElement.element("businessSql").attributeValue("name").trim()
         val businessSql = getSql(sqlName)!!
-        val dictTransform = rootElement.element("transformJobName")?.text
+        val jobs = rootElement.elements("transformJobName")
+        val transfroms = mutableListOf<String>()
+        if (jobs != null && jobs.isNotEmpty()) {
+            jobs.forEach { transfroms.add(it.text) }
+        }
+//        val dictTransform = rootElement.element("transformJobName")?.text
 
         val relatedTables = rootElement.element("relates").elements("table").map { it.attributeValue("name") }
 
@@ -62,7 +68,7 @@ object DeepStreamHelper {
             businessName = businessName,
             dsName = dsName,
             relatedTables = relatedTables,
-            dictTransformName = dictTransform,
+            dictTransformNames = transfroms,
             businessSql = businessSql,
             conditionFields = conditionFields,
             resultFields = resultFields
@@ -103,6 +109,17 @@ object DeepStreamHelper {
         }
     }
 
+    @JvmStatic
+    fun toStreamDataTypes(dataFields: List<DataField>): StreamDataTypes {
+        val allTypes = dataFields.associateBy({ it.fieldName }, { it.fieldType })
+            .mapValues { (_, value) ->
+                mappingTypeNameToInformation(value)
+            }
+
+        return StreamDataTypes(allTypes.keys.toTypedArray(), allTypes.values.toTypedArray())
+    }
+
+    @JvmStatic
     fun toStreamDataTypes(typeMap: Map<String, String>): StreamDataTypes {
         val allTypes = typeMap.mapValues { (_, value) ->
             mappingTypeNameToInformation(value)
@@ -117,6 +134,7 @@ object DeepStreamHelper {
             "VARCHAR2" -> Types.STRING
             "CHAR" -> Types.STRING
             "TIMESTAMP" -> Types.LOCAL_DATE_TIME
+            "TIMESTAMP_LTZ" -> Types.INSTANT
             "DATE" -> Types.LOCAL_DATE
             "TIME" -> Types.LOCAL_TIME
             "NUMBER" -> Types.BIG_DEC

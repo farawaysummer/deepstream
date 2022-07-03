@@ -45,12 +45,14 @@ class DictMappingFunction(
 
     override fun map(value: Row): Row {
         val transFields = transforms.keys
+        println("Ready to Mapping Fields: $transFields")
         transFields.forEach { field ->
             val fieldValue = value.getField(field)
             val transform = transforms[field]
             if (fieldValue != null && transform != null) {
                 val result = transform.transform(field, arrayOf(field), arrayOf(fieldValue))
                 if (result.isSuccess) {
+                    println("Mapping field $field from $fieldValue to ${result.resultValue}")
                     value.setField(field, result.resultValue)
                 }
             }

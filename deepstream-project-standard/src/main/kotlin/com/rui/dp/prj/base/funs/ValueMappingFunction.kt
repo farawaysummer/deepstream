@@ -36,9 +36,7 @@ class ValueMappingFunction(
 
     override fun map(value: Row): Row {
         val transFields = transforms.keys
-        if (logger.isDebugEnabled) {
-            logger.debug("Ready to Mapping Fields: $transFields")
-        }
+        logger.info("[${jobData.jobName}] Ready to Mapping Fields: $transFields")
 
         transFields.forEach { field ->
             val fieldValue = value.getField(field)

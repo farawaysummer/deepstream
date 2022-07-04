@@ -29,8 +29,9 @@ abstract class JobDataLoader {
         val rootElement = loadResources(jobResource)
 
         val jobName = rootElement.attributeValue("name")
-        val eventElement = rootElement.element("event")
-        val eventData = loadEventData(eventElement)
+
+        val eventsElement = rootElement.element("events")
+        val eventsData = eventsElement.elements("event").map { loadEventData(it) }
 
         val relatedElement = rootElement.element("relates")
         val relatedTables = loadRelatedTables(relatedElement)
@@ -38,7 +39,7 @@ abstract class JobDataLoader {
         val processElement = rootElement.element("process")
         val processData = loadProcessData(processElement)
 
-        return DeepStreamProcessJobData(jobName, eventData, relatedTables, processData)
+        return DeepStreamProcessJobData(jobName, eventsData, relatedTables, processData)
     }
 
     private fun loadEventData(eventElement: Element): EventData {

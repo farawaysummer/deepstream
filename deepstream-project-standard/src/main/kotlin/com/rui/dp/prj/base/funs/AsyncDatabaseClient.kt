@@ -24,7 +24,6 @@ class AsyncDatabaseClient(private val queryData: QueryData, private val delayQue
             return emptyList()
         }
 
-        logger.debug("Process data $row ")
         try {
             if (delayQueryTime > 0) { // delay query, in case required data not exist
                 Thread.sleep(delayQueryTime * 1000L)
@@ -69,7 +68,7 @@ class AsyncDatabaseClient(private val queryData: QueryData, private val delayQue
 
                     rows.add(newRow)
                 }
-                logger.debug("Finish with $rows ")
+                logger.info("[${queryData.jobName}] Process data $row , and finished with ${rows.size} values")
                 return rows
             }
         } catch (e: SQLException) {

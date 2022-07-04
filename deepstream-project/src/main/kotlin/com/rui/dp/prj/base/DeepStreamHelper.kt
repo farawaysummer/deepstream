@@ -20,7 +20,7 @@ import org.apache.flink.table.runtime.typeutils.TimestampDataTypeInfo
 import org.dom4j.io.SAXReader
 
 object DeepStreamHelper {
-    private val SQL: MutableMap<String, String> = mutableMapOf()
+    val SQL: MutableMap<String, String> = mutableMapOf()
 
     @JvmStatic
     fun initEnv(): ProcessContext {
@@ -107,16 +107,6 @@ object DeepStreamHelper {
             val sql = it.text
             SQL[name] = sql
         }
-    }
-
-    @JvmStatic
-    fun toStreamDataTypes(dataFields: List<DataField>): StreamDataTypes {
-        val allTypes = dataFields.associateBy({ it.fieldName }, { it.fieldType })
-            .mapValues { (_, value) ->
-                mappingTypeNameToInformation(value)
-            }
-
-        return StreamDataTypes(allTypes.keys.toTypedArray(), allTypes.values.toTypedArray())
     }
 
     @JvmStatic

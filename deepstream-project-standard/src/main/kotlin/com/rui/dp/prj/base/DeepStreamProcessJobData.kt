@@ -5,25 +5,25 @@ import com.rui.ds.datasource.DatabaseSources
 
 data class DeepStreamProcessJobData(
     val jobName: String,
-    val eventData: EventData,
+    val events: List<EventData>,
     val relatedTables: List<RelatedTable>,
-    val processData: ProcessData
+    val processData: ProcessData,
 ) {
     private val SQLS: MutableMap<String, String> = mutableMapOf()
     private val dsConfig: MutableMap<String, DataSourceConfig> = mutableMapOf()
 
-    val queryData: QueryData
-        get() {
-            return QueryData(
-                dsName = processData.dsName,
-                businessSql = getSQL(processData.processSqlName),
-                conditionFields = eventData.eventFields.map { it.fieldName },
-                resultFields = processData.resultFields.associateBy({ it.fieldName }, { it.fieldType }),
-                dsConfig = dsConfig,
-                dynamicCondition = processData.dynamicCondition,
-                masterTable = processData.masterTable
-            )
-        }
+    fun createQueryData(event: EventData): QueryData {
+        return QueryData(
+            jobName = jobName,
+            dsName = processData.dsName,
+            businessSql = getSQL(processData.processSqlName),
+            conditionFields = event.eventFields.map { it.fieldName },
+            resultFields = processData.resultFields.associateBy({ it.fieldName }, { it.fieldType }),
+            dsConfig = dsConfig,
+            dynamicCondition = processData.dynamicCondition,
+            masterTable = processData.masterTable
+        )
+    }
 
     internal fun setSQLs(sqls: Map<String, String>) {
         this.SQLS.putAll(sqls)
@@ -135,6 +135,7 @@ data class TableType(val type: String, val properties: Map<String, String>) {
 }
 
 data class QueryData(
+    val jobName: String,
     val dsName: String,
     val businessSql: String,
     val conditionFields: List<String>,

@@ -25,7 +25,7 @@ public class DeduplicateRowFunction extends KeyedProcessFunction<RowDesc, Row, R
     public void open(Configuration parameters) throws Exception {
         super.open(parameters);
         ValueStateDescriptor<RowDesc> valueDesc = new ValueStateDescriptor<>("rowState", RowDesc.class);
-        valueDesc.enableTimeToLive(StateTtlConfig.newBuilder(Time.seconds(5)).build());
+        valueDesc.enableTimeToLive(StateTtlConfig.newBuilder(Time.seconds(10)).build());
         // 完成 Keyed State 的创建。
         valueState = getRuntimeContext().getState(valueDesc);
     }

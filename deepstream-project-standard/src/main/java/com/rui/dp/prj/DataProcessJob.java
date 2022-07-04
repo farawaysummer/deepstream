@@ -22,9 +22,9 @@ import java.util.stream.Collectors;
 
 public class DataProcessJob implements ProjectJob {
     private final ProcessContext context = DeepStreamHelper.initEnv();
-    private final DeepStreamJobData jobData;
+    private final DeepStreamProcessJobData jobData;
 
-    public DataProcessJob(DeepStreamJobData jobData) {
+    public DataProcessJob(DeepStreamProcessJobData jobData) {
         this.jobData = jobData;
     }
 

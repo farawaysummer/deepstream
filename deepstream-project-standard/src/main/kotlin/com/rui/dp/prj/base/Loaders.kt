@@ -12,7 +12,7 @@ object PackageResourceJobDataLoader: JobDataLoader() {
     }
 
     @JvmStatic
-    fun load(): DeepStreamJobData {
+    fun load(): DeepStreamProcessJobData {
         val jobData = loadJobData("job")
         val sqls = loadSql("sqls")
         jobData.setSQLs(sqls)

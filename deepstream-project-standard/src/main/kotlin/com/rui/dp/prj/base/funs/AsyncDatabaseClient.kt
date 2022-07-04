@@ -33,7 +33,15 @@ class AsyncDatabaseClient(private val queryData: QueryData, private val delayQue
             DatabaseSources.getConnection(queryData.dsName).use { connection ->
                 val rowFields = row.getFieldNames(true)
 
+//                val conditionStr = queryData.conditionFields.joinToString(" AND ") { "$it = ?" }
                 val sql = queryData.businessSql
+//                sql = if (sql.lastIndexOf(string = "where", ignoreCase = true) >
+//                    sql.lastIndexOf(string="from", ignoreCase = true)) {
+//                    "$sql AND $conditionStr"
+//                } else {
+//                    "$sql WHERE $conditionStr"
+//                }
+
                 val rows = mutableListOf<Row>()
                 val statement = connection!!.prepareStatement(sql)
                 for (index in 1..queryData.conditionFields.size) {

@@ -1,5 +1,6 @@
 package com.rui.dp.prj.base
 
+import com.google.common.base.Strings
 import com.rui.ds.common.DataSourceConfig
 import org.dom4j.Element
 import java.math.BigInteger
@@ -15,7 +16,7 @@ abstract class JobDataLoader {
             parseConnection(it)
         }
 
-        return configs.associateBy({it.name}, {it})
+        return configs.associateBy({ it.name }, { it })
     }
 
     fun loadSql(sqlResource: String): Map<String, String> {
@@ -24,20 +25,20 @@ abstract class JobDataLoader {
         return sqlElements.associateBy({ it.attributeValue("name") }, { it.text })
     }
 
-    fun loadJobData(jobResource: String): DeepStreamJobData {
+    fun loadJobData(jobResource: String): DeepStreamProcessJobData {
         val rootElement = loadResources(jobResource)
 
         val jobName = rootElement.attributeValue("name")
         val eventElement = rootElement.element("event")
         val eventData = loadEventData(eventElement)
 
-        val relatedElement = eventElement.element("relates")
+        val relatedElement = rootElement.element("relates")
         val relatedTables = loadRelatedTables(relatedElement)
 
-        val processElement = eventElement.element("process")
+        val processElement = rootElement.element("process")
         val processData = loadProcessData(processElement)
 
-        return DeepStreamJobData(jobName, eventData, relatedTables, processData)
+        return DeepStreamProcessJobData(jobName, eventData, relatedTables, processData)
     }
 
     private fun loadEventData(eventElement: Element): EventData {
@@ -86,6 +87,12 @@ abstract class JobDataLoader {
     private fun loadProcessData(processElement: Element): ProcessData {
         val dsName = processElement.element("datasource").attributeValue("name")
         val processSqlName = processElement.element("processSQL").attributeValue("name")
+        val processMasterTab = processElement.element("processSQL").attributeValue("masterTable")
+        var useDynamicCondition = false
+        if (!Strings.isNullOrEmpty(processMasterTab)) {
+            useDynamicCondition = true
+        }
+
         val sinkSqlName = processElement.element("sinkSQL").attributeValue("name")
         val transformsElement = processElement.element("transformJobs")
         val trans = if (transformsElement != null) {
@@ -103,7 +110,16 @@ abstract class JobDataLoader {
             )
         }
 
-        return ProcessData(dsName, processSqlName, sinkSqlName, trans, delayQuery, resultFields)
+        return ProcessData(
+            dsName = dsName,
+            processSqlName = processSqlName,
+            dynamicCondition = useDynamicCondition,
+            masterTable = processMasterTab,
+            sinkSqlName = sinkSqlName,
+            dictTransforms = trans,
+            queryDelay = delayQuery,
+            resultFields = resultFields
+        )
     }
 
     private fun loadTableType(element: Element): TableType {
@@ -136,9 +152,13 @@ abstract class JobDataLoader {
         val database = conElement.elementText("database")
 
         val attributesEle = conElement.element("attributes")
-        val elements = attributesEle.elements("attribute")
-        val attributes =
+        val attributes = if (attributesEle != null) {
+            val elements = attributesEle.elements("attribute")
             elements.associateBy({ it.elementText("code") }, { it.elementText("attribute") })
+        } else {
+            emptyMap()
+        }
+
         val subType = conElement.element("subType")?.text
 
         val subTypeValue = subType?.toInt() ?: DataSourceConfig.DATABASE_SUBTYPE_DEFAULT

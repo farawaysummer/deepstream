@@ -4,7 +4,6 @@ import com.rui.dp.prj.base.funs.AsyncDBJoinFunction
 import com.rui.dp.prj.base.funs.ValueMappingFunction
 import com.rui.ds.common.DataSourceConfig
 import com.rui.ds.datasource.DatabaseSources
-import com.rui.ds.steps.transform.DictMappingFunction
 import java.util.*
 
 object DeepStreamFunctions {
@@ -21,7 +20,7 @@ object DeepStreamFunctions {
 
     @JvmStatic
     fun createValueMappingFunctions(
-        jobData: DeepStreamJobData,
+        jobData: DeepStreamProcessJobData,
         jobs: List<String>,
         columns: List<String>
     ): ValueMappingFunction {

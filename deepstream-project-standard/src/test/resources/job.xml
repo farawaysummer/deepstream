@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<job name="Standard">
+<job name="CDR">
     <!--捕获的变更事件相关配置-->
     <event name="queryEvent">
         <!--数据变更事件的索引字段信息-->
         <eventKeys>
-            <field name="AUTO_ID" type="STRING" isKey="true"/>
+            <field name="CH_ID" type="STRING" isKey="true"/>
         </eventKeys>
         <!--读取的事件来源类型，一般为kafka或jdbc-cdc-->
         <eventType name="kafka">
@@ -15,7 +15,7 @@
             <!--kafka的读取分组，默认即可-->
             <config name="properties.group.id" value="k_default"/>
             <!--kafka的读取偏移量设置，调试阶段可设置为earliest-offset , 正式运行时设置为group-offsets-->
-            <config name="scan.startup.mode" value="group-offsets"/>
+            <config name="scan.startup.mode" value="earliest-offset"/>
             <!--kafka的读取格式，从CDC的数据主题中读取格式为ruisoft-koalaspeed-->
             <config name="format" value="ruisoft-koalaspeed"/>
         </eventType>
@@ -23,7 +23,7 @@
     <!--处理过程中涉及到的表定义-->
     <relates>
         <!--表定义，包括表名和引用的字段定义，引用名与同目录下的table-*.xml文件相同-->
-        <table name="EMR_CASE_HISTORY_DOCUMENT" ref="sample">
+        <table name="NB_E12010000" ref="e12010000">
             <!--表与真实物理数据存储的映射，类型为jdbc意味着这张表与真实数据库中的某张表形成了映射关系-->
             <tableType name="jdbc">
                 <!--连接信息-->
@@ -41,12 +41,13 @@
         </table>
     </relates>
     <process>
-        <processSQL name="selectHIS"/>
+        <datasource name="HIS"/>
+        <processSQL name="selectHIS" masterTable=""/>
         <sinkSQL name="insert"/>
         <transformJobs>
-            <tranform name=""/>
+            <tranform name="NB_E12010000-门诊电子病历"/>
         </transformJobs>
-        <delayQuerySecond>0</delayQuerySecond>
+        <delayQuerySecond>1</delayQuerySecond>
         <results>
             <field name="ORG_CODE" type="VARCHAR2"/>
             <field name="CLINIC_ID" type="VARCHAR2"/>

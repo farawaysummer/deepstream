@@ -8,7 +8,22 @@ class PackageResourceJobDataLoaderTest {
     @Test
     fun `test job data loader`() {
         val jobData = PackageResourceJobDataLoader.load()
-        println(jobData)
+
+        println("========CREATE EVENT TABLE=========")
+        println(jobData.eventData.toEventTableSql())
+
+        println("\n========QUERY EVENT TABLE=========")
+        println(jobData.eventData.toEventQuerySql())
+
+        assert(jobData.relatedTables.isNotEmpty())
+
+        println("\n========CREATE RELATED TABLE=========")
+        jobData.relatedTables.forEach {
+            println("========TABLE [${it.tableName}]=========")
+            println(it.toTableSql())
+        }
+
+
     }
 
 }

@@ -3,7 +3,7 @@ package com.rui.dp.prj.base
 import com.rui.ds.common.DataSourceConfig
 import com.rui.ds.datasource.DatabaseSources
 
-data class DeepStreamJobData(
+data class DeepStreamProcessJobData(
     val jobName: String,
     val eventData: EventData,
     val relatedTables: List<RelatedTable>,
@@ -19,7 +19,9 @@ data class DeepStreamJobData(
                 businessSql = getSQL(processData.processSqlName),
                 conditionFields = eventData.eventFields.map { it.fieldName },
                 resultFields = processData.resultFields.associateBy({ it.fieldName }, { it.fieldType }),
-                dsConfig
+                dsConfig = dsConfig,
+                dynamicCondition = processData.dynamicCondition,
+                masterTable = processData.masterTable
             )
         }
 
@@ -82,6 +84,8 @@ data class EventData(
 data class ProcessData(
     val dsName: String,
     val processSqlName: String,
+    val dynamicCondition: Boolean = false,
+    val masterTable: String? = null,
     val sinkSqlName: String,
     val dictTransforms: List<String>,
     val queryDelay: Int = 0,
@@ -97,7 +101,7 @@ data class DataField(val fieldName: String, val fieldType: String, val isKey: Bo
 
 data class RelatedTable(val tableName: String, val tableFields: List<DataField>, val tableType: TableType) {
     fun toTableSql(): String {
-        val fields = tableFields.joinToString(separator = ",") {
+        val fields = tableFields.joinToString(separator = ",\n") {
             "`${it.fieldName}` ${it.fieldType}"
         }
 
@@ -119,8 +123,8 @@ data class RelatedTable(val tableName: String, val tableFields: List<DataField>,
 data class TableType(val type: String, val properties: Map<String, String>) {
 
     override fun toString(): String {
-        val defStr = properties.entries.joinToString(separator = ",") {
-            "'$it.key' = '${it.value}'"
+        val defStr = properties.entries.joinToString(separator = ",\n") {
+            "'${it.key}' = '${it.value}'"
         }
 
         return """
@@ -135,7 +139,9 @@ data class QueryData(
     val businessSql: String,
     val conditionFields: List<String>,
     val resultFields: Map<String, String>,
-    val dsConfig: MutableMap<String, DataSourceConfig>
+    val dsConfig: MutableMap<String, DataSourceConfig>,
+    val dynamicCondition: Boolean = false,
+    val masterTable: String? = null
 ): java.io.Serializable {
 
     fun loadDataSource() {

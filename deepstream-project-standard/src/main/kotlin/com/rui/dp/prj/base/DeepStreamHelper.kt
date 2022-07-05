@@ -25,6 +25,13 @@ object DeepStreamHelper {
     }
 
     @JvmStatic
+    fun initEnv(jobName: String): ProcessContext {
+        val jobConfig = JobConfig(miniBatchEnabled = false, jobName = jobName)
+        // 初始化运行环境, 注册数据源
+        return DeepStreamJob.initProcessContext(jobConfig)
+    }
+
+    @JvmStatic
     fun toStreamDataTypes(dataFields: List<DataField>): StreamDataTypes {
         val allTypes = dataFields.associateBy({ it.fieldName }, { it.fieldType })
             .mapValues { (_, value) ->

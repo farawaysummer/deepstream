@@ -23,6 +23,7 @@ import java.time.Duration
 import java.util.concurrent.TimeUnit
 
 data class JobConfig(
+    val jobName: String? = null,
     var jobMode: String = "STREAM",
     var miniBatchEnabled: Boolean = false,
     var enableWebUI: Boolean = false,
@@ -137,6 +138,12 @@ class DeepStreamJob(
 
             val tableEnv = StreamTableEnvironment.create(env, fsSettings)
             tableEnv.config.sqlDialect = SqlDialect.DEFAULT
+
+            if (jobConfig.jobName != null) {
+                val conf = Configuration()
+                conf.setString("pipeline.name", jobConfig.jobName)
+                env.configure(conf, Thread.currentThread().contextClassLoader)
+            }
 
             registryUDF(tableEnv)
 

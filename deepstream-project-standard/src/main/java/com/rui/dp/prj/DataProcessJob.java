@@ -21,11 +21,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class DataProcessJob implements ProjectJob {
-    private final ProcessContext context = DeepStreamHelper.initEnv();
+    private final ProcessContext context;
     private final DeepStreamProcessJobData jobData;
 
     public DataProcessJob(DeepStreamProcessJobData jobData) {
         this.jobData = jobData;
+        context = DeepStreamHelper.initEnv(jobData.getJobName());
     }
 
     @Override

@@ -9,10 +9,13 @@ import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.types.Row;
 import org.apache.flink.util.Collector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class DeduplicateRowFunction extends KeyedProcessFunction<RowDesc, Row, Row> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeduplicateRowFunction.class);
 
     private ValueState<RowDesc> valueState;
     private final List<String> keys;
@@ -39,7 +42,15 @@ public class DeduplicateRowFunction extends KeyedProcessFunction<RowDesc, Row, R
             valueState.update(current);
             //还需要注册一个定时器
             ctx.timerService().registerEventTimeTimer(current.getTimestamp() + 3000);
-            out.collect(value);
+
+            int[] rowFields = new int[value.getArity() - 1];
+            for (int index = 0 ; index < value.getArity() - 1; index++) {
+                rowFields[index] = index;
+            }
+
+            Row valueWithoutPT = Row.project(value, rowFields);
+
+            out.collect(valueWithoutPT);
         }
     }
 

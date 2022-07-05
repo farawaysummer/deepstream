@@ -34,11 +34,11 @@ data class DeepStreamProcessJobData(
     }
 
     fun getSQL(name: String): String {
-        return SQLS[name]?: throw RuntimeException("未找到SQL: $name")
+        return SQLS[name] ?: throw RuntimeException("未找到SQL: $name")
     }
 
     fun getDataSourceConfig(confName: String): DataSourceConfig {
-        return dsConfig[confName]?: throw RuntimeException("未找到数据源$confName")
+        return dsConfig[confName] ?: throw RuntimeException("未找到数据源$confName")
     }
 
     fun loadDataSource() {
@@ -78,6 +78,10 @@ data class EventData(
         return """
             SELECT $fields, `${Consts.FILE_PROC_TIME}` FROM ${eventName.uppercase()}
         """.trimIndent()
+    }
+
+    fun eventFieldsWithProcTime(): List<DataField> {
+        return listOf(*eventFields.toTypedArray(), DataField(Consts.FILE_PROC_TIME, "TIMESTAMP_LTZ(9)", false))
     }
 }
 
@@ -143,7 +147,7 @@ data class QueryData(
     val dsConfig: MutableMap<String, DataSourceConfig>,
     val dynamicCondition: Boolean = false,
     val masterTable: String? = null
-): java.io.Serializable {
+) : java.io.Serializable {
 
     fun loadDataSource() {
         dsConfig.values.forEach {

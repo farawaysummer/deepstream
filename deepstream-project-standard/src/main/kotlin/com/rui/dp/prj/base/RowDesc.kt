@@ -24,4 +24,24 @@ data class RowDesc(
             return RowDesc(rowKind, timestamp, rowKeys)
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as RowDesc
+
+        if (rowKind != other.rowKind) return false
+        if (rowKeys != other.rowKeys) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = rowKind.hashCode()
+        result = 31 * result + rowKeys.hashCode()
+        return result
+    }
+
+
 }

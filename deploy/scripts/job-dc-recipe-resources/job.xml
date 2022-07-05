@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<job name="DC-RECIPE">
+    <!--捕获的变更事件相关配置-->
+    <event name="queryEvent">
+        <!--数据变更事件的索引字段信息-->
+        <eventKeys>
+            <field name="AUTO_ID" type="STRING" isKey="true"/>
+        </eventKeys>
+        <!--读取的事件来源类型，一般为kafka或jdbc-cdc-->
+        <eventType name="mysql-cdc">
+            <!--连接信息-->
+            <config name="hostname" value="10.48.251.50"/>
+            <config name="port" value="3306"/>
+            <!--用户名-->
+            <config name="username" value="ruisoft"/>
+            <!--密码-->
+            <config name="password" value="Ruisoft@123"/>
+            <!--数据库名-->
+            <config name="database-name" value="ods"/>
+            <!--真实表名-->
+            <config name="table-name" value="s_cli_recipe"/>
+        </eventType>
+    </event>
+    <!--处理过程中涉及到的表定义-->
+    <relates>
+        <!--表定义，包括表名和引用的字段定义，引用名与同目录下的table-*.xml文件相同-->
+        <table name="C01040000" ref="c01040000">
+            <!--表与真实物理数据存储的映射，类型为jdbc意味着这张表与真实数据库中的某张表形成了映射关系-->
+            <tableType name="upsert-kafka'">
+                <!--读取的kafka主题名-->
+                <config name="topic" value="c01040000"/>
+                <!--kafka的服务地址-->
+                <config name="properties.bootstrap.servers" value="10.48.251.50:9092"/>
+                <!--kafka的读取分组，默认即可-->
+                <config name="properties.group.id" value="k_default"/>
+                <!--kafka的读取格式，从CDC的数据主题中读取格式为ruisoft-koalaspeed-->
+                <config name="key.format" value="json"/>
+                <config name="value.format" value="json"/>
+            </tableType>
+        </table>
+    </relates>
+    <process>
+        <datasource name="DC"/>
+        <processSQL name="selectDC"/>
+        <sinkSQL name="insert"/>
+        <transformJobs/>
+        <delayQuerySecond>3</delayQuerySecond>
+        <results>
+            <field name="AUTO_ID" type="VARCHAR2"/>
+            <field name="PRE_INFOR_ORG_CODE" type="VARCHAR2"/>
+            <field name="PRE_INFOR_PRES_ID" type="VARCHAR2"/>
+            <field name="PRE_INFOR_CLINIC_ID" type="VARCHAR2"/>
+            <field name="PRE_INFOR_RECORD_TIME" type="VARCHAR2"/>
+            <field name="PRE_INFOR_TYPE" type="CHAR"/>
+            <field name="PRE_INFOR_EMP_ID" type="CHAR"/>
+            <field name="PRE_INFOR_CATEGORY" type="VARCHAR2"/>
+            <field name="PRE_INFOR_EMP_ID_ORG" type="VARCHAR2"/>
+            <field name="PRE_INFOR_CHARGE_ID" type="VARCHAR2"/>
+            <field name="PRE_INFOR_FEE_PRES_ID" type="VARCHAR2"/>
+            <field name="PRE_INFOR_SOURCE" type="VARCHAR2"/>
+            <field name="PRE_INFOR_IDENTIFICATION_CODE" type="VARCHAR2"/>
+            <field name="PRE_INFOR_VALID_DATE" type="VARCHAR2"/>
+            <field name="PRE_INFOR_REVIEWER_NAME" type="VARCHAR2"/>
+            <field name="PRE_INFOR_REVIEWER_ID" type="CHAR"/>
+            <field name="PRE_INFOR_REVIEW_TIME" type="VARCHAR2"/>
+            <field name="PRE_INFOR_PRESCRIBE_TIME" type="VARCHAR2"/>
+            <field name="PRE_INFOR_DISPENSE_TIME" type="VARCHAR2"/>
+            <field name="PRE_INFOR_STATUS" type="VARCHAR2"/>
+            <field name="PRE_INFOR_CANCEL_TIME" type="VARCHAR2"/>
+            <field name="PRE_INFOR_PRES_FEE" type="VARCHAR2"/>
+            <field name="PRE_INFOR_PRESCRIBE_EMP_NAME" type="VARCHAR2"/>
+            <field name="PRE_INFOR_PRESCRIBE_EMP_ID" type="CHAR"/>
+            <field name="PRE_INFOR_DISPENSE_EMP_NAME" type="VARCHAR2"/>
+            <field name="PRE_INFOR_DISPENSE_EMP_ID" type="CHAR"/>
+            <field name="PRE_INFOR_REMARK" type="VARCHAR2"/>
+            <field name="PRE_INFOR_CIRCULATE_FLAG" type="VARCHAR2"/>
+            <field name="PRE_LIST_ORG_CODE" type="VARCHAR2"/>
+            <field name="PRE_LIST_PRES_ID" type="VARCHAR2"/>
+            <field name="PRE_LIST_NO" type="VARCHAR2"/>
+            <field name="PRE_LIST_GROUPNO" type="VARCHAR2"/>
+            <field name="PRE_LIST_MEDIC_CLASS" type="CHAR"/>
+            <field name="PRE_LIST_MEDIC_CODE" type="CHAR"/>
+            <field name="PRE_LIST_MEDIC_CODE_SAFETY" type="VARCHAR2"/>
+            <field name="PRE_LIST_MEDIC_CODE_LOCAL" type="VARCHAR2"/>
+            <field name="PRE_LIST_MEDIC_GENERAL_NAME" type="CHAR"/>
+            <field name="PRE_LIST_MEDIC_NAME" type="CHAR"/>
+            <field name="PRE_LIST_MEDIC_TYPE" type="VARCHAR2"/>
+            <field name="PRE_LIST_MEDIC_SPEC" type="VARCHAR2"/>
+            <field name="PRE_LIST_MEDIC_AREA" type="CHAR"/>
+            <field name="PRE_LIST_MEDIC_USEQUANTITY" type="VARCHAR2"/>
+            <field name="PRE_LIST_MEDIC_USEUNIT" type="VARCHAR2"/>
+            <field name="PRE_LIST_MEDIC_USEDOSAGE" type="VARCHAR2"/>
+            <field name="PRE_LIST_MEDIC_USECODE" type="VARCHAR2"/>
+            <field name="PRE_LIST_MEDIC_USEPLAN" type="VARCHAR2"/>
+            <field name="PRE_LIST_MEDIC_USEMODE" type="VARCHAR2"/>
+            <field name="PRE_LIST_MEDIC_DAYS" type="VARCHAR2"/>
+            <field name="PRE_LIST_MEDIC_QUANTITY" type="VARCHAR2"/>
+            <field name="PRE_LIST_MEDIC_UNIT" type="VARCHAR2"/>
+            <field name="PRE_LIST_MEDIC_SELF" type="VARCHAR2"/>
+            <field name="PRE_LIST_MEDIC_SAFETY" type="VARCHAR2"/>
+            <field name="PRE_LIST_MEDIC_SAFETYCLASS" type="CHAR"/>
+            <field name="PRE_LIST_CREATE_TIME" type="VARCHAR2"/>
+            <field name="PRE_LIST_MODIFY_TIME" type="VARCHAR2"/>
+            <field name="PRE_LIST_MEDIC_REMARK" type="VARCHAR2"/>
+            <field name="PRE_LIST_YPID" type="VARCHAR2"/>
+            <field name="PRE_LIST_FREQUENCY_REMARK" type="VARCHAR2"/>
+            <field name="PRE_LIST_DRUG_BATCH_NO" type="CHAR"/>
+            <field name="PRE_LIST_PERFORMED_CODE" type="VARCHAR2"/>
+            <field name="PRE_LIST_PACKAGE_QUANTITY" type="CHAR"/>
+            <field name="PRE_LIST_PACKAGE_QUANTITY_UNIT" type="CHAR"/>
+            <field name="PRE_LIST_HERBAL_DOSES" type="VARCHAR2"/>
+            <field name="PRE_LIST_PREPARATION_TECHNIQUE" type="VARCHAR2"/>
+            <field name="PRE_LIST_TCM_RECIPE_SEQUENCE" type="VARCHAR2"/>
+            <field name="PRE_LIST_DECOCTING_METHOD" type="VARCHAR2"/>
+            <field name="PRE_LIST_DOCTOR_ANTIBIOS" type="CHAR"/>
+            <field name="PRE_LIST_REVIEWER" type="VARCHAR2"/>
+            <field name="PRE_LIST_REVIEWER_ID" type="VARCHAR2"/>
+            <field name="PRE_LIST_DDD" type="VARCHAR2"/>
+            <field name="PRE_LIST_MEDI_ANTIBIOTIC_FLAG" type="CHAR"/>
+            <field name="PRE_LIST_MEDI_BASE" type="CHAR"/>
+            <field name="PRE_LIST_CHARGE_ID" type="VARCHAR2"/>
+            <field name="PRE_LIST_FEE_PRES_ID" type="VARCHAR2"/>
+            <field name="PRE_LIST_IS_MEDI" type="VARCHAR2"/>
+            <field name="PRE_LIST_IS_MAIN" type="VARCHAR2"/>
+            <field name="PRE_LIST_ANTIBIOS_FLAG" type="VARCHAR2"/>
+            <field name="PRE_LIST_SPIRIT_FLAG" type="VARCHAR2"/>
+            <field name="PRE_LIST_ANAESTHETIZTION" type="VARCHAR2"/>
+            <field name="PRE_LIST_BASE_FLAG" type="VARCHAR2"/>
+            <field name="PRE_LIST_VACCINE_FLAG" type="VARCHAR2"/>
+            <field name="PRE_LIST_INFUSION_FLAG" type="VARCHAR2"/>
+            <field name="PRE_LIST_WITHDRAWAL_FLAG" type="VARCHAR2"/>
+            <field name="PRE_LIST_DOSAGE_FORM" type="VARCHAR2"/>
+            <field name="PRE_LIST_SPECIFICATION_UNIT" type="VARCHAR2"/>
+            <field name="PRE_LIST_SPECIFICATION_" type="VARCHAR2"/>
+            <field name="PRE_LIST_DISPENSE_NUMBER" type="VARCHAR2"/>
+            <field name="PRE_LIST_DISPENSE_UNIT" type="VARCHAR2"/>
+            <field name="PRE_LIST_DOSE_UNITNAME" type="VARCHAR2"/>
+            <field name="PRE_LIST_DOSE_UNITID" type="VARCHAR2"/>
+            <field name="PRE_LIST_USEUNIT_ID" type="VARCHAR2"/>
+            <field name="PRE_LIST_IS_SKINTESTDRUG" type="VARCHAR2"/>
+            <field name="PRE_LIST_REVISE_FLAG" type="VARCHAR2"/>
+            <field name="PRE_LIST_POISON_FLAG" type="VARCHAR2"/>
+            <field name="PRE_LIST_POISONMADE_FLAG" type="VARCHAR2"/>
+            <field name="PRE_LIST_MEDI_TIMING" type="VARCHAR2"/>
+            <field name="PRE_LIST_DRUGUSE_TOTAL" type="VARCHAR2"/>
+            <field name="PRE_LIST_DRUG_SOURCE" type="VARCHAR2"/>
+            <field name="PRE_LIST_MEDI_SPEED" type="VARCHAR2"/>
+            <field name="PRE_LIST_LIMITED_TIME" type="VARCHAR2"/>
+            <field name="PRE_LIST_MEDI_PURPOSE" type="VARCHAR2"/>
+            <field name="PRE_LIST_PROJECT_AMOUNT" type="VARCHAR2"/>
+            <field name="PRE_LIST_ANTI_TUMOR_DRUG" type="VARCHAR2"/>
+            <field name="LKFIELD" type="VARCHAR2"/>
+            <field name="RBUSINESS_DATE" type="VARCHAR2"/>
+        </results>
+    </process>
+
+</job>

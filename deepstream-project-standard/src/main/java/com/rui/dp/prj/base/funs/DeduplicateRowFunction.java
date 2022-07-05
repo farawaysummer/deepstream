@@ -21,18 +21,14 @@ public class DeduplicateRowFunction extends KeyedProcessFunction<RowDesc, Row, R
     private static final Logger LOGGER = LoggerFactory.getLogger(DeduplicateRowFunction.class);
 
     private ValueState<Row> valueState;
-    private final List<String> keys;
 
-    public DeduplicateRowFunction(List<String> keys) {
-        this.keys = keys;
+    public DeduplicateRowFunction() {
     }
 
     @Override
     public void open(Configuration parameters) throws Exception {
         super.open(parameters);
         ValueStateDescriptor<Row> valueDesc = new ValueStateDescriptor<>("rowState", Row.class);
-//        valueDesc.enableTimeToLive(StateTtlConfig.newBuilder(Time.seconds(10)).build());
-        // 完成 Keyed State 的创建。
         valueState = getRuntimeContext().getState(valueDesc);
     }
 
@@ -52,7 +48,6 @@ public class DeduplicateRowFunction extends KeyedProcessFunction<RowDesc, Row, R
         Row value;
         try {
             value = valueState.value();
-//            LOGGER.info("Process row value " + value);
             int[] rowFields = new int[value.getArity() - 1];
             for (int index = 0 ; index < value.getArity() - 1; index++) {
                 rowFields[index] = index;

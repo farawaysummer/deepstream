@@ -9,6 +9,9 @@ class PackageResourceJobDataLoaderTest {
     fun `test job data loader`() {
         val jobData = PackageResourceJobDataLoader.load()
 
+        println(jobData.processData.useDictMapping())
+
+        println(jobData)
 //        println("========CREATE EVENT TABLE=========")
 //        println(jobData.eventData.toEventTableSql())
 //

@@ -8,7 +8,7 @@ data class DeepStreamProcessJobData(
     val events: List<EventData>,
     val relatedTables: List<RelatedTable>,
     val processData: ProcessData,
-) {
+) : java.io.Serializable {
     private val SQLS: MutableMap<String, String> = mutableMapOf()
     private val dsConfig: MutableMap<String, DataSourceConfig> = mutableMapOf()
 
@@ -52,7 +52,7 @@ data class EventData(
     private val eventName: String,
     val eventFields: List<DataField>,
     val eventType: TableType
-) {
+): java.io.Serializable {
     fun toEventTableSql(): String {
         val fields = eventFields.joinToString(separator = ",") {
             "`${it.fieldName}` ${it.fieldType}"
@@ -79,10 +79,6 @@ data class EventData(
             SELECT $fields, `${Consts.FILE_PROC_TIME}` FROM ${eventName.uppercase()}
         """.trimIndent()
     }
-
-    fun eventFieldsWithProcTime(): List<DataField> {
-        return listOf(*eventFields.toTypedArray(), DataField(Consts.FILE_PROC_TIME, "TIMESTAMP_LTZ(9)", false))
-    }
 }
 
 data class ProcessData(
@@ -94,16 +90,17 @@ data class ProcessData(
     val dictTransforms: List<String>,
     val queryDelay: Int = 0,
     val resultFields: List<DataField>
-) {
-    val useDictMapping: Boolean
-        get() {
-            return dictTransforms.isNotEmpty()
-        }
+) : java.io.Serializable {
+    fun useDictMapping(): Boolean {
+        return dictTransforms.isNotEmpty()
+    }
 }
 
-data class DataField(val fieldName: String, val fieldType: String, val isKey: Boolean)
+data class DataField(val fieldName: String, val fieldType: String, val isKey: Boolean, val fromName: String?) :
+    java.io.Serializable
 
-data class RelatedTable(val tableName: String, val tableFields: List<DataField>, val tableType: TableType) {
+data class RelatedTable(val tableName: String, val tableFields: List<DataField>, val tableType: TableType) :
+    java.io.Serializable {
     fun toTableSql(): String {
         val fields = tableFields.joinToString(separator = ",\n") {
             "`${it.fieldName}` ${it.fieldType}"
@@ -124,7 +121,7 @@ data class RelatedTable(val tableName: String, val tableFields: List<DataField>,
     }
 }
 
-data class TableType(val type: String, val properties: Map<String, String>) {
+data class TableType(val type: String, val properties: Map<String, String>): java.io.Serializable {
 
     override fun toString(): String {
         val defStr = properties.entries.joinToString(separator = ",\n") {

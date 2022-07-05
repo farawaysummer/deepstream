@@ -14,8 +14,8 @@
         <module>deepstream-process</module>
         <module>deepstream-process-facade-kettle</module>
         <module>deepstream-connector-ks</module>
-        <module>deepstream-project</module>
         <module>deepstream-project-standard</module>
+        <module>deepstream-project-ghost</module>
     </modules>
 
     <properties>

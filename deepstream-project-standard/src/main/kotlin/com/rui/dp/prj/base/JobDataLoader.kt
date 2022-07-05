@@ -50,7 +50,8 @@ abstract class JobDataLoader {
             DataField(
                 it.attributeValue("name"),
                 it.attributeValue("type"),
-                it.attributeValue("isKey").toBoolean()
+                it.attributeValue("isKey")?.toBoolean()?: false,
+                it.attributeValue("from") ?: null
             )
         }
 
@@ -74,7 +75,7 @@ abstract class JobDataLoader {
             val tableTypeElement = it.element("tableType")
             val tableType = loadTableType(tableTypeElement)
 
-            // generate table create sql
+            // generate table create sql`
             RelatedTable(
                 tableName,
                 tableRefs[tableRef]!!,
@@ -107,7 +108,8 @@ abstract class JobDataLoader {
             DataField(
                 it.attributeValue("name"),
                 it.attributeValue("type"),
-                false
+                false,
+                it.attributeValue("from") ?: null
             )
         }
 
@@ -136,7 +138,8 @@ abstract class JobDataLoader {
             DataField(
                 it.attributeValue("name"),
                 it.attributeValue("type"),
-                it.attributeValue("isKey")?.toBoolean() ?: false
+                it.attributeValue("isKey")?.toBoolean() ?: false,
+                it.attributeValue("from") ?: null
             )
         }
 

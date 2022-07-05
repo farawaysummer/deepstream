@@ -60,6 +60,7 @@ object DeepStreamHelper {
             "DATE" -> Types.LOCAL_DATE
             "TIME" -> Types.LOCAL_TIME
             "NUMBER" -> Types.BIG_DEC
+            "BIGINT" -> Types.LONG
             else -> Types.STRING
         } as TypeInformation<*>
     }

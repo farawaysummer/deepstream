@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<job name="CDR">
+<job name="三院电子病历业务数据采集">
+    <!--捕获的变更事件相关配置-->
     <events>
-        <!--捕获的变更事件相关配置-->
         <event name="queryEvent">
             <!--数据变更事件的索引字段信息-->
             <eventKeys>
-                <field name="CH_ID" type="STRING" isKey="true"/>
+                <field name="CH_ID" type="STRING" isKey="true" from=""/>
             </eventKeys>
             <!--读取的事件来源类型，一般为kafka或jdbc-cdc-->
             <eventType name="kafka">
@@ -16,7 +16,7 @@
                 <!--kafka的读取分组，默认即可-->
                 <config name="properties.group.id" value="k_default"/>
                 <!--kafka的读取偏移量设置，调试阶段可设置为earliest-offset , 正式运行时设置为group-offsets-->
-                <config name="scan.startup.mode" value="earliest-offset"/>
+                <config name="scan.startup.mode" value="latest-offset"/>
                 <!--kafka的读取格式，从CDC的数据主题中读取格式为ruisoft-koalaspeed-->
                 <config name="format" value="ruisoft-koalaspeed"/>
             </eventType>
@@ -42,14 +42,15 @@
 
         </table>
     </relates>
+    <!--数据处理过程-->
     <process>
         <datasource name="HIS"/>
-        <processSQL name="selectHIS" masterTable=""/>
+        <processSQL name="selectHIS"/>
         <sinkSQL name="insert"/>
         <transformJobs>
-            <tranform name="NB_E12010000-门诊电子病历"/>
+            <transform name="NB_E12010000-门诊电子病历"/>
         </transformJobs>
-        <delayQuerySecond>1</delayQuerySecond>
+        <delayQuerySecond>0</delayQuerySecond>
         <results>
             <field name="ORG_CODE" type="VARCHAR2"/>
             <field name="CLINIC_ID" type="VARCHAR2"/>
@@ -154,5 +155,4 @@
             <field name="RECORD_UPDATE_DTIME" type="CHAR"/>
         </results>
     </process>
-
 </job>

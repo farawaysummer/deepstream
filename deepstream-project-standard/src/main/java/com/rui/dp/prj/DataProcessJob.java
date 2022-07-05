@@ -75,13 +75,14 @@ public class DataProcessJob implements ProjectJob {
 
             // 按事件分组
             StreamDataTypes eventTypes = DeepStreamHelper.toStreamDataTypes(event.getEventFields());
+
             DataStream<Row> groupStream = eventStream.keyBy(row -> RowDesc.of(row, keyFields))
-                    .process(new DeduplicateRowFunction(keyFields))
+                    .process(new DeduplicateRowFunction())
                     .returns(eventTypes.toTypeInformation());
 
             // 是否需要值域映射
             ValueMappingFunction mappingFunction = null;
-            if (jobData.getProcessData().getUseDictMapping()) {
+            if (jobData.getProcessData().useDictMapping()) {
                 List<String> columns = jobData.getProcessData().getResultFields()
                         .stream().map(DataField::getFieldName).collect(Collectors.toList());
                 mappingFunction = DeepStreamFunctions.createValueMappingFunctions(

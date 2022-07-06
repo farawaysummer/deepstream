@@ -58,10 +58,13 @@ data class EventData(
         val fields = eventFields.joinToString(separator = ",") {
             "`${it.fieldName}` ${it.fieldType}"
         }
+        val hasKey = eventFields.any { it.isKey }
         val primaryKeys = eventFields.filter { it.isKey }.joinToString(separator = ",") {
             "`${it.fieldName}`"
         }
-        return """
+        
+        if (hasKey) {
+            return """
             CREATE TABLE ${eventName.uppercase()} (
                 $fields ,
                 ${Consts.FILE_PROC_TIME} as PROCTIME(),
@@ -70,6 +73,17 @@ data class EventData(
                 $eventType
             )
         """.trimIndent()
+        } else {
+            return """
+            CREATE TABLE ${eventName.uppercase()} (
+                $fields ,
+                ${Consts.FILE_PROC_TIME} as PROCTIME()
+            ) WITH (
+                $eventType
+            )
+        """.trimIndent()
+        }
+
     }
 
     fun toEventQuerySql(): String {

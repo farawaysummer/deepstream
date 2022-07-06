@@ -27,19 +27,30 @@
         <!--表定义，包括表名和引用的字段定义，引用名与同目录下的table-*.xml文件相同-->
         <table name="NB_E12010000" ref="e12010000">
             <!--表与真实物理数据存储的映射，类型为jdbc意味着这张表与真实数据库中的某张表形成了映射关系-->
-            <tableType name="jdbc">
-                <!--连接信息-->
-                <config name="url" value="jdbc:mysql://10.48.251.50:3306/ods?useSSL=false&amp;autoReconnect=true"/>
-                <!--用户名-->
-                <config name="username" value="ruisoft"/>
-                <!--密码-->
-                <config name="password" value="Ruisoft@123"/>
-                <!--驱动类名-->
-                <config name="driver" value="com.mysql.cj.jdbc.Driver"/>
-                <!--真实表名-->
-                <config name="table-name" value="E12010000"/>
+<!--            <tableType name="jdbc">-->
+<!--                &lt;!&ndash;连接信息&ndash;&gt;-->
+<!--                <config name="url" value="jdbc:mysql://10.48.251.50:3306/ods?useSSL=false&amp;autoReconnect=true"/>-->
+<!--                &lt;!&ndash;用户名&ndash;&gt;-->
+<!--                <config name="username" value="ruisoft"/>-->
+<!--                &lt;!&ndash;密码&ndash;&gt;-->
+<!--                <config name="password" value="Ruisoft@123"/>-->
+<!--                &lt;!&ndash;驱动类名&ndash;&gt;-->
+<!--                <config name="driver" value="com.mysql.cj.jdbc.Driver"/>-->
+<!--                &lt;!&ndash;真实表名&ndash;&gt;-->
+<!--                <config name="table-name" value="E12010000"/>-->
+<!--            </tableType>-->
+            <!--表与真实物理数据存储的映射，类型为jdbc意味着这张表与真实数据库中的某张表形成了映射关系-->
+            <tableType name="upsert-kafka">
+                <!--读取的kafka主题名-->
+                <config name="topic" value="src_e12010000"/>
+                <!--kafka的服务地址-->
+                <config name="properties.bootstrap.servers" value="10.48.251.50:9092"/>
+                <!--kafka的读取分组，默认即可-->
+                <config name="properties.group.id" value="src_g1"/>
+                <!--kafka的读取格式，从CDC的数据主题中读取格式为ruisoft-koalaspeed-->
+                <config name="key.format" value="json"/>
+                <config name="value.format" value="json"/>
             </tableType>
-
         </table>
     </relates>
     <!--数据处理过程-->

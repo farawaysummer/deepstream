@@ -1,5 +1,5 @@
 <table>
-    <field name="BASE_ID" type="VARCHAR" isKey="true"/>
+    <field name="BASE_ID" type="VARCHAR" />
     <field name="HOSP_ID" type="VARCHAR"/>
     <field name="HOSP_NAME" type="VARCHAR"/>
     <field name="BATCH_NO" type="VARCHAR"/>

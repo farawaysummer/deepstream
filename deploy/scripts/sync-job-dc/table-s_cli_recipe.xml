@@ -116,5 +116,5 @@
     <field name="LIST_ANTI_TUMOR_DRUG" type="VARCHAR"/>
     <field name="INFOR_FEE_PRES_ID" type="VARCHAR"/>
     <field name="INFOR_CHARGE_ID" type="VARCHAR"/>
-    <field name="AUTO_ID" type="VARCHAR" isKey="true"/>
+    <field name="AUTO_ID" type="VARCHAR" />
 </table>

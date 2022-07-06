@@ -90,7 +90,7 @@
     <field name="TCM_SYNDROME_NAME" type="STRING"/>
     <field name="THERAPEUTIC_METHOD_CODE" type="STRING"/>
     <field name="THERAPEUTIC_METHOD" type="STRING"/>
-    <field name="AUTO_ID" type="VARCHAR"/>
+    <field name="AUTO_ID" type="VARCHAR" isKey="true"/>
     <field name="HOSP_NAME" type="VARCHAR"/>
     <field name="HOSP_ID" type="VARCHAR"/>
     <field name="PATIENT_ID" type="VARCHAR"/>

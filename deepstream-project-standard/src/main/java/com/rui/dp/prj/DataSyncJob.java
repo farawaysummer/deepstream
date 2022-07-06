@@ -1,6 +1,8 @@
 package com.rui.dp.prj;
 
 import com.rui.dp.prj.base.*;
+import com.rui.dp.prj.base.job.DeepStreamSyncJobData;
+import com.rui.dp.prj.base.job.RelatedTable;
 import com.rui.ds.ProcessContext;
 
 public class DataSyncJob implements ProjectJob {
@@ -22,7 +24,10 @@ public class DataSyncJob implements ProjectJob {
 
     @Override
     public void start() {
-
+        for (String syncSqlName : jobData.getSyncSQLs()) {
+            String sql = jobData.getSQL(syncSqlName);
+            DeepStreamHelper.executeSQL(context, sql);
+        }
     }
 
     @Override

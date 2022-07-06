@@ -1,6 +1,6 @@
 package com.rui.dp.prj;
 
-import com.rui.dp.prj.base.DeepStreamProcessJobData;
+import com.rui.dp.prj.base.job.DeepStreamProcessJobData;
 import com.rui.dp.prj.base.ExternalResourceJobDataLoader;
 import com.rui.dp.prj.base.PackageResourceJobDataLoader;
 

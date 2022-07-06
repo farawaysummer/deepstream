@@ -1,6 +1,6 @@
 package com.rui.dp.prj.base.funs
 
-import com.rui.dp.prj.base.QueryData
+import com.rui.dp.prj.base.job.QueryData
 import com.rui.ds.datasource.DatabaseSources
 import org.apache.flink.types.Row
 import org.apache.flink.types.RowKind

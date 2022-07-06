@@ -16,6 +16,8 @@
         <module>deepstream-connector-ks</module>
         <module>deepstream-project-standard</module>
         <module>deepstream-project-ghost</module>
+        <module>deepstream-project-tookits</module>
+        <module>deepstream-project-mirror</module>
     </modules>
 
     <properties>
@@ -414,6 +416,23 @@
                     <skipTests>true</skipTests>
                 </configuration>
             </plugin>
+
+            <!--clean all the external directories-->
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>./jobs/</directory>
+                            <includes>
+                                <include>*.*</include>
+                            </includes>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+
 
             <plugin>
                 <artifactId>maven-source-plugin</artifactId>

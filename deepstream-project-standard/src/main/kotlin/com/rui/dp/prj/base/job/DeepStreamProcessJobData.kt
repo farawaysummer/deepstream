@@ -1,5 +1,6 @@
-package com.rui.dp.prj.base
+package com.rui.dp.prj.base.job
 
+import com.rui.dp.prj.base.Consts
 import com.rui.ds.common.DataSourceConfig
 import com.rui.ds.datasource.DatabaseSources
 
@@ -93,45 +94,6 @@ data class ProcessData(
 ) : java.io.Serializable {
     fun useDictMapping(): Boolean {
         return dictTransforms.isNotEmpty()
-    }
-}
-
-data class DataField(val fieldName: String, val fieldType: String, val isKey: Boolean, val fromName: String?) :
-    java.io.Serializable
-
-data class RelatedTable(val tableName: String, val tableFields: List<DataField>, val tableType: TableType) :
-    java.io.Serializable {
-    fun toTableSql(): String {
-        val fields = tableFields.joinToString(separator = ",\n") {
-            "`${it.fieldName}` ${it.fieldType}"
-        }
-
-        val primaryKeys = tableFields.filter { it.isKey }.joinToString(separator = ",") {
-            "`${it.fieldName}`"
-        }
-
-        return """
-            CREATE TABLE $tableName (
-                $fields ,
-                PRIMARY KEY (${primaryKeys}) NOT ENFORCED
-            ) WITH (
-                $tableType
-            )
-        """.trimIndent()
-    }
-}
-
-data class TableType(val type: String, val properties: Map<String, String>): java.io.Serializable {
-
-    override fun toString(): String {
-        val defStr = properties.entries.joinToString(separator = ",\n") {
-            "'${it.key}' = '${it.value}'"
-        }
-
-        return """
-            'connector' = '$type',
-            $defStr
-        """.trimIndent()
     }
 }
 

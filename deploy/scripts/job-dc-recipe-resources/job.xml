@@ -1,32 +1,34 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <job name="DC-RECIPE">
     <!--捕获的变更事件相关配置-->
-    <event name="queryEvent">
-        <!--数据变更事件的索引字段信息-->
-        <eventKeys>
-            <field name="AUTO_ID" type="STRING" isKey="true"/>
-        </eventKeys>
-        <!--读取的事件来源类型，一般为kafka或jdbc-cdc-->
-        <eventType name="mysql-cdc">
-            <!--连接信息-->
-            <config name="hostname" value="10.48.251.50"/>
-            <config name="port" value="3306"/>
-            <!--用户名-->
-            <config name="username" value="ruisoft"/>
-            <!--密码-->
-            <config name="password" value="Ruisoft@123"/>
-            <!--数据库名-->
-            <config name="database-name" value="ods"/>
-            <!--真实表名-->
-            <config name="table-name" value="s_cli_recipe"/>
-        </eventType>
-    </event>
+    <events>
+        <event name="queryEvent">
+            <!--数据变更事件的索引字段信息-->
+            <eventKeys>
+                <field name="AUTO_ID" type="STRING" isKey="true"/>
+            </eventKeys>
+            <!--读取的事件来源类型，一般为kafka或jdbc-cdc-->
+            <eventType name="mysql-cdc">
+                <!--连接信息-->
+                <config name="hostname" value="10.48.251.50"/>
+                <config name="port" value="3306"/>
+                <!--用户名-->
+                <config name="username" value="ruisoft"/>
+                <!--密码-->
+                <config name="password" value="Ruisoft@123"/>
+                <!--数据库名-->
+                <config name="database-name" value="ods"/>
+                <!--真实表名-->
+                <config name="table-name" value="s_cli_recipe"/>
+            </eventType>
+        </event>
+    </events>
     <!--处理过程中涉及到的表定义-->
     <relates>
         <!--表定义，包括表名和引用的字段定义，引用名与同目录下的table-*.xml文件相同-->
         <table name="C01040000" ref="c01040000">
             <!--表与真实物理数据存储的映射，类型为jdbc意味着这张表与真实数据库中的某张表形成了映射关系-->
-            <tableType name="upsert-kafka'">
+            <tableType name="upsert-kafka">
                 <!--读取的kafka主题名-->
                 <config name="topic" value="c01040000"/>
                 <!--kafka的服务地址-->

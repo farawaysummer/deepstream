@@ -4,6 +4,10 @@ import com.rui.dp.prj.base.*;
 import com.rui.dp.prj.base.funs.AsyncDBJoinFunction;
 import com.rui.dp.prj.base.funs.DeduplicateRowFunction;
 import com.rui.dp.prj.base.funs.ValueMappingFunction;
+import com.rui.dp.prj.base.job.DataField;
+import com.rui.dp.prj.base.job.DeepStreamProcessJobData;
+import com.rui.dp.prj.base.job.EventData;
+import com.rui.dp.prj.base.job.RelatedTable;
 import com.rui.ds.ProcessContext;
 import com.rui.ds.StreamDataTypes;
 import org.apache.commons.compress.utils.Lists;
@@ -34,14 +38,15 @@ public class DataProcessJob implements ProjectJob {
         // 创建Flink表的定义
         for (RelatedTable tableRef : jobData.getRelatedTables()) {
             String tableSql = tableRef.toTableSql();
+
             DeepStreamHelper.executeSQL(context, tableSql);
         }
 
         // 创建事件读取的表定义
         List<EventData> events = jobData.getEvents();
         for (EventData eventData : events) {
-            DeepStreamHelper.executeSQL(context, eventData.toEventTableSql());
-
+            String eventSql = eventData.toEventTableSql();
+            DeepStreamHelper.executeSQL(context, eventSql);
         }
     }
 

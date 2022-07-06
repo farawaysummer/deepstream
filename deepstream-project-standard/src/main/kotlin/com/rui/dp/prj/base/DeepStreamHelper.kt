@@ -1,11 +1,8 @@
 package com.rui.dp.prj.base
 
+import com.rui.dp.prj.base.job.DataField
 import com.rui.ds.ProcessContext
 import com.rui.ds.StreamDataTypes
-import com.rui.ds.common.TableContext
-import com.rui.ds.datasource.DatabaseSources
-import com.rui.ds.facade.kettle.KettleJobParser
-import com.rui.ds.generator.TableGenerator
 import com.rui.ds.job.DeepStreamJob
 import com.rui.ds.job.JobConfig
 import com.rui.ds.types.DeepStreamTypes
@@ -14,7 +11,6 @@ import org.apache.flink.api.common.typeinfo.Types
 import org.apache.flink.table.api.Table
 import org.apache.flink.table.api.TableResult
 import org.apache.flink.table.catalog.ResolvedSchema
-import org.dom4j.io.SAXReader
 
 object DeepStreamHelper {
     @JvmStatic

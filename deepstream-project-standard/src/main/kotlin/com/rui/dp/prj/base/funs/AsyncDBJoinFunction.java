@@ -1,6 +1,6 @@
 package com.rui.dp.prj.base.funs;
 
-import com.rui.dp.prj.base.QueryData;
+import com.rui.dp.prj.base.job.QueryData;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.async.ResultFuture;
 import org.apache.flink.streaming.api.functions.async.RichAsyncFunction;

@@ -2,6 +2,8 @@ package com.rui.dp.prj.base
 
 import com.rui.dp.prj.base.funs.AsyncDBJoinFunction
 import com.rui.dp.prj.base.funs.ValueMappingFunction
+import com.rui.dp.prj.base.job.DeepStreamProcessJobData
+import com.rui.dp.prj.base.job.QueryData
 import com.rui.ds.common.DataSourceConfig
 import com.rui.ds.datasource.DatabaseSources
 import java.util.*

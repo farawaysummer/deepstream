@@ -1,11 +1,13 @@
-package com.rui.dp.prj.base.utils
+package com.rui.dp.prj.utils
 
 import com.google.common.collect.Sets
 import com.rui.dp.prj.base.DeepStreamHelper
+import com.rui.ds.common.DataSourceConfig
 import com.rui.ds.datasource.DatabaseSources
-import com.rui.ds.facade.kettle.KettleJobParser
 import com.rui.ds.types.DeepStreamTypes
+import org.dom4j.Element
 import org.dom4j.io.SAXReader
+import java.math.BigInteger
 
 object ProjectToolkits {
 
@@ -25,12 +27,46 @@ object ProjectToolkits {
         val connections = rootElement.elements("connection")
 
         val configs = connections.map {
-            KettleJobParser.parseConnection(it)
+            parseConnection(it)
         }
 
         configs.forEach {
             DatabaseSources.registryDataSource(it)
         }
+    }
+
+    private fun parseConnection(conElement: Element): DataSourceConfig {
+        val name = conElement.elementText("name")
+        val host = conElement.elementText("server")
+        val port = conElement.elementText("port")
+        val type = conElement.elementText("type").lowercase()
+        val username = conElement.elementText("username")
+        val password = decryptPassword(conElement.elementText("password"))
+        val database = conElement.elementText("database")
+
+        val attributesEle = conElement.element("attributes")
+        val attributes = if (attributesEle != null) {
+            val elements = attributesEle.elements("attribute")
+            elements.associateBy({ it.elementText("code") }, { it.elementText("attribute") })
+        } else {
+            emptyMap()
+        }
+
+        val subType = conElement.element("subType")?.text
+
+        val subTypeValue = subType?.toInt() ?: DataSourceConfig.DATABASE_SUBTYPE_DEFAULT
+
+        return DataSourceConfig(
+            name = name,
+            dbName = database,
+            username = username,
+            password = password,
+            type = type,
+            host = host,
+            port = port.toInt(),
+            properties = attributes,
+            subType = subTypeValue
+        )
     }
 
     @JvmStatic
@@ -61,9 +97,14 @@ object ProjectToolkits {
                     val columnName = columnResult.getString("COLUMN_NAME")
 
                     fields[columnName] = columnType
-                    fieldContent.append("<field name=\"$columnName\" type=\"$columnType\" isKey=\"${sourcePK.contains(columnName)}\"/>\n")
+                    fieldContent.append(
+                        "<field name=\"$columnName\" type=\"$columnType\" isKey=\"${
+                            sourcePK.contains(
+                                columnName
+                            )
+                        }\"/>\n"
+                    )
                 }
-
             }
 
             return fieldContent.toString()
@@ -148,4 +189,25 @@ object ProjectToolkits {
         }
     }
 
+    private fun decryptPassword(encrypted: String?): String {
+        if (encrypted.isNullOrEmpty()) {
+            return ""
+        }
+
+        if (!encrypted.startsWith("Encrypted ")) {
+            return encrypted
+        }
+
+        val encPassword = encrypted.substring("Encrypted ".length)
+        val biConfuse = BigInteger(seed)
+        return try {
+            val biR1 = BigInteger(encPassword, 16)
+            val biR0 = biR1.xor(biConfuse)
+            String(biR0.toByteArray())
+        } catch (e: Exception) {
+            ""
+        }
+    }
+
+    private const val seed: String = "0933910847463829827159347601486730416058"
 }

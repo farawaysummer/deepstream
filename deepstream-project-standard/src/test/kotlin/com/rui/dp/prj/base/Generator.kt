@@ -1,6 +1,5 @@
 package com.rui.dp.prj.base
 
-import com.rui.dp.prj.base.utils.ProjectToolkits
 
 
 object Generator {

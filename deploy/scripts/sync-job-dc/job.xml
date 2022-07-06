@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<job name="数据中心表同步" type="sync">
+    <relates>
+        <!--表定义，包括表名和引用的字段定义，引用名与同目录下的table-*.xml文件相同-->
+        <table name="E12010000" ref="e12010000">
+            <!--表与真实物理数据存储的映射，类型为jdbc意味着这张表与真实数据库中的某张表形成了映射关系-->
+            <tableType name="mysql-cdc">
+                <config name="hostname" value="10.48.251.50"/>
+                <config name="port" value="3306"/>
+                <!--用户名-->
+                <config name="username" value="ruisoft"/>
+                <!--密码-->
+                <config name="password" value="Ruisoft@123"/>
+                <!--连接信息-->
+                <config name="database-name" value="ods"/>
+                <!--真实表名-->
+                <config name="table-name" value="e12010000"/>
+            </tableType>
+        </table>
+        <!--表定义，包括表名和引用的字段定义，引用名与同目录下的table-*.xml文件相同-->
+        <table name="E12010000_CDC" ref="e12010000">
+            <!--表与真实物理数据存储的映射，类型为jdbc意味着这张表与真实数据库中的某张表形成了映射关系-->
+            <tableType name="jdbc">
+                <!--连接信息-->
+                <config name="url" value="jdbc:oracle:thin:@10.48.250.25:1521/orcl"/>
+                <!--用户名-->
+                <config name="username" value="RUI_HC_DC"/>
+                <!--密码-->
+                <config name="password" value="BTtpA5mX"/>
+                <!--驱动类名-->
+                <config name="driver" value="oracle.jdbc.driver.OracleDriver"/>
+                <!--真实表名-->
+                <config name="table-name" value="NB_E12010000_CDC"/>
+            </tableType>
+        </table>
+        <!--表定义，包括表名和引用的字段定义，引用名与同目录下的table-*.xml文件相同-->
+        <table name="S_CLI_RECIPE" ref="s_cli_recipe">
+            <!--表与真实物理数据存储的映射，类型为jdbc意味着这张表与真实数据库中的某张表形成了映射关系-->
+            <tableType name="mysql-cdc">
+                <config name="hostname" value="10.48.251.50"/>
+                <config name="port" value="3306"/>
+                <!--用户名-->
+                <config name="username" value="ruisoft"/>
+                <!--密码-->
+                <config name="password" value="Ruisoft@123"/>
+                <!--连接信息-->
+                <config name="database-name" value="ods"/>
+                <!--真实表名-->
+                <config name="table-name" value="s_cli_recipe"/>
+            </tableType>
+        </table>
+        <!--表定义，包括表名和引用的字段定义，引用名与同目录下的table-*.xml文件相同-->
+        <table name="S_CLI_RECIPE_CDC" ref="s_cli_recipe_target">
+            <!--表与真实物理数据存储的映射，类型为jdbc意味着这张表与真实数据库中的某张表形成了映射关系-->
+            <tableType name="jdbc">
+                <!--连接信息-->
+                <config name="url" value="jdbc:oracle:thin:@10.48.250.25:1521/orcl"/>
+                <!--用户名-->
+                <config name="username" value="RUI_HC_DC"/>
+                <!--密码-->
+                <config name="password" value="BTtpA5mX"/>
+                <!--驱动类名-->
+                <config name="driver" value="oracle.jdbc.driver.OracleDriver"/>
+                <!--真实表名-->
+                <config name="table-name" value="S_CLI_RECIPE_CDC"/>
+            </tableType>
+        </table>
+        <!--表定义，包括表名和引用的字段定义，引用名与同目录下的table-*.xml文件相同-->
+        <table name="S_CLI_SEERECORD" ref="s_cli_seerecord">
+            <!--表与真实物理数据存储的映射，类型为jdbc意味着这张表与真实数据库中的某张表形成了映射关系-->
+            <tableType name="mysql-cdc">
+                <config name="hostname" value="10.48.251.50"/>
+                <config name="port" value="3306"/>
+                <!--用户名-->
+                <config name="username" value="ruisoft"/>
+                <!--密码-->
+                <config name="password" value="Ruisoft@123"/>
+                <!--连接信息-->
+                <config name="database-name" value="ods"/>
+                <!--真实表名-->
+                <config name="table-name" value="s_cli_seerecord"/>
+            </tableType>
+        </table>
+        <!--表定义，包括表名和引用的字段定义，引用名与同目录下的table-*.xml文件相同-->
+        <table name="S_CLI_SEERECORD_CDC" ref="s_cli_seerecord_target">
+            <!--表与真实物理数据存储的映射，类型为jdbc意味着这张表与真实数据库中的某张表形成了映射关系-->
+            <tableType name="jdbc">
+                <!--连接信息-->
+                <config name="url" value="jdbc:oracle:thin:@10.48.250.25:1521/orcl"/>
+                <!--用户名-->
+                <config name="username" value="RUI_HC_DC"/>
+                <!--密码-->
+                <config name="password" value="BTtpA5mX"/>
+                <!--驱动类名-->
+                <config name="driver" value="oracle.jdbc.driver.OracleDriver"/>
+                <!--真实表名-->
+                <config name="table-name" value="S_CLI_SEERECORD_CDC"/>
+            </tableType>
+        </table>
+    </relates>
+    <process>
+        <syncSQLs>
+            <syncSQL name="syncE12010000"/>
+            <syncSQL name="syncRECIPE"/>
+            <syncSQL name="syncSEERECORD"/>
+        </syncSQLs>
+    </process>
+</job>

@@ -1,7 +1,7 @@
 package com.rui.dp.prj.base.funs
 
 import com.rui.dp.prj.base.Consts
-import com.rui.dp.prj.base.DeepStreamProcessJobData
+import com.rui.dp.prj.base.job.DeepStreamProcessJobData
 import com.rui.dp.prj.base.funs.vp.DPTransformGateway
 import com.ruisoft.eig.transform.transformer.Transformer
 import org.apache.flink.api.common.functions.RichMapFunction

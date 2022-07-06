@@ -27,7 +27,7 @@
         <!--表定义，包括表名和引用的字段定义，引用名与同目录下的table-*.xml文件相同-->
         <table name="NB_E12010000" ref="e12010000">
             <!--表与真实物理数据存储的映射，类型为jdbc意味着这张表与真实数据库中的某张表形成了映射关系-->
-            <tableType name="upsert-kafka'">
+            <tableType name="upsert-kafka">
                 <!--读取的kafka主题名-->
                 <config name="topic" value="e12010000p2"/>
                 <!--kafka的服务地址-->

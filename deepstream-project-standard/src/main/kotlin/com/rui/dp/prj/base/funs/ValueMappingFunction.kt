@@ -24,7 +24,9 @@ class ValueMappingFunction(
 
     override fun open(parameters: Configuration?) {
         super.open(parameters)
-        transformGateway = DPTransformGateway.newGateway(jobData.getDataSourceConfig(Consts.VALUE_MAPPING_DS))
+        val dsConfig = jobData.getDataSourceConfig(Consts.VALUE_MAPPING_DS)
+        logger.info("Init value mapping with datasource ${dsConfig.name} to ${dsConfig.connectString}")
+        transformGateway = DPTransformGateway.newGateway(dsConfig)
         val allTrans = mutableMapOf<String, Transformer>()
         for (jobId in jobIds) {
             val trans = transformGateway!!.match(jobId, fields)

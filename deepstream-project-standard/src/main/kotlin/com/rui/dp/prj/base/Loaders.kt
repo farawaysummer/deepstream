@@ -13,6 +13,7 @@ object PackageResourceJobDataLoader : ProcessJobDataLoader() {
         val inputStream = javaClass.getResourceAsStream("/$resourceName.xml")!!
         val reader = SAXReader()
         val document = reader.read(inputStream)
+        logger.info("Loading resource $resourceName :\n ${document.asXML()}")
         return document.rootElement
     }
 
@@ -48,6 +49,9 @@ class ExternalResourceJobDataLoader(
 
         val reader = SAXReader()
         val document = reader.read(resourceFile)
+
+        logger.info("Loading resource ${resourceFile.absolutePath} :\n ${document.asXML()}")
+
         return document.rootElement
     }
 
@@ -68,6 +72,7 @@ object PackageResourceSyncJobDataLoader : SyncJobDataLoader() {
         val inputStream = javaClass.getResourceAsStream("/$resourceName.xml")!!
         val reader = SAXReader()
         val document = reader.read(inputStream)
+        logger.info("Loading resource $resourceName :\n ${document.asXML()}")
         return document.rootElement
     }
 
@@ -100,6 +105,7 @@ class ExternalResourceSyncJobDataLoader(
 
         val reader = SAXReader()
         val document = reader.read(resourceFile)
+        logger.info("Loading resource ${resourceFile.absolutePath} :\n ${document.asXML()}")
         return document.rootElement
     }
 

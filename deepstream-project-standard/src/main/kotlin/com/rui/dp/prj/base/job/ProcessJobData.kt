@@ -5,6 +5,8 @@ import com.rui.dp.prj.base.Consts
 import com.rui.ds.common.DataSourceConfig
 import com.rui.ds.datasource.DatabaseSources
 import org.dom4j.Element
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 data class ProcessJobData(
     val jobName: String,
@@ -56,7 +58,8 @@ data class EventData(
     val eventName: String,
     val eventFields: List<DataField>,
     val fieldMapping: Map<String, String> = mapOf(),
-    val eventType: TableType
+    val eventType: TableType,
+    val properties: Map<String, String> = mutableMapOf()
 ) : java.io.Serializable {
     fun toEventTableSql(): String {
         val fields = eventFields.joinToString(separator = ",") {
@@ -182,7 +185,14 @@ abstract class ProcessJobDataLoader : JobDataLoader() {
         val eventTypeElement = eventElement.element("eventType")
         val eventType = loadTableType(eventTypeElement)
 
-        return EventData(eventName, eventKeys, fieldMapping, eventType)
+        val eventConfigElement = eventElement.element("eventConfig")
+        val eventConfig = if (eventConfigElement != null) {
+            eventConfigElement.elements("config").associateBy({it.attributeValue("name")}, {it.attributeValue("value")})
+        } else {
+            emptyMap()
+        }
+
+        return EventData(eventName, eventKeys, fieldMapping, eventType, eventConfig)
     }
 
     private fun loadRelatedTables(tableElement: Element): List<RelatedTable> {
@@ -246,6 +256,4 @@ abstract class ProcessJobDataLoader : JobDataLoader() {
             resultFields = resultFields
         )
     }
-
-
 }

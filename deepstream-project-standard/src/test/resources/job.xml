@@ -20,6 +20,9 @@
                 <!--kafka的读取格式，从CDC的数据主题中读取格式为ruisoft-koalaspeed-->
                 <config name="format" value="ruisoft-koalaspeed"/>
             </eventType>
+            <eventConfig>
+                <config name="deduplicate.windows" value="1000"/>
+            </eventConfig>
         </event>
     </events>
     <!--处理过程中涉及到的表定义-->

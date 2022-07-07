@@ -26,8 +26,9 @@ public class AsyncDBJoinFunction extends RichAsyncFunction<Row, Row> {
 
     @Override
     public void open(Configuration parameters) {
-        client = new AsyncDatabaseClient(queryData, delay, counter);
         counter = getRuntimeContext().getMetricGroup().counter("queryRows-" + queryData.getJobName());
+
+        client = new AsyncDatabaseClient(queryData, delay, counter);
     }
 
     @Override

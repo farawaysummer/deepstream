@@ -17,6 +17,8 @@ import org.apache.flink.streaming.api.datastream.AsyncDataStream;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.types.Row;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -25,6 +27,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class DataProcessJob implements ProjectJob {
+    private static final Logger logger = LoggerFactory.getLogger(DataProcessJob.class);
+
     private final ProcessContext context;
     private final ProcessJobData jobData;
 
@@ -35,10 +39,12 @@ public class DataProcessJob implements ProjectJob {
 
     @Override
     public void prepare() {
+
+        logger.info("Ready to prepare job [" + jobData.getJobName() +"]");
         // 创建Flink表的定义
         for (RelatedTable tableRef : jobData.getRelatedTables()) {
             String tableSql = tableRef.toTableSql();
-
+            logger.info("[" + jobData.getJobName() +"] Execute related table create sql:\n" + tableSql);
             DeepStreamHelper.executeSQL(context, tableSql);
         }
 
@@ -46,14 +52,32 @@ public class DataProcessJob implements ProjectJob {
         List<EventData> events = jobData.getEvents();
         for (EventData eventData : events) {
             String eventSql = eventData.toEventTableSql();
+            logger.info("[" + jobData.getJobName() +"] Execute event table create sql:\n" + eventSql);
             DeepStreamHelper.executeSQL(context, eventSql);
         }
+
+        logger.info("Finish preparing job [" + jobData.getJobName() +"]");
+
+        jobData.loadDataSource();
     }
 
     @Override
     public void start() {
+        logger.info("Create processing job [" + jobData.getJobName() +"]");
         List<EventData> events = jobData.getEvents();
         List<DataStream<Row>> allQueryResults = Lists.newArrayList();
+
+        // 是否需要值域映射
+        ValueMappingFunction mappingFunction = null;
+        if (jobData.getProcessData().useDictMapping()) {
+            List<String> columns = jobData.getProcessData().getResultFields()
+                    .stream().map(DataField::getFieldName).collect(Collectors.toList());
+            mappingFunction = DeepStreamFunctions.createValueMappingFunctions(
+                    jobData,
+                    jobData.getProcessData().getDictTransforms(),
+                    columns
+            );
+        }
 
         for (EventData event : events) {
             // 对数据变更事件去重
@@ -84,18 +108,6 @@ public class DataProcessJob implements ProjectJob {
             DataStream<Row> groupStream = eventStream.keyBy(row -> RowDesc.of(row, keyFields))
                     .process(new DeduplicateRowFunction(jobData.getJobName(), event))
                     .returns(eventTypes.toTypeInformation());
-
-            // 是否需要值域映射
-            ValueMappingFunction mappingFunction = null;
-            if (jobData.getProcessData().useDictMapping()) {
-                List<String> columns = jobData.getProcessData().getResultFields()
-                        .stream().map(DataField::getFieldName).collect(Collectors.toList());
-                mappingFunction = DeepStreamFunctions.createValueMappingFunctions(
-                        jobData,
-                        jobData.getProcessData().getDictTransforms(),
-                        columns
-                );
-            }
 
             // 关联查询
             StreamDataTypes streamDataType = DeepStreamHelper.toStreamDataTypes(jobData.getProcessData().getResultFields());
@@ -131,9 +143,11 @@ public class DataProcessJob implements ProjectJob {
         }
 
         // 处理完成后，插入目标表
-        context.getTableEnv().createTemporaryView("DTable", resultStream);
+        context.getTableEnv().createTemporaryView(Consts.RESULT_TABLE, resultStream);
         String insertSql = jobData.getSQL(jobData.getProcessData().getSinkSqlName());
         DeepStreamHelper.executeSQL(context, insertSql);
+
+        logger.info( "[" + jobData.getJobName() +"] Start to process");
     }
 
     @Override

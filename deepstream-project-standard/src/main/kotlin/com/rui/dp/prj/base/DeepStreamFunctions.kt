@@ -26,10 +26,7 @@ object DeepStreamFunctions {
         jobs: List<String>,
         columns: List<String>
     ): ValueMappingFunction {
-        val mcDsConfig = DatabaseSources.getDataSourceConfig("MC_DS")
-        if (mcDsConfig == null) {
-            loadMCDataSource()
-        }
+//        val mcDsConfig = jobData.getDataSourceConfig("MC_DS")
 
         val connection = DatabaseSources.getConnection("MC_DS")!!
         val jobIds = mutableListOf<Long>()
@@ -51,22 +48,22 @@ object DeepStreamFunctions {
         return ValueMappingFunction(jobIds, columns.toTypedArray(), jobData)
     }
 
-    @JvmStatic
-    private fun loadMCDataSource() {
-        val resource = DeepStreamFunctions::class.java.getResourceAsStream("/source.properties")!!
-        val sourceProp = Properties()
-        sourceProp.load(resource)
-
-        val mcDsConf = DataSourceConfig(
-            name = "MC_DS",
-            dbName = "eigmcdb",
-            username = sourceProp.getProperty("eigmc.db.username"),
-            password = sourceProp.getProperty("eigmc.db.password"),
-            type = "mysql",
-            host = sourceProp.getProperty("eigmc.db.hostname"),
-            port = sourceProp.getProperty("eigmc.db.port").toInt()
-        )
-
-        DatabaseSources.registryDataSource(mcDsConf)
-    }
+//    @JvmStatic
+//    private fun loadMCDataSource() {
+//        val resource = DeepStreamFunctions::class.java.getResourceAsStream("/source.properties")!!
+//        val sourceProp = Properties()
+//        sourceProp.load(resource)
+//
+//        val mcDsConf = DataSourceConfig(
+//            name = "MC_DS",
+//            dbName = "eigmcdb",
+//            username = sourceProp.getProperty("eigmc.db.username"),
+//            password = sourceProp.getProperty("eigmc.db.password"),
+//            type = "mysql",
+//            host = sourceProp.getProperty("eigmc.db.hostname"),
+//            port = sourceProp.getProperty("eigmc.db.port").toInt()
+//        )
+//
+//        DatabaseSources.registryDataSource(mcDsConf)
+//    }
 }

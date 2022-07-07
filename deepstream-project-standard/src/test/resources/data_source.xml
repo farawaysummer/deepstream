@@ -21,17 +21,5 @@
             <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
         </attributes>
     </connection>
-    <connection>
-        <name>MC_DS</name>
-        <server>10.48.0.26</server>
-        <type>mysql</type>
-        <access>Native</access>
-        <database>eigmcdb</database>
-        <port>3216</port>
-        <username>reseig</username>
-        <password>mu-xPL7C</password>
-        <servername/>
-        <data_tablespace/>
-        <index_tablespace/>
-    </connection>
+
 </transformation>

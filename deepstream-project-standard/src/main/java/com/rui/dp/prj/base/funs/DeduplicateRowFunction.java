@@ -17,6 +17,7 @@ public class DeduplicateRowFunction extends KeyedProcessFunction<RowDesc, Row, R
     private ValueState<Row> valueState;
     private final String jobName;
     private final EventData eventData;
+    private long window = 1000;
 
     // counter-jobName-eventName
     private transient Counter counter;
@@ -33,6 +34,15 @@ public class DeduplicateRowFunction extends KeyedProcessFunction<RowDesc, Row, R
         valueState = getRuntimeContext().getState(valueDesc);
 
         counter = getRuntimeContext().getMetricGroup().counter("processRows-" + jobName + "-" + eventData.getEventName());
+
+        String windowStr = eventData.getProperties().get("deduplicate.windows");
+        if (windowStr != null) {
+            try {
+                this.window = Long.parseLong(windowStr);
+            } catch (Exception e) {
+                // ignore
+            }
+        }
     }
 
     @Override
@@ -41,7 +51,7 @@ public class DeduplicateRowFunction extends KeyedProcessFunction<RowDesc, Row, R
 
         if (current == null) {
             //还需要注册一个定时器
-            ctx.timerService().registerEventTimeTimer(ctx.timerService().currentProcessingTime() + 1000);
+            ctx.timerService().registerEventTimeTimer(ctx.timerService().currentProcessingTime() + window);
             valueState.update(value);
         }
     }

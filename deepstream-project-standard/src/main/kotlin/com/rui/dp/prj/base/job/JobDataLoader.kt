@@ -2,6 +2,8 @@ package com.rui.dp.prj.base.job
 
 import com.rui.ds.common.DataSourceConfig
 import org.dom4j.Element
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.math.BigInteger
 
 abstract class JobDataLoader {
@@ -100,5 +102,6 @@ abstract class JobDataLoader {
 
     companion object {
         internal const val seed: String = "0933910847463829827159347601486730416058"
+        val logger: Logger = LoggerFactory.getLogger(JobDataLoader::class.java)
     }
 }

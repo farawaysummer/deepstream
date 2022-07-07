@@ -1,15 +1,15 @@
 package com.rui.dp.prj;
 
 import com.rui.dp.prj.base.*;
-import com.rui.dp.prj.base.job.DeepStreamSyncJobData;
+import com.rui.dp.prj.base.job.SyncJobData;
 import com.rui.dp.prj.base.job.RelatedTable;
 import com.rui.ds.ProcessContext;
 
 public class DataSyncJob implements ProjectJob {
     private final ProcessContext context = DeepStreamHelper.initEnv();
-    private final DeepStreamSyncJobData jobData;
+    private final SyncJobData jobData;
 
-    public DataSyncJob(DeepStreamSyncJobData jobData) {
+    public DataSyncJob(SyncJobData jobData) {
         this.jobData = jobData;
     }
 

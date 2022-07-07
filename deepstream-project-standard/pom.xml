@@ -27,6 +27,10 @@
             <artifactId>dom4j</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-metrics-dropwizard</artifactId>
+        </dependency>
 <!--        <dependency>-->
 <!--            <groupId>com.rui</groupId>-->
 <!--            <artifactId>deepstream-process-facade-kettle</artifactId>-->

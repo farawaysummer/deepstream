@@ -123,7 +123,13 @@ class DeepStreamJob(
             )
 
             env.parallelism = 1
-            val checkpointStorage = File("./flink/checkpoint")
+            val checkpointPath = if (jobConfig.jobName == null) {
+                "./flink/checkpoint"
+            } else {
+                "./flink/checkpoint/${jobConfig.jobName.hashCode()}"
+            }
+
+            val checkpointStorage = File(checkpointPath)
             checkpointStorage.mkdirs()
             env.checkpointConfig.checkpointStorage =
                 FileSystemCheckpointStorage("file://${checkpointStorage.absolutePath}")
@@ -132,7 +138,7 @@ class DeepStreamJob(
             env.checkpointConfig.checkpointingMode = CheckpointingMode.EXACTLY_ONCE
             env.checkpointConfig.checkpointTimeout = 30000L
             env.checkpointConfig.checkpointInterval = 3000L
-            env.checkpointConfig.maxConcurrentCheckpoints = 2
+            env.checkpointConfig.maxConcurrentCheckpoints = 1
             env.checkpointConfig.minPauseBetweenCheckpoints = 3000L
             env.checkpointConfig.alignedCheckpointTimeout = Duration.ofMinutes(5)
 

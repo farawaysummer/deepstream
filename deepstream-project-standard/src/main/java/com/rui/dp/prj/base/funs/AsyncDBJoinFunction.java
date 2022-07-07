@@ -2,6 +2,7 @@ package com.rui.dp.prj.base.funs;
 
 import com.rui.dp.prj.base.job.QueryData;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.metrics.Counter;
 import org.apache.flink.streaming.api.functions.async.ResultFuture;
 import org.apache.flink.streaming.api.functions.async.RichAsyncFunction;
 import org.apache.flink.types.Row;
@@ -11,6 +12,8 @@ public class AsyncDBJoinFunction extends RichAsyncFunction<Row, Row> {
     private transient AsyncDatabaseClient client;
     private final QueryData queryData;
     private int delay = 1;
+    // counter-jobName-eventName
+    private transient Counter counter;
 
     public AsyncDBJoinFunction(QueryData queryData) {
         this.queryData = queryData;
@@ -23,7 +26,8 @@ public class AsyncDBJoinFunction extends RichAsyncFunction<Row, Row> {
 
     @Override
     public void open(Configuration parameters) {
-        client = new AsyncDatabaseClient(queryData, delay);
+        client = new AsyncDatabaseClient(queryData, delay, counter);
+        counter = getRuntimeContext().getMetricGroup().counter("queryRows-" + queryData.getJobName());
     }
 
     @Override

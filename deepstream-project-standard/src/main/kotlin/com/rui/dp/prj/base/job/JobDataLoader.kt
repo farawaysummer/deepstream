@@ -37,8 +37,7 @@ abstract class JobDataLoader {
             DataField(
                 it.attributeValue("name"),
                 it.attributeValue("type"),
-                it.attributeValue("isKey")?.toBoolean() ?: false,
-                it.attributeValue("from") ?: null
+                it.attributeValue("isKey")?.toBoolean() ?: false
             )
         }
 

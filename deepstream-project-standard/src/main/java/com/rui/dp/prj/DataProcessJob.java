@@ -5,7 +5,7 @@ import com.rui.dp.prj.base.funs.AsyncDBJoinFunction;
 import com.rui.dp.prj.base.funs.DeduplicateRowFunction;
 import com.rui.dp.prj.base.funs.ValueMappingFunction;
 import com.rui.dp.prj.base.job.DataField;
-import com.rui.dp.prj.base.job.DeepStreamProcessJobData;
+import com.rui.dp.prj.base.job.ProcessJobData;
 import com.rui.dp.prj.base.job.EventData;
 import com.rui.dp.prj.base.job.RelatedTable;
 import com.rui.ds.ProcessContext;
@@ -26,9 +26,9 @@ import java.util.stream.Collectors;
 
 public class DataProcessJob implements ProjectJob {
     private final ProcessContext context;
-    private final DeepStreamProcessJobData jobData;
+    private final ProcessJobData jobData;
 
-    public DataProcessJob(DeepStreamProcessJobData jobData) {
+    public DataProcessJob(ProcessJobData jobData) {
         this.jobData = jobData;
         context = DeepStreamHelper.initEnv(jobData.getJobName());
     }
@@ -82,7 +82,7 @@ public class DataProcessJob implements ProjectJob {
             StreamDataTypes eventTypes = DeepStreamHelper.toStreamDataTypes(event.getEventFields());
 
             DataStream<Row> groupStream = eventStream.keyBy(row -> RowDesc.of(row, keyFields))
-                    .process(new DeduplicateRowFunction())
+                    .process(new DeduplicateRowFunction(jobData.getJobName(), event))
                     .returns(eventTypes.toTypeInformation());
 
             // 是否需要值域映射

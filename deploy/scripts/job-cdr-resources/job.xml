@@ -5,12 +5,31 @@
         <event name="queryEvent">
             <!--数据变更事件的索引字段信息-->
             <eventKeys>
-                <field name="CH_ID" type="STRING" isKey="true" from=""/>
+                <field name="CH_ID" type="STRING" isKey="true" ref=""/>
             </eventKeys>
             <!--读取的事件来源类型，一般为kafka或jdbc-cdc-->
             <eventType name="kafka">
                 <!--读取的kafka主题名-->
                 <config name="topic" value="10"/>
+                <!--kafka的服务地址-->
+                <config name="properties.bootstrap.servers" value="localhost:9092"/>
+                <!--kafka的读取分组，默认即可-->
+                <config name="properties.group.id" value="k_default"/>
+                <!--kafka的读取偏移量设置，调试阶段可设置为earliest-offset , 正式运行时设置为group-offsets-->
+                <config name="scan.startup.mode" value="latest-offset"/>
+                <!--kafka的读取格式，从CDC的数据主题中读取格式为ruisoft-koalaspeed-->
+                <config name="format" value="ruisoft-koalaspeed"/>
+            </eventType>
+        </event>
+        <event name="queryEvent1">
+            <!--数据变更事件的索引字段信息-->
+            <eventKeys>
+                <field name="CH_ID" type="STRING"/>
+            </eventKeys>
+            <!--读取的事件来源类型，一般为kafka或jdbc-cdc-->
+            <eventType name="kafka">
+                <!--读取的kafka主题名-->
+                <config name="topic" value="11"/>
                 <!--kafka的服务地址-->
                 <config name="properties.bootstrap.servers" value="localhost:9092"/>
                 <!--kafka的读取分组，默认即可-->
@@ -56,7 +75,7 @@
     <!--数据处理过程-->
     <process>
         <datasource name="HIS"/>
-        <processSQL name="selectHIS"/>
+        <processSQL name="selectHIS" masterTable="WDHIS.EMR_CASE_HISTORY_DOCUMENT"/>
         <sinkSQL name="insert"/>
         <transformJobs>
             <transform name="NB_E12010000-门诊电子病历"/>

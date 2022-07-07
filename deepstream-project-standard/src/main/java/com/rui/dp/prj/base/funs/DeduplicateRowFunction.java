@@ -1,28 +1,29 @@
 package com.rui.dp.prj.base.funs;
 
-import com.rui.dp.prj.base.Consts;
 import com.rui.dp.prj.base.RowDesc;
-import org.apache.flink.api.common.state.StateTtlConfig;
+import com.rui.dp.prj.base.job.EventData;
 import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
-import org.apache.flink.api.common.time.Time;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.metrics.Counter;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.types.Row;
 import org.apache.flink.util.Collector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.util.List;
 
 public class DeduplicateRowFunction extends KeyedProcessFunction<RowDesc, Row, Row> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeduplicateRowFunction.class);
 
     private ValueState<Row> valueState;
+    private final String jobName;
+    private final EventData eventData;
 
-    public DeduplicateRowFunction() {
+    // counter-jobName-eventName
+    private transient Counter counter;
+
+    public DeduplicateRowFunction(String jobName, EventData event) {
+        this.jobName = jobName;
+        this.eventData = event;
     }
 
     @Override
@@ -30,6 +31,8 @@ public class DeduplicateRowFunction extends KeyedProcessFunction<RowDesc, Row, R
         super.open(parameters);
         ValueStateDescriptor<Row> valueDesc = new ValueStateDescriptor<>("rowState", Row.class);
         valueState = getRuntimeContext().getState(valueDesc);
+
+        counter = getRuntimeContext().getMetricGroup().counter("processRows-" + jobName + "-" + eventData.getEventName());
     }
 
     @Override
@@ -49,11 +52,12 @@ public class DeduplicateRowFunction extends KeyedProcessFunction<RowDesc, Row, R
         try {
             value = valueState.value();
             int[] rowFields = new int[value.getArity() - 1];
-            for (int index = 0 ; index < value.getArity() - 1; index++) {
+            for (int index = 0; index < value.getArity() - 1; index++) {
                 rowFields[index] = index;
             }
 
             Row valueWithoutPT = Row.project(value, rowFields);
+            counter.inc();
 
             out.collect(valueWithoutPT);
         } catch (IOException e) {

@@ -1,7 +1,7 @@
 package com.rui.dp.prj.base.funs
 
 import com.rui.dp.prj.base.Consts
-import com.rui.dp.prj.base.job.DeepStreamProcessJobData
+import com.rui.dp.prj.base.job.ProcessJobData
 import com.rui.dp.prj.base.funs.vp.DPTransformGateway
 import com.ruisoft.eig.transform.transformer.Transformer
 import org.apache.flink.api.common.functions.RichMapFunction
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory
 class ValueMappingFunction(
     private val jobIds: List<Long>,
     private val fields: Array<String>,
-    private val jobData: DeepStreamProcessJobData
+    private val jobData: ProcessJobData
 ) : RichMapFunction<Row, Row>() {
 
     @Transient

@@ -2,11 +2,11 @@ package com.rui.dp.prj;
 
 import com.rui.dp.prj.base.ExternalResourceSyncJobDataLoader;
 import com.rui.dp.prj.base.PackageResourceSyncJobDataLoader;
-import com.rui.dp.prj.base.job.DeepStreamSyncJobData;
+import com.rui.dp.prj.base.job.SyncJobData;
 
-public class SyncProjectStarter {
+public abstract class SyncProjectStarter {
     public void start(String[] args) {
-        DeepStreamSyncJobData jobData;
+        SyncJobData jobData;
         if (args == null || args.length == 0) {
             jobData = PackageResourceSyncJobDataLoader.load();
         } else {

@@ -1,7 +1,7 @@
 package com.rui.dp.prj.base
 
-import com.rui.dp.prj.base.job.DeepStreamProcessJobData
-import com.rui.dp.prj.base.job.DeepStreamSyncJobData
+import com.rui.dp.prj.base.job.ProcessJobData
+import com.rui.dp.prj.base.job.SyncJobData
 import com.rui.dp.prj.base.job.ProcessJobDataLoader
 import com.rui.dp.prj.base.job.SyncJobDataLoader
 import org.dom4j.Element
@@ -17,7 +17,7 @@ object PackageResourceJobDataLoader : ProcessJobDataLoader() {
     }
 
     @JvmStatic
-    fun load(): DeepStreamProcessJobData {
+    fun load(): ProcessJobData {
         val jobData = loadJobData("job")
         val sqls = loadSql("sqls")
         jobData.setSQLs(sqls)
@@ -51,7 +51,7 @@ class ExternalResourceJobDataLoader(
         return document.rootElement
     }
 
-    fun load(): DeepStreamProcessJobData {
+    fun load(): ProcessJobData {
         val jobData = loadJobData("job")
         val sqls = loadSql("sqls")
         jobData.setSQLs(sqls)
@@ -72,7 +72,7 @@ object PackageResourceSyncJobDataLoader : SyncJobDataLoader() {
     }
 
     @JvmStatic
-    fun load(): DeepStreamSyncJobData {
+    fun load(): SyncJobData {
         val jobData = loadJobData("job")
         val sqls = loadSql("sqls")
         jobData.setSQLs(sqls)
@@ -103,7 +103,7 @@ class ExternalResourceSyncJobDataLoader(
         return document.rootElement
     }
 
-    fun load(): DeepStreamSyncJobData {
+    fun load(): SyncJobData {
         val jobData = loadJobData("job")
         val sqls = loadSql("sqls")
         jobData.setSQLs(sqls)

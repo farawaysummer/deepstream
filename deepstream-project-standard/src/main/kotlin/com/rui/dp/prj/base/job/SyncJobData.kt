@@ -2,9 +2,26 @@ package com.rui.dp.prj.base.job
 
 import org.dom4j.Element
 
+data class SyncJobData(
+    val jobName: String,
+    val relatedTables: List<RelatedTable>,
+    val syncSQLs: List<String>
+): java.io.Serializable {
+    private val SQLS: MutableMap<String, String> = mutableMapOf()
+
+    internal fun setSQLs(sqls: Map<String, String>) {
+        this.SQLS.putAll(sqls)
+    }
+
+    fun getSQL(name: String): String {
+        return SQLS[name] ?: throw RuntimeException("未找到SQL: $name")
+    }
+
+}
+
 abstract class SyncJobDataLoader: JobDataLoader() {
 
-    fun loadJobData(jobResource: String): DeepStreamSyncJobData {
+    fun loadJobData(jobResource: String): SyncJobData {
         val rootElement = loadResources(jobResource)
 
         val jobName = rootElement.attributeValue("name")
@@ -17,7 +34,7 @@ abstract class SyncJobDataLoader: JobDataLoader() {
             it.attributeValue("name")
         }
 
-        return DeepStreamSyncJobData(jobName, relatedTables, SQLs)
+        return SyncJobData(jobName, relatedTables, SQLs)
     }
 
     private fun loadRelatedTables(tableElement: Element): List<RelatedTable> {

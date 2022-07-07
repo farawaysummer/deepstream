@@ -19,7 +19,7 @@
             </tableType>
         </table>
         <!--表定义，包括表名和引用的字段定义，引用名与同目录下的table-*.xml文件相同-->
-        <table name="E12010000_CDC" ref="e12010000_target">
+        <table name="E12010000_LOCAL" ref="e12010000_target">
             <!--表与真实物理数据存储的映射，类型为jdbc意味着这张表与真实数据库中的某张表形成了映射关系-->
             <tableType name="jdbc">
                 <!--连接信息-->
@@ -35,7 +35,7 @@
             </tableType>
         </table>
         <!--表定义，包括表名和引用的字段定义，引用名与同目录下的table-*.xml文件相同-->
-        <table name="C01040000" ref="c0104">
+        <table name="C01040000" ref="c01040000">
             <!--表与真实物理数据存储的映射，类型为jdbc意味着这张表与真实数据库中的某张表形成了映射关系-->
             <tableType name="kafka">
                 <!--读取的kafka主题名-->
@@ -52,7 +52,7 @@
             </tableType>
         </table>
         <!--表定义，包括表名和引用的字段定义，引用名与同目录下的table-*.xml文件相同-->
-        <table name="C01040000_CDC" ref="e12010000_target">
+        <table name="C01040000_LOCAL" ref="c01040000_target">
             <!--表与真实物理数据存储的映射，类型为jdbc意味着这张表与真实数据库中的某张表形成了映射关系-->
             <tableType name="jdbc">
                 <!--连接信息-->

@@ -44,7 +44,7 @@ class ExternalResourceJobDataLoader(
 
         val resourceFile = File(filePath)
         if (!resourceFile.exists()) {
-            throw RuntimeException("Can't find resource path $resourcePath")
+            throw RuntimeException("Can't find resource path $filePath")
         }
 
         val reader = SAXReader()
@@ -100,7 +100,7 @@ class ExternalResourceSyncJobDataLoader(
 
         val resourceFile = File(filePath)
         if (!resourceFile.exists()) {
-            throw RuntimeException("Can't find resource path $resourcePath")
+            throw RuntimeException("Can't find resource path $filePath")
         }
 
         val reader = SAXReader()

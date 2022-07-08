@@ -21,25 +21,25 @@
                 <config name="format" value="ruisoft-koalaspeed"/>
             </eventType>
         </event>
-        <event name="queryEvent1">
-            <!--数据变更事件的索引字段信息-->
-            <eventKeys>
-                <field name="CH_ID" type="STRING"/>
-            </eventKeys>
-            <!--读取的事件来源类型，一般为kafka或jdbc-cdc-->
-            <eventType name="kafka">
-                <!--读取的kafka主题名-->
-                <config name="topic" value="11"/>
-                <!--kafka的服务地址-->
-                <config name="properties.bootstrap.servers" value="localhost:9092"/>
-                <!--kafka的读取分组，默认即可-->
-                <config name="properties.group.id" value="k_default"/>
-                <!--kafka的读取偏移量设置，调试阶段可设置为earliest-offset , 正式运行时设置为group-offsets-->
-                <config name="scan.startup.mode" value="latest-offset"/>
-                <!--kafka的读取格式，从CDC的数据主题中读取格式为ruisoft-koalaspeed-->
-                <config name="format" value="ruisoft-koalaspeed"/>
-            </eventType>
-        </event>
+<!--        <event name="queryEvent1">-->
+<!--            &lt;!&ndash;数据变更事件的索引字段信息&ndash;&gt;-->
+<!--            <eventKeys>-->
+<!--                <field name="CH_ID" type="STRING"/>-->
+<!--            </eventKeys>-->
+<!--            &lt;!&ndash;读取的事件来源类型，一般为kafka或jdbc-cdc&ndash;&gt;-->
+<!--            <eventType name="kafka">-->
+<!--                &lt;!&ndash;读取的kafka主题名&ndash;&gt;-->
+<!--                <config name="topic" value="11"/>-->
+<!--                &lt;!&ndash;kafka的服务地址&ndash;&gt;-->
+<!--                <config name="properties.bootstrap.servers" value="localhost:9092"/>-->
+<!--                &lt;!&ndash;kafka的读取分组，默认即可&ndash;&gt;-->
+<!--                <config name="properties.group.id" value="k_default"/>-->
+<!--                &lt;!&ndash;kafka的读取偏移量设置，调试阶段可设置为earliest-offset , 正式运行时设置为group-offsets&ndash;&gt;-->
+<!--                <config name="scan.startup.mode" value="latest-offset"/>-->
+<!--                &lt;!&ndash;kafka的读取格式，从CDC的数据主题中读取格式为ruisoft-koalaspeed&ndash;&gt;-->
+<!--                <config name="format" value="ruisoft-koalaspeed"/>-->
+<!--            </eventType>-->
+<!--        </event>-->
     </events>
     <!--处理过程中涉及到的表定义-->
     <relates>

@@ -37,6 +37,10 @@ public class AsyncDBJoinFunction extends RichAsyncFunction<Row, Row> {
                 .whenComplete(
                         (response, error) -> {
                             if (response != null) {
+                                if (response.isEmpty()) {
+                                    // send input row into latency consume kafka topic
+                                    
+                                }
                                 resultFuture.complete(response);
                             } else {
                                 resultFuture.completeExceptionally(error);
@@ -44,6 +48,7 @@ public class AsyncDBJoinFunction extends RichAsyncFunction<Row, Row> {
 
                         });
     }
+
 
 
 }

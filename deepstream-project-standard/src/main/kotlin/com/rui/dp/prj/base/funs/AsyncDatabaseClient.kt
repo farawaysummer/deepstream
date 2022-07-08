@@ -18,11 +18,11 @@ class AsyncDatabaseClient(private val queryData: QueryData,
         queryData.loadDataSource()
     }
 
-    fun query(key: Row): CompletableFuture<Collection<Row?>> {
+    fun query(key: Row): CompletableFuture<Collection<Row>> {
         return CompletableFuture.supplyAsync { queryDB(key) }
     }
 
-    private fun queryDB(row: Row): List<Row?> {
+    private fun queryDB(row: Row): List<Row> {
         if (row.kind == RowKind.UPDATE_BEFORE) {
             return emptyList()
         }

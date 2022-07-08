@@ -70,7 +70,7 @@ data class EventData(
             "`${it.fieldName}`"
         }
 
-        if (hasKey) {
+        if (hasKey && !eventType.ignoreKey) {
             return """
             CREATE TABLE ${eventName.uppercase()} (
                 $fields ,

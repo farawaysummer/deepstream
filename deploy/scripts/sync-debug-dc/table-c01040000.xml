@@ -100,7 +100,7 @@
     <field name="PRE_LIST_MEDI_PURPOSE" type="STRING"/>
     <field name="PRE_LIST_PROJECT_AMOUNT" type="STRING"/>
     <field name="PRE_LIST_ANTI_TUMOR_DRUG" type="STRING"/>
-    <field name="AUTO_ID" type="VARCHAR"/>
+    <field name="AUTO_ID" type="VARCHAR" isKey="true"/>
     <field name="isUpLoad" type="VARCHAR"/>
     <field name="isValidate" type="VARCHAR"/>
     <field name="RBUSINESS_DATE" type="TIMESTAMP(3)"/>

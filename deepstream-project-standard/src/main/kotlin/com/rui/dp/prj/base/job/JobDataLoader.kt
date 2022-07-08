@@ -28,9 +28,11 @@ abstract class JobDataLoader {
 
     internal fun loadTableType(element: Element): TableType {
         val typeName = element.attributeValue("name")
+        val ignoreKey = element.attributeValue("ignoreKey")?: "false"
+
         val typeProperties = element.elements("config")
             .associateBy({ it.attributeValue("name") }, { it.attributeValue("value") })
-        return TableType(typeName, typeProperties)
+        return TableType(typeName, typeProperties, ignoreKey.toBoolean())
     }
 
     internal fun loadTableRef(refName: String): List<DataField> {

@@ -27,12 +27,15 @@ public class AvroKoalaSpeedToRowDataConverters {
 
         return data -> {
             GenericRecord genericRecord = (GenericRecord) data;
-            GenericRowData row = new GenericRowData(arity);
+            GenericRowData row = new GenericRowData(arity + 1);
             for(int i = 0; i < arity; ++i) {
                 String fieldName = fieldNames.get(i);
                 Object value = genericRecord.get(fieldName);
                 row.setField(i, fieldConverters[i].convert(value));
             }
+
+            // add deadline field as current time
+            row.setField(arity, System.currentTimeMillis());
 
             return row;
         };

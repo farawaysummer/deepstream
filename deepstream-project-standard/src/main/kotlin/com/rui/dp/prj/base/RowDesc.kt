@@ -12,7 +12,7 @@ data class RowDesc(
     companion object {
         @JvmStatic
         fun of(row: Row, keys: List<String>): RowDesc {
-            val timestamp = (row.getField(Consts.FILE_PROC_TIME) as Instant).toEpochMilli()
+            val timestamp = (row.getField(Consts.FIELD_PROC_TIME) as Instant).toEpochMilli()
             val rowKind =
                 if (row.kind == RowKind.DELETE) {
                     row.kind

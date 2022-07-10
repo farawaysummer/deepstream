@@ -71,7 +71,7 @@
             <field name="LK_CLI_RECIPE" type="VARCHAR2"/>
             <field name="LK_CLI_SEE" type="VARCHAR2"/>
             <field name="LK_MPI_PATIENT" type="VARCHAR2"/>
-            <field name="PATIENT_ID" type="VARCHAR2"/>
+            <field name="PATIENT_ID" type="VARCHAR2" must="true"/>
             <field name="OUTP_ID" type="VARCHAR2"/>
             <field name="OUTP_NO" type="VARCHAR2"/>
             <field name="RECIPE_NO" type="VARCHAR2"/>

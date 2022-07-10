@@ -1,5 +1,6 @@
 package com.rui.dp.prj.base.funs;
 
+import com.rui.dp.prj.base.Consts;
 import com.rui.dp.prj.base.RowDesc;
 import com.rui.dp.prj.base.job.EventData;
 import org.apache.flink.api.common.state.ValueState;
@@ -11,6 +12,7 @@ import org.apache.flink.types.Row;
 import org.apache.flink.util.Collector;
 
 import java.io.IOException;
+import java.util.Set;
 
 public class DeduplicateRowFunction extends KeyedProcessFunction<RowDesc, Row, Row> {
 
@@ -47,6 +49,15 @@ public class DeduplicateRowFunction extends KeyedProcessFunction<RowDesc, Row, R
 
     @Override
     public void processElement(Row value, KeyedProcessFunction<RowDesc, Row, Row>.Context ctx, Collector<Row> out) throws Exception {
+        // 过滤掉超过deadline的事件记录
+        Set<String> fields = value.getFieldNames(true);
+        if (fields != null &&fields.contains(Consts.FIELD_DEAD_LINE)) {
+            Long deadline = (Long)value.getField(Consts.FIELD_DEAD_LINE);
+            if (deadline != null && deadline < ctx.timerService().currentProcessingTime()) {
+                return;
+            }
+        }
+
         Row current = valueState.value();
 
         if (current == null) {

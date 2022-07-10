@@ -5,8 +5,6 @@ import com.rui.dp.prj.base.Consts
 import com.rui.ds.common.DataSourceConfig
 import com.rui.ds.datasource.DatabaseSources
 import org.dom4j.Element
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 data class ProcessJobData(
     val jobName: String,
@@ -74,7 +72,7 @@ data class EventData(
             return """
             CREATE TABLE ${eventName.uppercase()} (
                 $fields ,
-                ${Consts.FILE_PROC_TIME} as PROCTIME(),
+                ${Consts.FIELD_PROC_TIME} as PROCTIME(),
                 PRIMARY KEY (${primaryKeys}) NOT ENFORCED
             ) WITH (
                 $eventType
@@ -84,7 +82,7 @@ data class EventData(
             return """
             CREATE TABLE ${eventName.uppercase()} (
                 $fields ,
-                ${Consts.FILE_PROC_TIME} as PROCTIME()
+                ${Consts.FIELD_PROC_TIME} as PROCTIME()
             ) WITH (
                 $eventType
             )
@@ -98,7 +96,7 @@ data class EventData(
             "`${it.fieldName}`"
         }
         return """
-            SELECT $fields, `${Consts.FILE_PROC_TIME}` FROM ${eventName.uppercase()}
+            SELECT $fields, `${Consts.FIELD_PROC_TIME}` FROM ${eventName.uppercase()}
         """.trimIndent()
     }
 }
@@ -163,7 +161,8 @@ abstract class ProcessJobDataLoader : JobDataLoader() {
             DataField(
                 it.attributeValue("name"),
                 it.attributeValue("type"),
-                it.attributeValue("isKey")?.toBoolean() ?: false
+                it.attributeValue("isKey")?.toBoolean() ?: false,
+                it.attributeValue("required")?.toBoolean() ?: false
             )
         }
 
@@ -241,7 +240,8 @@ abstract class ProcessJobDataLoader : JobDataLoader() {
             DataField(
                 it.attributeValue("name"),
                 it.attributeValue("type"),
-                false
+                false,
+                it.attributeValue("required")?.toBoolean() ?: false
             )
         }
 

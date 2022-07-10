@@ -5,7 +5,7 @@
         <event name="queryEvent">
             <!--数据变更事件的索引字段信息-->
             <eventKeys>
-                <field name="CH_ID" type="STRING" isKey="true" ref=""/>
+                <field name="CH_ID" type="STRING" isKey="true" ref="CH_ID"/>
             </eventKeys>
             <!--读取的事件来源类型，一般为kafka或jdbc-cdc-->
             <eventType name="kafka">

@@ -1,12 +1,10 @@
 package com.rui.dp.prj;
 
 import com.rui.dp.prj.base.*;
-import com.rui.dp.prj.base.funs.AsyncDBJoinFunction;
-import com.rui.dp.prj.base.funs.DeduplicateRowFunction;
-import com.rui.dp.prj.base.funs.ValueMappingFunction;
+import com.rui.dp.prj.base.funs.*;
 import com.rui.dp.prj.base.job.DataField;
-import com.rui.dp.prj.base.job.ProcessJobData;
 import com.rui.dp.prj.base.job.EventData;
+import com.rui.dp.prj.base.job.ProcessJobData;
 import com.rui.dp.prj.base.job.RelatedTable;
 import com.rui.ds.ProcessContext;
 import com.rui.ds.StreamDataTypes;
@@ -15,6 +13,7 @@ import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.streaming.api.datastream.AsyncDataStream;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.types.Row;
 import org.slf4j.Logger;
@@ -40,11 +39,11 @@ public class DataProcessJob implements ProjectJob {
     @Override
     public void prepare() {
 
-        logger.info("Ready to prepare job [" + jobData.getJobName() +"]");
+        logger.info("Ready to prepare job [" + jobData.getJobName() + "]");
         // 创建Flink表的定义
         for (RelatedTable tableRef : jobData.getRelatedTables()) {
             String tableSql = tableRef.toTableSql();
-            logger.info("[" + jobData.getJobName() +"] Execute related table create sql:\n" + tableSql);
+            logger.info("[" + jobData.getJobName() + "] Execute related table create sql:\n" + tableSql);
             DeepStreamHelper.executeSQL(context, tableSql);
         }
 
@@ -52,18 +51,18 @@ public class DataProcessJob implements ProjectJob {
         List<EventData> events = jobData.getEvents();
         for (EventData eventData : events) {
             String eventSql = eventData.toEventTableSql();
-            logger.info("[" + jobData.getJobName() +"] Execute event table create sql:\n" + eventSql);
+            logger.info("[" + jobData.getJobName() + "] Execute event table create sql:\n" + eventSql);
             DeepStreamHelper.executeSQL(context, eventSql);
         }
 
-        logger.info("Finish preparing job [" + jobData.getJobName() +"]");
+        logger.info("Finish preparing job [" + jobData.getJobName() + "]");
 
         jobData.loadDataSource();
     }
 
     @Override
     public void start() {
-        logger.info("Create processing job [" + jobData.getJobName() +"]");
+        logger.info("Create processing job [" + jobData.getJobName() + "]");
         List<EventData> events = jobData.getEvents();
         List<DataStream<Row>> allQueryResults = Lists.newArrayList();
 
@@ -79,6 +78,9 @@ public class DataProcessJob implements ProjectJob {
             );
         }
 
+        // process retry events
+
+
         for (EventData event : events) {
             // 对数据变更事件去重
             Table eventTable = DeepStreamHelper.executeQuery(context, event.toEventQuerySql());
@@ -87,7 +89,7 @@ public class DataProcessJob implements ProjectJob {
                             WatermarkStrategy.<Row>forBoundedOutOfOrderness(Duration.ofSeconds(1))
                                     .withTimestampAssigner((SerializableTimestampAssigner<Row>)
                                             (element, l) -> {
-                                                Instant timestamp = (Instant) element.getField(Consts.FILE_PROC_TIME);
+                                                Instant timestamp = (Instant) element.getField(Consts.FIELD_PROC_TIME);
                                                 if (timestamp == null) {
                                                     return System.currentTimeMillis();
                                                 } else {
@@ -111,28 +113,25 @@ public class DataProcessJob implements ProjectJob {
 
             // 关联查询
             StreamDataTypes streamDataType = DeepStreamHelper.toStreamDataTypes(jobData.getProcessData().getResultFields());
-            DataStream<Row> queryResult;
+            DataStream<ProcessResult> queryResult = AsyncDataStream.unorderedWait(
+                    groupStream,
+                    new AsyncDBJoinFunction(jobData.createQueryData(event)),
+                    30000, TimeUnit.SECONDS
+            );
+
+            SingleOutputStreamOperator<Row> forwardResult;
             if (mappingFunction != null) {
-                queryResult = AsyncDataStream.unorderedWait(
-                        groupStream,
-                        new AsyncDBJoinFunction(jobData.createQueryData(event)),
-                        30000, TimeUnit.SECONDS
-                ).map(mappingFunction).returns(
-                        streamDataType.toTypeInformation()
-                );
+                forwardResult = queryResult.process(new ResultForwardFunction())
+                        .map(mappingFunction)
+                        .returns(streamDataType.toTypeInformation());
             } else {
-                queryResult = AsyncDataStream.unorderedWait(
-                        groupStream,
-                        new AsyncDBJoinFunction(jobData.createQueryData(event)),
-                        30000, TimeUnit.SECONDS
-                ).returns(
-                        streamDataType.toTypeInformation()
-                );
+                forwardResult = queryResult.process(new ResultForwardFunction())
+                        .returns(streamDataType.toTypeInformation());
             }
 
-            allQueryResults.add(queryResult);
+            allQueryResults.add(forwardResult);
         }
-
+//
         DataStream<Row> resultStream;
         if (allQueryResults.size() == 1) {
             resultStream = allQueryResults.get(0);
@@ -147,7 +146,7 @@ public class DataProcessJob implements ProjectJob {
         String insertSql = jobData.getSQL(jobData.getProcessData().getSinkSqlName());
         DeepStreamHelper.executeSQL(context, insertSql);
 
-        logger.info( "[" + jobData.getJobName() +"] Start to process");
+        logger.info("[" + jobData.getJobName() + "] Start to process");
     }
 
     @Override

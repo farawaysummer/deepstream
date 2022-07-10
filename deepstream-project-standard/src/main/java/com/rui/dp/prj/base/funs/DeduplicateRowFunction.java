@@ -10,12 +10,14 @@ import org.apache.flink.metrics.Counter;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.types.Row;
 import org.apache.flink.util.Collector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Set;
 
 public class DeduplicateRowFunction extends KeyedProcessFunction<RowDesc, Row, Row> {
-
+    private static final Logger logger = LoggerFactory.getLogger(DeduplicateRowFunction.class);
     private ValueState<Row> valueState;
     private final String jobName;
     private final EventData eventData;
@@ -51,9 +53,12 @@ public class DeduplicateRowFunction extends KeyedProcessFunction<RowDesc, Row, R
     public void processElement(Row value, KeyedProcessFunction<RowDesc, Row, Row>.Context ctx, Collector<Row> out) throws Exception {
         // 过滤掉超过deadline的事件记录
         Set<String> fields = value.getFieldNames(true);
-        if (fields != null &&fields.contains(Consts.FIELD_DEAD_LINE)) {
-            Long deadline = (Long)value.getField(Consts.FIELD_DEAD_LINE);
-            if (deadline != null && deadline < ctx.timerService().currentProcessingTime()) {
+        if (fields != null && fields.contains(Consts.FIELD_DEAD_LINE)) {
+            Long deadline = (Long) value.getField(Consts.FIELD_DEAD_LINE);
+            if (deadline != null &&
+                    deadline != 0L &&
+                    deadline < ctx.timerService().currentProcessingTime()) {
+                logger.info("Delay retry timeout, drop event {}.", value);
                 return;
             }
         }

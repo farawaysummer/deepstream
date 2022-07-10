@@ -11,9 +11,11 @@ import java.math.BigDecimal
 import java.sql.SQLException
 import java.util.concurrent.CompletableFuture
 
-class AsyncDatabaseClient(private val queryData: QueryData,
-                          private val delayQueryTime: Int,
-                          private val counter: Counter) {
+class AsyncDatabaseClient(
+    private val queryData: QueryData,
+    private val delayQueryTime: Int,
+    private val counter: Counter
+) {
     init {
         queryData.loadDataSource()
     }
@@ -35,8 +37,9 @@ class AsyncDatabaseClient(private val queryData: QueryData,
             DatabaseSources.getConnection(queryData.dsName).use { connection ->
                 val rowFields = row.getFieldNames(true)
 
-                val sql = if (queryData.dynamicCondition) {
-                    val conditionStr = queryData.conditionFields.joinToString(" AND ") { "${queryData.masterTable}.$it = ?" }
+                val sql = if (queryData.dynamicConfig.enabled) {
+
+                    val conditionStr = queryData.conditionFields.joinToString(" AND ") { "${queryData.dynamicConfig.alias}.$it = ?" }
                     val businessSql = queryData.businessSql
                     if (businessSql.lastIndexOf(string = "where", ignoreCase = true) >
                         businessSql.lastIndexOf(string = "from", ignoreCase = true)
@@ -69,16 +72,16 @@ class AsyncDatabaseClient(private val queryData: QueryData,
                     val result = statement.executeQuery()
                     while (result.next()) {
                         val values =
-                            queryData.resultFields.keys.associateBy({
-                                it
+                            queryData.resultFields.associateBy({
+                                it.fieldName
                             }, {
-                                result.getObject(it)
+                                result.getObject(it.fieldName)
                             })
                                 .mapValues { (_, value) ->
                                     typeNormalize(value)
                                 }
                         val newRow = Row.withNames()
-                        queryData.resultFields.keys.forEach { newRow.setField(it, values[it]) }
+                        queryData.resultFields.forEach { newRow.setField(it.fieldName, values[it.fieldName]) }
 
                         rows.add(newRow)
                         counter.inc()

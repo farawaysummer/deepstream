@@ -1,5 +1,6 @@
 package com.rui.ds.ks;
 
+import com.rui.ds.ks.delay.DeepStreamDelay;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.flink.formats.avro.AvroToRowDataConverters;
 import org.apache.flink.table.data.GenericRowData;
@@ -8,7 +9,9 @@ import org.apache.flink.table.types.logical.LogicalType;
 import org.apache.flink.table.types.logical.RowType;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 
 public class AvroKoalaSpeedToRowDataConverters {
 
@@ -27,15 +30,18 @@ public class AvroKoalaSpeedToRowDataConverters {
 
         return data -> {
             GenericRecord genericRecord = (GenericRecord) data;
-            GenericRowData row = new GenericRowData(arity + 1);
-            for(int i = 0; i < arity; ++i) {
+            GenericRowData row = new GenericRowData(arity);
+            for (int i = 0; i < arity; ++i) {
                 String fieldName = fieldNames.get(i);
                 Object value = genericRecord.get(fieldName);
-                row.setField(i, fieldConverters[i].convert(value));
-            }
 
-            // add deadline field as current time
-            row.setField(arity, System.currentTimeMillis());
+                // product by koalaspeed, and no deadline field in record
+                if (Objects.equals(fieldName, DeepStreamDelay.FIELD_DEAD_LINE) && value == null) {
+                    row.setField(i, 0L);
+                } else {
+                    row.setField(i, fieldConverters[i].convert(value));
+                }
+            }
 
             return row;
         };

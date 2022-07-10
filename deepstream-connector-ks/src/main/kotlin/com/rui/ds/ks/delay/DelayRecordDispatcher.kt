@@ -1,6 +1,5 @@
 package com.rui.ds.ks.delay
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.base.Strings
 import org.apache.kafka.clients.consumer.ConsumerRecords
 import org.apache.kafka.clients.consumer.KafkaConsumer
@@ -14,14 +13,13 @@ import java.util.concurrent.Callable
 import java.util.concurrent.atomic.AtomicBoolean
 
 class DelayRecordDispatcher(
-    private val delayTopic: String,
-    private val delayMs: Long,
-    bootStrapServers: String
-) : Callable<Boolean> {
+    bootStrapServers: String,
+    private val delayLevel: DelayLevel
+) : Runnable {
     private val consumer: KafkaConsumer<String, String>
     private val producer: KafkaProducer<String, DelayRetryRecord>
     val onWorking: AtomicBoolean = AtomicBoolean(false)
-    private val mapper = ObjectMapper()
+    private val delayTopic: String
 
     init {
         val props = Properties()
@@ -39,15 +37,17 @@ class DelayRecordDispatcher(
         productProps["value.serializer"] = "com.rui.ds.ks.delay.DelayEventSerializer"
         this.producer = KafkaProducer(productProps)
 
+        this.delayTopic = DeepStreamDelay.delayTopic(delayLevel)
+
         consumer.subscribe(listOf(delayTopic))
     }
 
-    override fun call(): Boolean {
+    override fun run() {
         while (onWorking.get()) {
             val records: ConsumerRecords<String, String> = consumer.poll(Duration.ofMillis(1000))
             for (record in records) {
                 while (true) {
-                    val sleep: Long = record.timestamp() + delayMs - System.currentTimeMillis()
+                    val sleep: Long = record.timestamp() + delayLevel.delayMinute * 60 * 1000 - System.currentTimeMillis()
                     if (sleep > 0) {
                         try {
                             Thread.sleep(sleep)
@@ -58,7 +58,9 @@ class DelayRecordDispatcher(
                         continue
                     }
 
-                    val delayRecord = readDelayData(record.value())
+                    val delayRecord = DeepStreamDelay.readDelayData(record.value())
+                    logger.info("Process delay data {}", delayRecord);
+
                     if (Strings.isNullOrEmpty(delayRecord.eventTopic)) {
                         logger.warn("unable to read topic from value:{}", record.value())
                         break
@@ -75,13 +77,6 @@ class DelayRecordDispatcher(
 
             consumer.commitSync()
         }
-
-        return true
-    }
-
-    private fun readDelayData(message: String): DelayRetryRecord {
-        // parse from json string to recordO
-        return mapper.readValue(message, DelayRetryRecord::class.java)
     }
 
     companion object {

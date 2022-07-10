@@ -1,13 +1,12 @@
 package com.rui.dp.prj;
 
 import com.rui.dp.prj.base.*;
+import com.rui.dp.prj.base.delay.DelayProcessService;
 import com.rui.dp.prj.base.funs.*;
-import com.rui.dp.prj.base.job.DataField;
-import com.rui.dp.prj.base.job.EventData;
-import com.rui.dp.prj.base.job.ProcessJobData;
-import com.rui.dp.prj.base.job.RelatedTable;
+import com.rui.dp.prj.base.job.*;
 import com.rui.ds.ProcessContext;
 import com.rui.ds.StreamDataTypes;
+import com.rui.ds.ks.delay.DelayServiceKey;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
@@ -47,12 +46,20 @@ public class DataProcessJob implements ProjectJob {
             DeepStreamHelper.executeSQL(context, tableSql);
         }
 
-        // 创建事件读取的表定义
+        // 创建事件读取的表定义, 初始化事件资源
         List<EventData> events = jobData.getEvents();
         for (EventData eventData : events) {
             String eventSql = eventData.toEventTableSql();
             logger.info("[" + jobData.getJobName() + "] Execute event table create sql:\n" + eventSql);
             DeepStreamHelper.executeSQL(context, eventSql);
+
+            if (eventData.getDelayRetryConfig().getEnabled()) {
+                DelayServiceKey key = new DelayServiceKey(eventData.getDelayRetryConfig().getServers(),
+                        eventData.getDelayRetryConfig().getLevel());
+                logger.info("[" + jobData.getJobName() + "] Register delay process {}", key);
+
+                DelayProcessService.registerDelayProcess(key);
+            }
         }
 
         logger.info("Finish preparing job [" + jobData.getJobName() + "]");
@@ -77,9 +84,6 @@ public class DataProcessJob implements ProjectJob {
                     columns
             );
         }
-
-        // process retry events
-
 
         for (EventData event : events) {
             // 对数据变更事件去重
@@ -106,32 +110,30 @@ public class DataProcessJob implements ProjectJob {
 
             // 按事件分组
             StreamDataTypes eventTypes = DeepStreamHelper.toStreamDataTypes(event.getEventFields());
-
             DataStream<Row> groupStream = eventStream.keyBy(row -> RowDesc.of(row, keyFields))
                     .process(new DeduplicateRowFunction(jobData.getJobName(), event))
                     .returns(eventTypes.toTypeInformation());
 
+            QueryData queryData = jobData.createQueryData(event);
+
             // 关联查询
             StreamDataTypes streamDataType = DeepStreamHelper.toStreamDataTypes(jobData.getProcessData().getResultFields());
-            DataStream<ProcessResult> queryResult = AsyncDataStream.unorderedWait(
-                    groupStream,
-                    new AsyncDBJoinFunction(jobData.createQueryData(event)),
-                    30000, TimeUnit.SECONDS
-            );
+            DataStream<Row> queryResult = AsyncDataStream.unorderedWait(
+                            groupStream,
+                            new AsyncDBJoinFunction(queryData),
+                            30000, TimeUnit.SECONDS
+                    ).process(new ResultForwardFunction(queryData))
+                    .returns(streamDataType.toTypeInformation());
 
-            SingleOutputStreamOperator<Row> forwardResult;
             if (mappingFunction != null) {
-                forwardResult = queryResult.process(new ResultForwardFunction())
+                queryResult = queryResult
                         .map(mappingFunction)
-                        .returns(streamDataType.toTypeInformation());
-            } else {
-                forwardResult = queryResult.process(new ResultForwardFunction())
                         .returns(streamDataType.toTypeInformation());
             }
 
-            allQueryResults.add(forwardResult);
+            allQueryResults.add(queryResult);
         }
-//
+
         DataStream<Row> resultStream;
         if (allQueryResults.size() == 1) {
             resultStream = allQueryResults.get(0);

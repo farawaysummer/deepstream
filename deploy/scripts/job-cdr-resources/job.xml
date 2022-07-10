@@ -8,7 +8,7 @@
                 <field name="CH_ID" type="STRING" isKey="true" ref="CH_ID"/>
             </eventKeys>
             <!--读取的事件来源类型，一般为kafka或jdbc-cdc-->
-            <eventType name="kafka">
+            <eventType name="kafka" retryAddress="10">
                 <!--读取的kafka主题名-->
                 <config name="topic" value="10"/>
                 <!--kafka的服务地址-->
@@ -20,6 +20,12 @@
                 <!--kafka的读取格式，从CDC的数据主题中读取格式为ruisoft-koalaspeed-->
                 <config name="format" value="ruisoft-koalaspeed"/>
             </eventType>
+            <!--延迟重试配置-->
+            <delayRetry enabled="true" >
+                <!--delayLevel: 延迟重试等级， 级别为LOW, MEDIUM, HIGH 对应的延迟重试时间为1分钟，3分钟，10分钟 -->
+                <config delayLevel="MEDIUM" servers="localhost:9092" deadline="30" target="10"/>
+                <policy checkEmpty="true" checkRequired="true"/>
+            </delayRetry>
         </event>
 <!--        <event name="queryEvent1">-->
 <!--            &lt;!&ndash;数据变更事件的索引字段信息&ndash;&gt;-->
@@ -75,12 +81,13 @@
     <!--数据处理过程-->
     <process>
         <datasource name="HIS"/>
-        <processSQL name="selectHIS" masterTable="WDHIS.EMR_CASE_HISTORY_DOCUMENT"/>
+        <processSQL name="selectHIS"/>
         <sinkSQL name="insert"/>
         <transformJobs>
             <transform name="NB_E12010000-门诊电子病历"/>
         </transformJobs>
         <delayQuerySecond>0</delayQuerySecond>
+        <dynamicProcess enabled="true" masterTable="WDHIS.EMR_CASE_HISTORY_DOCUMENT" alias="A"/>
         <results>
             <field name="ORG_CODE" type="VARCHAR2"/>
             <field name="CLINIC_ID" type="VARCHAR2"/>

@@ -9,6 +9,7 @@ class DelayEventSerializer : Serializer<DelayRetryRecord> {
     override fun serialize(topic: String, data: DelayRetryRecord): ByteArray {
         val columnValues = mutableMapOf<CharSequence, CharSequence>()
         data.values.forEach { (name, value) -> columnValues[name] = value }
+        columnValues[DeepStreamDelay.FIELD_DEAD_LINE] = data.deadline.toString()
 
         val builder = AvroRecordEvent.newBuilder()
             .setEventId(UUID.randomUUID().toString())

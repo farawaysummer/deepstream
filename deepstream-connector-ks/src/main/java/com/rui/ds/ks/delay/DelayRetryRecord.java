@@ -31,4 +31,13 @@ public class DelayRetryRecord implements java.io.Serializable {
     public void setValues(Map<String, String> values) {
         this.values = values;
     }
+
+    @Override
+    public String toString() {
+        return "DelayRetryRecord{" +
+                "eventTopic='" + eventTopic + '\'' +
+                ", deadline=" + deadline +
+                ", values=" + values +
+                '}';
+    }
 }

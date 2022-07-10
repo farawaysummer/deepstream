@@ -5,8 +5,7 @@ import org.apache.flink.types.Row
 data class ProcessResult(
     val input: Row,
     val pass: Int,
-    val output: Collection<Row>,
-    val unfinished: Collection<Row>
+    val output: Collection<Row>
 ) : java.io.Serializable {
     companion object {
         const val ALL_PASS: Int = 1

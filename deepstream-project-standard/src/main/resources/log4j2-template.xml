@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="ERROR">
+    <Properties>
+        <Property name="log.dir">${sys:log.file:-logs/}</Property>
+        <Property name="log.jobname">${ctx:jobName}</Property>
+    </Properties>
+    
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level - %msg%n" />
+        </Console>
+
+        <Routing name="job-log">
+            <Routes pattern="$${ctx:jobName}">
+                <Route>
+                    <RollingRandomAccessFile name="job-${ctx:jobName}" fileName="${log.dir}/job-${ctx:jobName:-default}.log"
+                                             filePattern="${log.dir}/%d{yyyy-MM}/job-${ctx:jobName:-default}-%d{yyyy-MM-dd}-%i.log"
+                                             append="true">
+                        <Filters>
+                            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="NEUTRAL"/>
+                            <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="NEUTRAL"/>
+                            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+                            <ThresholdFilter level="DEBUG" onMatch="DENY" onMismatch="NEUTRAL"/>
+                        </Filters>
+
+                        <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level - %msg%n" />
+
+                        <Policies>
+                            <SizeBasedTriggeringPolicy size="20 MB"/>
+                        </Policies>
+
+                        <DefaultRolloverStrategy max="100"/>
+                    </RollingRandomAccessFile>
+                </Route>
+            </Routes>
+        </Routing>
+
+        <RollingRandomAccessFile name="errFileLog" fileName="${log.dir}/job-err.log"
+                                 filePattern="${log.dir}/%d{yyyy-MM}/job-err-%d{yyyy-MM-dd}-%i.log"
+                                 append="true">
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level - [$${ctx:jobName:-default}] - %msg%n" />
+
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+
+            <DefaultRolloverStrategy max="100"/>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="mainAppender" fileName="${log.dir}/node.log"
+                                 filePattern="${log.dir}/node.log.%i"
+                                 append="true">
+
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %-60c %x - %m%n" />
+
+            <Policies>
+                <OnStartupTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="100MB"/>
+            </Policies>
+
+            <DefaultRolloverStrategy max="${env:MAX_LOG_FILE_NUMBER:-10}"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="mainAppender"/>
+        </Root>
+
+        <Logger name="com.rui" level="INFO" additivity="true">
+            <AppenderRef ref="job-log"/>
+<!--            <AppenderRef ref="errFileLog"/>-->
+        </Logger>
+
+        <Logger name="akka" level="INFO" additivity="true">
+            <AppenderRef ref="mainAppender"/>
+        </Logger>
+
+        <Logger name="org.apache.kafka" level="INFO" additivity="true">
+            <AppenderRef ref="mainAppender"/>
+        </Logger>
+
+        <Logger name="org.apache.hadoop" level="INFO" additivity="true">
+            <AppenderRef ref="mainAppender"/>
+        </Logger>
+
+        <Logger name="org.apache.zookeeper" level="INFO" additivity="true">
+            <AppenderRef ref="mainAppender"/>
+        </Logger>
+
+        <Logger name="org.apache.flink.shaded.zookeeper3" level="INFO" additivity="true">
+            <AppenderRef ref="mainAppender"/>
+        </Logger>
+    </Loggers>
+</Configuration>

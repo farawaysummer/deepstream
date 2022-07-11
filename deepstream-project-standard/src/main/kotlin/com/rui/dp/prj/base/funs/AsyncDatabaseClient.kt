@@ -16,8 +16,26 @@ class AsyncDatabaseClient(
     private val delayQueryTime: Int,
     private val counter: Counter
 ) {
+    private val sql: String
+
     init {
         queryData.loadDataSource()
+
+        sql = if (queryData.dynamicConfig.enabled) {
+            val conditionStr = queryData.conditionFields.joinToString(" AND ") { "${queryData.dynamicConfig.alias}.$it = ?" }
+            val businessSql = queryData.businessSql
+            if (businessSql.lastIndexOf(string = "where", ignoreCase = true) >
+                businessSql.lastIndexOf(string = "from", ignoreCase = true)
+            ) {
+                "$businessSql AND $conditionStr"
+            } else {
+                "$businessSql WHERE $conditionStr"
+            }
+        } else {
+            queryData.businessSql
+        }
+
+        logger.info("[${queryData.jobName}] Query sql is:\n $sql")
     }
 
     fun query(key: Row): CompletableFuture<Collection<Row>> {
@@ -36,23 +54,6 @@ class AsyncDatabaseClient(
 
             DatabaseSources.getConnection(queryData.dsName).use { connection ->
                 val rowFields = row.getFieldNames(true)
-
-                val sql = if (queryData.dynamicConfig.enabled) {
-
-                    val conditionStr = queryData.conditionFields.joinToString(" AND ") { "${queryData.dynamicConfig.alias}.$it = ?" }
-                    val businessSql = queryData.businessSql
-                    if (businessSql.lastIndexOf(string = "where", ignoreCase = true) >
-                        businessSql.lastIndexOf(string = "from", ignoreCase = true)
-                    ) {
-                        "$businessSql AND $conditionStr"
-                    } else {
-                        "$businessSql WHERE $conditionStr"
-                    }
-                } else {
-                    queryData.businessSql
-                }
-
-                logger.debug("[${queryData.jobName}] Query with sql:\n $sql")
 
                 val rows = mutableListOf<Row>()
                 val statement = connection!!.prepareStatement(sql)

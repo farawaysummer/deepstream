@@ -14,6 +14,7 @@ data class ProcessJobData(
 ) : java.io.Serializable {
     private val SQLS: MutableMap<String, String> = mutableMapOf()
     private val dsConfig: MutableMap<String, DataSourceConfig> = mutableMapOf()
+    val jobId: String = jobName.hashCode().toString()
 
     fun createQueryData(event: EventData): QueryData {
         // process kafka event

@@ -20,6 +20,12 @@
                 <!--kafka的读取格式，从CDC的数据主题中读取格式为ruisoft-koalaspeed-->
                 <config name="format" value="ruisoft-koalaspeed"/>
             </eventType>
+            <!--延迟重试配置-->
+            <delayRetry enabled="true" >
+                <!--delayLevel: 延迟重试等级， 级别为LOW, MEDIUM, HIGH 对应的延迟重试时间为1分钟，3分钟，10分钟 -->
+                <config delayLevel="MEDIUM" servers="localhost:9092" deadline="10" target="7"/>
+                <policy checkEmpty="true" checkRequired="true"/>
+            </delayRetry>
         </event>
     </events>
     <!--处理过程中涉及到的表定义-->

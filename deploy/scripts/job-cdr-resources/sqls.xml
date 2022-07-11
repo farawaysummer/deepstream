@@ -386,7 +386,6 @@ D.CHANGE_TIME	 AS  UPDATE_DTIME,-- datetime DEFAULT NULL,
        AND E.SOURCE_TYPE=1
        AND D.CH_ID = E.CH_ID
        AND C.REG_ID = E.REG_ID
-       AND D.CH_ID = ?
 
         ]]>
     </sql>

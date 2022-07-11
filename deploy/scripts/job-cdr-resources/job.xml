@@ -8,14 +8,14 @@
                 <field name="CH_ID" type="STRING" isKey="true" ref="CH_ID"/>
             </eventKeys>
             <!--读取的事件来源类型，一般为kafka或jdbc-cdc-->
-            <eventType name="kafka" retryAddress="10">
+            <eventType name="kafka">
                 <!--读取的kafka主题名-->
                 <config name="topic" value="10"/>
                 <!--kafka的服务地址-->
                 <config name="properties.bootstrap.servers" value="localhost:9092"/>
                 <!--kafka的读取分组，默认即可-->
                 <config name="properties.group.id" value="k_default"/>
-                <!--kafka的读取偏移量设置，调试阶段可设置为earliest-offset , 正式运行时设置为group-offsets-->
+                <!--kafka的读取偏移量设置，调试阶段可设置为earliest-offset 或 latest-offset, 正式运行时设置为group-offsets-->
                 <config name="scan.startup.mode" value="latest-offset"/>
                 <!--kafka的读取格式，从CDC的数据主题中读取格式为ruisoft-koalaspeed-->
                 <config name="format" value="ruisoft-koalaspeed"/>
@@ -23,7 +23,7 @@
             <!--延迟重试配置-->
             <delayRetry enabled="true" >
                 <!--delayLevel: 延迟重试等级， 级别为LOW, MEDIUM, HIGH 对应的延迟重试时间为1分钟，3分钟，10分钟 -->
-                <config delayLevel="MEDIUM" servers="localhost:9092" deadline="30" target="10"/>
+                <config delayLevel="MEDIUM" servers="localhost:9092" deadline="10" target="10"/>
                 <policy checkEmpty="true" checkRequired="true"/>
             </delayRetry>
         </event>
@@ -87,7 +87,7 @@
             <transform name="NB_E12010000-门诊电子病历"/>
         </transformJobs>
         <delayQuerySecond>0</delayQuerySecond>
-        <dynamicProcess enabled="true" masterTable="WDHIS.EMR_CASE_HISTORY_DOCUMENT" alias="A"/>
+        <dynamicProcess enabled="true" masterTable="WDHIS.EMR_CASE_HISTORY_DOCUMENT" alias="D"/>
         <results>
             <field name="ORG_CODE" type="VARCHAR2"/>
             <field name="CLINIC_ID" type="VARCHAR2"/>

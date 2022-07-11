@@ -62,14 +62,14 @@ class DelayRecordDispatcher(
                     logger.info("Process delay data {}", delayRecord);
 
                     if (Strings.isNullOrEmpty(delayRecord.eventTopic)) {
-                        logger.warn("unable to read topic from value:{}", record.value())
+                        logger.warn("unable to read topic from value:{}", delayRecord)
                         break
                     }
 
                     val producerRecord = ProducerRecord<String, DelayRetryRecord>(delayTopic, delayRecord)
 
                     producer.send(producerRecord)
-                    logger.debug("send {} to {}", record.value(), delayTopic)
+                    logger.info("[DelayDispatch] send {} to {}", delayRecord, delayTopic)
 
                     break
                 }
